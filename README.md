@@ -21,6 +21,7 @@ A professional Windows desktop application for visualizing Google Cloud Document
 - Real-time text extraction
 - Confidence scoring for extracted text
 - Robust error handling and fallback methods
+- **Batch processing** for multiple PDFs
 
 ### 🎯 Interactive Text Analysis
 - **Bounding box overlays** on PDF (just like Google's demo!)
@@ -29,6 +30,8 @@ A professional Windows desktop application for visualizing Google Cloud Document
   - 🟠 Orange: Medium confidence (70-90%)
   - 🔴 Red: Low confidence (<70%)
   - 🔵 Blue: Selected text block
+- **Confidence heatmap mode** with transparency overlays
+- **Reading order visualization** with numbered sequence
 - Click-to-select text blocks
 - Hover effects and cursor changes
 
@@ -36,6 +39,9 @@ A professional Windows desktop application for visualizing Google Cloud Document
 - **Full Text Tab:** Complete extracted text with search functionality
 - **Text Blocks Tab:** Detailed listing with confidence scores and coordinates
 - **Statistics Tab:** Document metrics and analysis
+- **Language Detection:** Automatic text language identification
+- **Table Extraction:** Smart detection of tabular data structures
+- **Advanced Statistics:** Word frequency, detailed metrics, and analytics
 
 ### 💾 Export Capabilities
 - Export full text to .txt files
@@ -48,8 +54,48 @@ A professional Windows desktop application for visualizing Google Cloud Document
 - Modern Windows tkinter GUI
 - Tabbed content organization
 - Toolbar with intuitive controls
+- **Progress bars** for visual feedback
+- **Recent files menu** (last 10 files)
 - Status bar with progress updates
-- Keyboard shortcuts for efficiency
+- **Comprehensive keyboard shortcuts**
+- Built-in help system
+
+### ⚡ Advanced Features
+- **Batch Processing:** Process multiple PDFs simultaneously
+- **Visual Modes:** Toggle between normal, heatmap, and reading order views
+- **Smart Analysis:** Language detection and table structure recognition
+- **Productivity Tools:** Recent files, keyboard shortcuts, progress tracking
+- **Help System:** Built-in shortcuts guide and comprehensive documentation
+
+## ⌨️ Keyboard Shortcuts
+
+### File Operations
+- `Ctrl + O` - Open PDF file
+- `Ctrl + P` - Process document with Document AI  
+- `Ctrl + B` - Batch process multiple files
+
+### View Controls
+- `Ctrl + +` - Zoom in
+- `Ctrl + -` - Zoom out
+- `Ctrl + 0` - Fit to window
+- `Ctrl + H` - Toggle confidence heatmap
+- `Ctrl + R` - Toggle reading order display
+
+### Navigation
+- `Page Up/Down` - Navigate between pages
+- `Home/End` - Jump to first/last page
+- `Arrow Keys` - Pan PDF view
+
+### Help & Utilities
+- `F1` - Show keyboard shortcuts help
+- `Escape` - Clear current selection
+- `Ctrl + Q` - Quit application
+
+### Mouse Controls
+- **Click** - Select text block
+- **Drag** - Pan PDF view  
+- **Scroll** - Zoom in/out
+- **Double-click** - Fit selected block to view
 
 ## 📋 Requirements
 
