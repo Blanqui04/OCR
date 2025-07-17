@@ -40,6 +40,8 @@ A professional Windows desktop application for visualizing Google Cloud Document
 ### 💾 Export Capabilities
 - Export full text to .txt files
 - Export structured data to JSON with coordinates and confidence scores
+- **Export to CSV** with detailed metrics (coordinates, confidence, dimensions)
+- **Export PDF reports** with professional tables, statistics, and analysis
 - Professional file dialogs
 
 ### 🎨 Professional Interface

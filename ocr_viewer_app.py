@@ -18,6 +18,12 @@ from dataclasses import dataclass
 from typing import List, Optional
 import json
 import warnings
+import csv
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
 
 # Suppress Google Cloud authentication warnings
 warnings.filterwarnings("ignore", message="Your application has authenticated using end user credentials")
@@ -101,6 +107,8 @@ class OCRViewerApp:
         file_menu.add_separator()
         file_menu.add_command(label="Export Text...", command=self.export_text)
         file_menu.add_command(label="Export JSON...", command=self.export_json)
+        file_menu.add_command(label="Export CSV...", command=self.export_csv)
+        file_menu.add_command(label="Export PDF Report...", command=self.export_pdf_report)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         
@@ -138,6 +146,15 @@ class OCRViewerApp:
                   style='Modern.TButton').pack(side=tk.LEFT, padx=2)
         
         ttk.Button(toolbar_frame, text="Fit Window", command=self.fit_to_window,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        
+        # Export buttons
+        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        
+        ttk.Button(toolbar_frame, text="Export CSV", command=self.export_csv,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        
+        ttk.Button(toolbar_frame, text="Export PDF", command=self.export_pdf_report,
                   style='Modern.TButton').pack(side=tk.LEFT, padx=2)
         
         # Page navigation
@@ -906,6 +923,258 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 messagebox.showinfo("Success", f"JSON data exported to {file_path}")
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to export JSON: {str(e)}")
+    
+    def export_csv(self):
+        """Export text blocks data as CSV"""
+        if not self.text_blocks:
+            messagebox.showwarning("Warning", "No text data to export")
+            return
+            
+        file_path = filedialog.asksaveasfilename(
+            title="Save CSV as...",
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.writer(csvfile)
+                    
+                    # Write header
+                    writer.writerow([
+                        'Page', 'Text Content', 'Confidence', 
+                        'X1', 'Y1', 'X2', 'Y2', 
+                        'Width', 'Height', 'Character Count', 'Word Count'
+                    ])
+                    
+                    # Write data rows
+                    for block in self.text_blocks:
+                        x1, y1, x2, y2 = block.bbox
+                        width = abs(x2 - x1)
+                        height = abs(y2 - y1)
+                        char_count = len(block.text)
+                        word_count = len(block.text.split())
+                        
+                        writer.writerow([
+                            block.page_num + 1,
+                            block.text.replace('\n', ' ').replace('\r', ' '),  # Clean newlines for CSV
+                            f"{block.confidence:.3f}",
+                            f"{x1:.2f}",
+                            f"{y1:.2f}",
+                            f"{x2:.2f}",
+                            f"{y2:.2f}",
+                            f"{width:.2f}",
+                            f"{height:.2f}",
+                            char_count,
+                            word_count
+                        ])
+                        
+                messagebox.showinfo("Success", f"CSV data exported to {file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to export CSV: {str(e)}")
+    
+    def export_pdf_report(self):
+        """Export comprehensive PDF report with tables and statistics"""
+        if not self.text_blocks:
+            messagebox.showwarning("Warning", "No text data to export")
+            return
+            
+        file_path = filedialog.asksaveasfilename(
+            title="Save PDF Report as...",
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+        )
+        
+        if file_path:
+            try:
+                # Create PDF document
+                doc = SimpleDocTemplate(file_path, pagesize=A4)
+                story = []
+                styles = getSampleStyleSheet()
+                
+                # Custom styles
+                title_style = ParagraphStyle(
+                    'CustomTitle',
+                    parent=styles['Heading1'],
+                    fontSize=24,
+                    spaceAfter=30,
+                    textColor=colors.darkblue
+                )
+                
+                heading_style = ParagraphStyle(
+                    'CustomHeading',
+                    parent=styles['Heading2'],
+                    fontSize=16,
+                    spaceBefore=20,
+                    spaceAfter=10,
+                    textColor=colors.darkgreen
+                )
+                
+                # Title
+                story.append(Paragraph("OCR Analysis Report", title_style))
+                story.append(Spacer(1, 12))
+                
+                # Document information
+                doc_info = [
+                    ["Document:", os.path.basename(self.current_pdf_path) if self.current_pdf_path else "N/A"],
+                    ["Processing Date:", "2025-01-17"],  # You can make this dynamic
+                    ["Total Pages:", str(len(self.pdf_document)) if self.pdf_document else "N/A"],
+                    ["Total Text Blocks:", str(len(self.text_blocks))],
+                    ["Total Characters:", f"{sum(len(block.text) for block in self.text_blocks):,}"],
+                    ["Total Words:", f"{sum(len(block.text.split()) for block in self.text_blocks):,}"]
+                ]
+                
+                info_table = Table(doc_info, colWidths=[2*inch, 3*inch])
+                info_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+                    ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                    ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 10),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+                
+                story.append(info_table)
+                story.append(Spacer(1, 20))
+                
+                # Statistics by confidence
+                story.append(Paragraph("Confidence Statistics", heading_style))
+                
+                high_conf = sum(1 for b in self.text_blocks if b.confidence > 0.9)
+                med_conf = sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)
+                low_conf = sum(1 for b in self.text_blocks if b.confidence < 0.7)
+                avg_conf = sum(b.confidence for b in self.text_blocks) / len(self.text_blocks) if self.text_blocks else 0
+                
+                conf_data = [
+                    ["Confidence Level", "Count", "Percentage"],
+                    ["High (>90%)", str(high_conf), f"{(high_conf/len(self.text_blocks)*100):.1f}%"],
+                    ["Medium (70-90%)", str(med_conf), f"{(med_conf/len(self.text_blocks)*100):.1f}%"],
+                    ["Low (<70%)", str(low_conf), f"{(low_conf/len(self.text_blocks)*100):.1f}%"],
+                    ["Average Confidence", f"{avg_conf:.2%}", ""]
+                ]
+                
+                conf_table = Table(conf_data, colWidths=[2*inch, 1*inch, 1*inch])
+                conf_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 10),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    # Alternate row colors
+                    ('BACKGROUND', (0, 1), (-1, 1), colors.lightgreen),
+                    ('BACKGROUND', (0, 3), (-1, 3), colors.lightgreen),
+                ]))
+                
+                story.append(conf_table)
+                story.append(Spacer(1, 20))
+                
+                # Detailed text blocks table
+                story.append(Paragraph("Detailed Text Blocks", heading_style))
+                
+                # Prepare data for text blocks table
+                table_data = [["Page", "Text Preview", "Confidence", "Position (X,Y)", "Size (W×H)"]]
+                
+                for block in self.text_blocks[:50]:  # Limit to first 50 blocks to avoid huge PDFs
+                    x1, y1, x2, y2 = block.bbox
+                    width = abs(x2 - x1)
+                    height = abs(y2 - y1)
+                    
+                    # Truncate text for table
+                    text_preview = block.text[:40] + "..." if len(block.text) > 40 else block.text
+                    text_preview = text_preview.replace('\n', ' ')
+                    
+                    table_data.append([
+                        str(block.page_num + 1),
+                        text_preview,
+                        f"{block.confidence:.2f}",
+                        f"({x1:.0f},{y1:.0f})",
+                        f"{width:.0f}×{height:.0f}"
+                    ])
+                
+                # Create table with appropriate column widths
+                blocks_table = Table(table_data, colWidths=[0.6*inch, 2.8*inch, 0.8*inch, 1*inch, 0.8*inch])
+                blocks_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                    ('ALIGN', (2, 0), (2, -1), 'CENTER'),  # Confidence column
+                    ('ALIGN', (3, 0), (3, -1), 'CENTER'),  # Position column
+                    ('ALIGN', (4, 0), (4, -1), 'CENTER'),  # Size column
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 8),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ]))
+                
+                # Add alternating row colors
+                for i in range(1, len(table_data)):
+                    if i % 2 == 0:
+                        blocks_table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, i), (-1, i), colors.lightblue)
+                        ]))
+                
+                story.append(blocks_table)
+                
+                # Add note if there are more blocks
+                if len(self.text_blocks) > 50:
+                    story.append(Spacer(1, 12))
+                    story.append(Paragraph(
+                        f"<i>Note: Showing first 50 of {len(self.text_blocks)} total text blocks. "
+                        f"Export CSV for complete data.</i>", 
+                        styles['Normal']
+                    ))
+                
+                # Summary statistics by page
+                if self.pdf_document and len(self.pdf_document) > 1:
+                    story.append(Spacer(1, 20))
+                    story.append(Paragraph("Statistics by Page", heading_style))
+                    
+                    page_stats = []
+                    page_stats.append(["Page", "Text Blocks", "Characters", "Words", "Avg Confidence"])
+                    
+                    for page_num in range(len(self.pdf_document)):
+                        page_blocks = [b for b in self.text_blocks if b.page_num == page_num]
+                        if page_blocks:
+                            total_chars = sum(len(b.text) for b in page_blocks)
+                            total_words = sum(len(b.text.split()) for b in page_blocks)
+                            avg_conf = sum(b.confidence for b in page_blocks) / len(page_blocks)
+                            
+                            page_stats.append([
+                                str(page_num + 1),
+                                str(len(page_blocks)),
+                                str(total_chars),
+                                str(total_words),
+                                f"{avg_conf:.2f}"
+                            ])
+                    
+                    page_table = Table(page_stats, colWidths=[1*inch, 1*inch, 1*inch, 1*inch, 1.2*inch])
+                    page_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.darkorange),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 9),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ]))
+                    
+                    story.append(page_table)
+                
+                # Build PDF
+                doc.build(story)
+                messagebox.showinfo("Success", f"PDF report exported to {file_path}")
+                
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to export PDF report: {str(e)}")
+                print(f"PDF export error details: {e}")  # For debugging
 
 def main():
     """Main application entry point"""
