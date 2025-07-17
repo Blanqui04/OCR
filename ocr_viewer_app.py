@@ -50,6 +50,9 @@ class OCRViewerApp:
         self.current_page = 0
         self.zoom_factor = 1.0
         self.selected_block = None
+        self.recent_files = self.load_recent_files()
+        self.heatmap_mode = False
+        self.show_reading_order_mode = False
         
         # Google Cloud settings
         self.project_id = "natural-bison-465607-b6"
@@ -103,7 +106,14 @@ class OCRViewerApp:
         file_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Open PDF...", command=self.open_pdf, accelerator="Ctrl+O")
+        
+        # Recent files submenu
+        self.recent_files_menu = tk.Menu(file_menu, tearoff=0)
+        file_menu.add_cascade(label="Recent Files", menu=self.recent_files_menu)
+        self.update_recent_files_menu()
+        
         file_menu.add_command(label="Process Document", command=self.process_document, accelerator="Ctrl+P")
+        file_menu.add_command(label="Batch Process...", command=self.batch_process, accelerator="Ctrl+B")
         file_menu.add_separator()
         file_menu.add_command(label="Export Text...", command=self.export_text)
         file_menu.add_command(label="Export JSON...", command=self.export_json)
@@ -118,13 +128,33 @@ class OCRViewerApp:
         view_menu.add_command(label="Zoom In", command=self.zoom_in, accelerator="Ctrl++")
         view_menu.add_command(label="Zoom Out", command=self.zoom_out, accelerator="Ctrl+-")
         view_menu.add_command(label="Fit to Window", command=self.fit_to_window, accelerator="Ctrl+0")
+        view_menu.add_separator()
+        view_menu.add_command(label="Toggle Confidence Heatmap", command=self.toggle_heatmap, accelerator="Ctrl+H")
+        view_menu.add_command(label="Show Reading Order", command=self.show_reading_order, accelerator="Ctrl+R")
+        
+        # Tools menu
+        tools_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Tools", menu=tools_menu)
+        tools_menu.add_command(label="Language Detection", command=self.detect_language)
+        tools_menu.add_command(label="Extract Tables", command=self.extract_tables)
+        tools_menu.add_command(label="Text Statistics", command=self.show_detailed_stats)
+        
+        # Help menu
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="Keyboard Shortcuts", command=self.show_shortcuts)
+        help_menu.add_command(label="About", command=self.show_about)
         
         # Bind keyboard shortcuts
         self.root.bind('<Control-o>', lambda e: self.open_pdf())
         self.root.bind('<Control-p>', lambda e: self.process_document())
+        self.root.bind('<Control-b>', lambda e: self.batch_process())
         self.root.bind('<Control-plus>', lambda e: self.zoom_in())
         self.root.bind('<Control-minus>', lambda e: self.zoom_out())
         self.root.bind('<Control-0>', lambda e: self.fit_to_window())
+        self.root.bind('<Control-h>', lambda e: self.toggle_heatmap())
+        self.root.bind('<Control-r>', lambda e: self.show_reading_order())
+        self.root.bind('<F1>', lambda e: self.show_shortcuts())
         
     def create_toolbar(self):
         """Create application toolbar"""
@@ -168,6 +198,17 @@ class OCRViewerApp:
         
         self.page_label = ttk.Label(toolbar_frame, text="of 0")
         self.page_label.pack(side=tk.LEFT, padx=2)
+        
+        # Progress bar (initially hidden)
+        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        
+        self.progress_var = tk.DoubleVar()
+        self.progress_bar = ttk.Progressbar(toolbar_frame, variable=self.progress_var, 
+                                          length=150, mode='determinate')
+        self.progress_label = ttk.Label(toolbar_frame, text="")
+        
+        # Initially hidden
+        self.hide_progress()
         
     def create_pdf_viewer(self, parent):
         """Create PDF viewer panel"""
@@ -308,6 +349,9 @@ class OCRViewerApp:
             self.current_page = 0
             self.text_blocks = []
             
+            # Add to recent files
+            self.add_recent_file(file_path)
+            
             # Update page navigation
             page_count = len(self.pdf_document)
             self.page_var.set("1")
@@ -362,6 +406,13 @@ class OCRViewerApp:
         """Draw text block bounding boxes on image"""
         draw = ImageDraw.Draw(image)
         
+        # Get font for reading order numbers
+        try:
+            from PIL import ImageFont
+            font = ImageFont.truetype("arial.ttf", 12)
+        except:
+            font = None
+        
         for i, block in enumerate(self.text_blocks):
             if block.page_num != self.current_page:
                 continue
@@ -391,20 +442,72 @@ class OCRViewerApp:
             x2 = max(x1 + 1, min(x2, img_width))
             y2 = max(y1 + 1, min(y2, img_height))
             
-            # Choose color based on confidence
-            if block.confidence > 0.9:
-                color = "green"
-            elif block.confidence > 0.7:
-                color = "orange"
-            else:
-                color = "red"
-                
             try:
-                # Draw rectangle
-                if block == self.selected_block:
-                    draw.rectangle([x1, y1, x2, y2], outline="blue", width=3)
+                if self.heatmap_mode:
+                    # Heatmap mode: fill boxes with confidence-based colors
+                    if block.confidence > 0.9:
+                        fill_color = (0, 255, 0, 100)  # Green with transparency
+                    elif block.confidence > 0.7:
+                        fill_color = (255, 165, 0, 100)  # Orange with transparency
+                    else:
+                        fill_color = (255, 0, 0, 100)  # Red with transparency
+                    
+                    # Create a temporary image for transparency
+                    overlay = Image.new('RGBA', image.size, (255, 255, 255, 0))
+                    overlay_draw = ImageDraw.Draw(overlay)
+                    overlay_draw.rectangle([x1, y1, x2, y2], fill=fill_color)
+                    
+                    # Composite with main image
+                    image_rgba = image.convert('RGBA')
+                    image_rgba = Image.alpha_composite(image_rgba, overlay)
+                    image.paste(image_rgba.convert('RGB'))
+                    
+                    # Still draw border
+                    border_color = "green" if block.confidence > 0.9 else "orange" if block.confidence > 0.7 else "red"
+                    draw.rectangle([x1, y1, x2, y2], outline=border_color, width=1)
                 else:
-                    draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
+                    # Normal mode: just outlines
+                    if block.confidence > 0.9:
+                        color = "green"
+                    elif block.confidence > 0.7:
+                        color = "orange"
+                    else:
+                        color = "red"
+                        
+                    # Draw rectangle
+                    if block == self.selected_block:
+                        draw.rectangle([x1, y1, x2, y2], outline="blue", width=3)
+                    else:
+                        draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
+                
+                # Reading order mode: add numbers
+                if self.show_reading_order_mode:
+                    # Calculate reading order based on top-to-bottom, left-to-right
+                    page_blocks = [b for b in self.text_blocks if b.page_num == self.current_page]
+                    page_blocks.sort(key=lambda b: (b.bbox[1], b.bbox[0]))  # Sort by Y then X
+                    
+                    if block in page_blocks:
+                        order_num = page_blocks.index(block) + 1
+                        
+                        # Draw background circle for number
+                        center_x = x1 + 15
+                        center_y = y1 + 15
+                        draw.ellipse([center_x-10, center_y-10, center_x+10, center_y+10], 
+                                   fill="yellow", outline="black", width=2)
+                        
+                        # Draw number
+                        if font:
+                            bbox = draw.textbbox((0, 0), str(order_num), font=font)
+                            text_width = bbox[2] - bbox[0]
+                            text_height = bbox[3] - bbox[1]
+                        else:
+                            text_width, text_height = 8, 12  # Estimate
+                        
+                        text_x = center_x - text_width // 2
+                        text_y = center_y - text_height // 2
+                        
+                        draw.text((text_x, text_y), str(order_num), fill="black", font=font)
+                        
             except Exception as e:
                 print(f"Warning: Could not draw bounding box for block {i}: {e}")
                 # Skip this block if drawing fails
@@ -422,15 +525,20 @@ class OCRViewerApp:
     def _process_document_thread(self):
         """Process document in background thread"""
         try:
-            self.root.after(0, lambda: self.update_status("Processing document with Google Cloud Document AI..."))
+            self.root.after(0, lambda: self.show_progress("Connecting to Google Cloud..."))
+            self.root.after(0, lambda: self.update_progress(10))
             
             # Set up Document AI client
             opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
             client = documentai.DocumentProcessorServiceClient(client_options=opts)
             
+            self.root.after(0, lambda: self.update_progress(20, "Reading PDF file..."))
+            
             # Read file
             with open(self.current_pdf_path, "rb") as pdf_file:
                 content = pdf_file.read()
+            
+            self.root.after(0, lambda: self.update_progress(30, "Preparing request..."))
                 
             # Create request
             raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
@@ -438,30 +546,34 @@ class OCRViewerApp:
             request = documentai.ProcessRequest(name=name, raw_document=raw_document)
             
             # Process document
-            self.root.after(0, lambda: self.update_status("Sending document to Google Cloud for processing..."))
+            self.root.after(0, lambda: self.update_progress(50, "Processing with Document AI..."))
             result = client.process_document(request=request)
             document = result.document
             
-            self.root.after(0, lambda: self.update_status("Extracting text blocks from response..."))
+            self.root.after(0, lambda: self.update_progress(80, "Extracting text blocks..."))
             
             # Extract text blocks with error handling
             try:
                 self._extract_text_blocks(document)
-                self.root.after(0, lambda: self.update_status("Text extraction completed successfully"))
+                self.root.after(0, lambda: self.update_progress(90, "Finalizing..."))
             except Exception as extract_error:
                 print(f"Error extracting text blocks: {extract_error}")
                 # Fallback: extract basic text
                 self._extract_basic_text(document)
-                self.root.after(0, lambda: self.update_status("Basic text extraction completed (with limitations)"))
+                self.root.after(0, lambda: self.update_progress(90, "Basic extraction complete..."))
+            
+            self.root.after(0, lambda: self.update_progress(100, "Complete!"))
             
             # Update UI on main thread
             self.root.after(0, self._update_ui_after_processing)
+            self.root.after(2000, self.hide_progress)  # Hide after 2 seconds
             
         except Exception as e:
             error_msg = f"Processing failed: {str(e)}"
             print(f"Full error: {e}")
             self.root.after(0, lambda: messagebox.showerror("Processing Error", error_msg))
             self.root.after(0, lambda: self.update_status("Processing failed"))
+            self.root.after(0, self.hide_progress)
     
     def _extract_basic_text(self, document):
         """Fallback method for basic text extraction"""
@@ -1175,6 +1287,363 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to export PDF report: {str(e)}")
                 print(f"PDF export error details: {e}")  # For debugging
+    
+    def load_recent_files(self):
+        """Load recent files from settings"""
+        try:
+            # You could implement persistent storage here (e.g., JSON file)
+            return []
+        except:
+            return []
+    
+    def save_recent_files(self):
+        """Save recent files to settings"""
+        try:
+            # You could implement persistent storage here (e.g., JSON file)
+            pass
+        except:
+            pass
+    
+    def add_recent_file(self, file_path):
+        """Add file to recent files list"""
+        if file_path in self.recent_files:
+            self.recent_files.remove(file_path)
+        self.recent_files.insert(0, file_path)
+        self.recent_files = self.recent_files[:10]  # Keep only 10 recent files
+        self.save_recent_files()
+        self.update_recent_files_menu()
+    
+    def update_recent_files_menu(self):
+        """Update recent files menu"""
+        self.recent_files_menu.delete(0, tk.END)
+        
+        if not self.recent_files:
+            self.recent_files_menu.add_command(label="(No recent files)", state=tk.DISABLED)
+        else:
+            for i, file_path in enumerate(self.recent_files):
+                filename = os.path.basename(file_path)
+                self.recent_files_menu.add_command(
+                    label=f"{i+1}. {filename}",
+                    command=lambda fp=file_path: self.load_pdf(fp)
+                )
+    
+    def batch_process(self):
+        """Process multiple PDF files in batch"""
+        file_paths = filedialog.askopenfilenames(
+            title="Select PDF files for batch processing",
+            filetypes=[("PDF files", "*.pdf")]
+        )
+        
+        if not file_paths:
+            return
+            
+        # Create progress window
+        progress_window = tk.Toplevel(self.root)
+        progress_window.title("Batch Processing")
+        progress_window.geometry("400x150")
+        progress_window.transient(self.root)
+        progress_window.grab_set()
+        
+        # Progress bar
+        progress_var = tk.DoubleVar()
+        progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(file_paths))
+        progress_bar.pack(pady=20, padx=20, fill=tk.X)
+        
+        status_label = ttk.Label(progress_window, text="Starting batch processing...")
+        status_label.pack(pady=10)
+        
+        def process_batch():
+            results = []
+            for i, file_path in enumerate(file_paths):
+                try:
+                    status_label.config(text=f"Processing: {os.path.basename(file_path)}")
+                    progress_window.update()
+                    
+                    # Load and process file
+                    self.load_pdf(file_path)
+                    self._process_document_thread()
+                    
+                    # Collect results
+                    results.append({
+                        'file': file_path,
+                        'blocks': len(self.text_blocks),
+                        'success': True
+                    })
+                    
+                except Exception as e:
+                    results.append({
+                        'file': file_path,
+                        'error': str(e),
+                        'success': False
+                    })
+                
+                progress_var.set(i + 1)
+                progress_window.update()
+            
+            # Show results
+            self.show_batch_results(results)
+            progress_window.destroy()
+        
+        # Start processing in thread
+        threading.Thread(target=process_batch, daemon=True).start()
+    
+    def show_batch_results(self, results):
+        """Show batch processing results"""
+        result_window = tk.Toplevel(self.root)
+        result_window.title("Batch Processing Results")
+        result_window.geometry("600x400")
+        
+        # Results tree
+        columns = ('File', 'Status', 'Text Blocks')
+        results_tree = ttk.Treeview(result_window, columns=columns, show='headings')
+        
+        for col in columns:
+            results_tree.heading(col, text=col)
+            
+        results_tree.column('File', width=300)
+        results_tree.column('Status', width=100)
+        results_tree.column('Text Blocks', width=100)
+        
+        for result in results:
+            filename = os.path.basename(result['file'])
+            if result['success']:
+                results_tree.insert('', tk.END, values=(filename, 'Success', result['blocks']))
+            else:
+                results_tree.insert('', tk.END, values=(filename, 'Failed', 'N/A'))
+        
+        results_tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Close button
+        ttk.Button(result_window, text="Close", command=result_window.destroy).pack(pady=10)
+    
+    def toggle_heatmap(self):
+        """Toggle confidence heatmap view"""
+        self.heatmap_mode = not self.heatmap_mode
+        self.display_current_page()
+        
+        mode_text = "enabled" if self.heatmap_mode else "disabled"
+        self.update_status(f"Confidence heatmap {mode_text}")
+    
+    def show_reading_order(self):
+        """Show reading order of text blocks"""
+        self.show_reading_order_mode = not self.show_reading_order_mode
+        self.display_current_page()
+        
+        mode_text = "enabled" if self.show_reading_order_mode else "disabled"
+        self.update_status(f"Reading order display {mode_text}")
+    
+    def detect_language(self):
+        """Detect language of extracted text"""
+        if not self.text_blocks:
+            messagebox.showwarning("Warning", "No text data available")
+            return
+        
+        # Simple language detection based on character patterns
+        full_text = " ".join([block.text for block in self.text_blocks])
+        
+        # Basic language detection logic (you could integrate a proper library)
+        languages = {
+            'English': len([c for c in full_text if c.isascii()]) / len(full_text) if full_text else 0,
+            'Spanish': full_text.count('ñ') + full_text.count('á') + full_text.count('é'),
+            'French': full_text.count('ç') + full_text.count('à') + full_text.count('é'),
+        }
+        
+        detected = max(languages, key=languages.get)
+        confidence = languages[detected]
+        
+        messagebox.showinfo("Language Detection", 
+                          f"Detected Language: {detected}\n"
+                          f"Confidence: {confidence:.2%}\n\n"
+                          f"Total characters analyzed: {len(full_text):,}")
+    
+    def extract_tables(self):
+        """Extract table-like structures from text blocks"""
+        if not self.text_blocks:
+            messagebox.showwarning("Warning", "No text data available")
+            return
+        
+        # Simple table detection based on alignment and spacing
+        table_candidates = []
+        
+        for page_num in range(len(self.pdf_document)):
+            page_blocks = [b for b in self.text_blocks if b.page_num == page_num]
+            
+            # Group blocks by similar Y coordinates (potential table rows)
+            rows = {}
+            for block in page_blocks:
+                y_pos = int(block.bbox[1] / 10) * 10  # Round to nearest 10
+                if y_pos not in rows:
+                    rows[y_pos] = []
+                rows[y_pos].append(block)
+            
+            # Find rows with multiple aligned blocks (potential tables)
+            for y_pos, row_blocks in rows.items():
+                if len(row_blocks) >= 3:  # At least 3 columns
+                    # Sort by X position
+                    row_blocks.sort(key=lambda b: b.bbox[0])
+                    table_candidates.append({
+                        'page': page_num + 1,
+                        'row_y': y_pos,
+                        'columns': len(row_blocks),
+                        'content': [b.text for b in row_blocks]
+                    })
+        
+        if table_candidates:
+            # Show table extraction results
+            result_window = tk.Toplevel(self.root)
+            result_window.title("Extracted Tables")
+            result_window.geometry("800x500")
+            
+            text_widget = scrolledtext.ScrolledText(result_window, wrap=tk.WORD)
+            text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+            
+            text_widget.insert(tk.END, f"Found {len(table_candidates)} potential table rows:\n\n")
+            
+            for i, table in enumerate(table_candidates):
+                text_widget.insert(tk.END, f"Table Row {i+1} (Page {table['page']}):\n")
+                text_widget.insert(tk.END, " | ".join(table['content']) + "\n\n")
+        else:
+            messagebox.showinfo("Table Extraction", "No table structures detected in the document.")
+    
+    def show_detailed_stats(self):
+        """Show detailed text statistics"""
+        if not self.text_blocks:
+            messagebox.showwarning("Warning", "No text data available")
+            return
+        
+        # Calculate detailed statistics
+        full_text = " ".join([block.text for block in self.text_blocks])
+        
+        stats = {
+            'Total Characters': len(full_text),
+            'Total Words': len(full_text.split()),
+            'Total Sentences': full_text.count('.') + full_text.count('!') + full_text.count('?'),
+            'Total Paragraphs': len(self.text_blocks),
+            'Average Words per Block': len(full_text.split()) / len(self.text_blocks) if self.text_blocks else 0,
+            'Most Common Words': self.get_word_frequency(full_text),
+        }
+        
+        # Show in new window
+        stats_window = tk.Toplevel(self.root)
+        stats_window.title("Detailed Text Statistics")
+        stats_window.geometry("500x400")
+        
+        text_widget = scrolledtext.ScrolledText(stats_window, wrap=tk.WORD)
+        text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        text_widget.insert(tk.END, "DETAILED TEXT STATISTICS\n")
+        text_widget.insert(tk.END, "=" * 30 + "\n\n")
+        
+        for key, value in stats.items():
+            if key == 'Most Common Words':
+                text_widget.insert(tk.END, f"{key}:\n")
+                for word, count in value:
+                    text_widget.insert(tk.END, f"  {word}: {count}\n")
+                text_widget.insert(tk.END, "\n")
+            else:
+                text_widget.insert(tk.END, f"{key}: {value:,.2f}\n" if isinstance(value, float) else f"{key}: {value:,}\n")
+    
+    def get_word_frequency(self, text):
+        """Get top 10 most frequent words"""
+        import re
+        from collections import Counter
+        
+        # Clean and split text
+        words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
+        
+        # Filter out common stop words
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
+        filtered_words = [word for word in words if word not in stop_words and len(word) > 2]
+        
+        return Counter(filtered_words).most_common(10)
+    
+    def show_shortcuts(self):
+        """Show keyboard shortcuts help"""
+        shortcuts_window = tk.Toplevel(self.root)
+        shortcuts_window.title("Keyboard Shortcuts")
+        shortcuts_window.geometry("400x500")
+        shortcuts_window.transient(self.root)
+        
+        shortcuts_text = """
+KEYBOARD SHORTCUTS
+
+File Operations:
+  Ctrl + O        Open PDF file
+  Ctrl + P        Process document
+  Ctrl + B        Batch process files
+
+View Controls:
+  Ctrl + +        Zoom in
+  Ctrl + -        Zoom out
+  Ctrl + 0        Fit to window
+  Ctrl + H        Toggle confidence heatmap
+  Ctrl + R        Toggle reading order
+
+Navigation:
+  Page Up/Down    Navigate pages
+  Home/End        First/Last page
+  Arrow Keys      Pan view
+
+Other:
+  F1             Show this help
+  Ctrl + Q        Quit application
+  Escape         Clear selection
+
+Mouse Actions:
+  Click          Select text block
+  Drag           Pan PDF view
+  Scroll         Zoom in/out
+  Double-click   Fit block to view
+        """
+        
+        text_widget = scrolledtext.ScrolledText(shortcuts_window, wrap=tk.WORD, font=('Consolas', 10))
+        text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        text_widget.insert(tk.END, shortcuts_text)
+        text_widget.config(state=tk.DISABLED)
+        
+        ttk.Button(shortcuts_window, text="Close", command=shortcuts_window.destroy).pack(pady=10)
+    
+    def show_about(self):
+        """Show about dialog"""
+        about_text = """Professional OCR Viewer v2.0
+
+A Windows desktop application for visualizing 
+Google Cloud Document AI results with PDF 
+rendering and interactive text analysis.
+
+Features:
+• PDF viewing with zoom and navigation
+• Google Cloud Document AI integration
+• Interactive text block visualization
+• Advanced export capabilities
+• Batch processing support
+• Confidence analysis and statistics
+
+Built with Python, tkinter, and Google Cloud AI
+
+© 2025 - Open Source Project"""
+        
+        messagebox.showinfo("About", about_text)
+    
+    def show_progress(self, text="Processing..."):
+        """Show progress bar with text"""
+        self.progress_bar.pack(side=tk.LEFT, padx=5)
+        self.progress_label.config(text=text)
+        self.progress_label.pack(side=tk.LEFT, padx=5)
+        self.progress_var.set(0)
+        self.root.update_idletasks()
+    
+    def update_progress(self, value, text=None):
+        """Update progress bar value and optionally text"""
+        self.progress_var.set(value)
+        if text:
+            self.progress_label.config(text=text)
+        self.root.update_idletasks()
+    
+    def hide_progress(self):
+        """Hide progress bar"""
+        self.progress_bar.pack_forget()
+        self.progress_label.pack_forget()
 
 def main():
     """Main application entry point"""
