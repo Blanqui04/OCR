@@ -41,7 +41,7 @@ class OCRViewerApp:
         self.root = root
         self.root.title("Professional OCR Viewer - Google Cloud Document AI")
         self.root.geometry("1400x900")
-        self.root.configure(bg='#f0f0f0')
+        self.root.configure(bg='#f8fafc')  # Light blue-gray background
         
         # Application state
         self.current_pdf_path = None
@@ -67,14 +67,98 @@ class OCRViewerApp:
         style = ttk.Style()
         style.theme_use('clam')
         
-        # Configure button styles
-        style.configure('Modern.TButton', 
-                       padding=10, 
-                       font=('Segoe UI', 9))
+        # Modern blue and white color scheme
+        colors = {
+            'primary_blue': '#2563eb',      # Modern blue
+            'light_blue': '#3b82f6',       # Lighter blue
+            'accent_blue': '#1d4ed8',      # Darker blue
+            'white': '#ffffff',            # Pure white
+            'light_gray': '#f8fafc',       # Very light blue-gray
+            'medium_gray': '#e2e8f0',      # Light blue-gray
+            'dark_gray': '#475569',        # Dark blue-gray
+            'text_dark': '#1e293b'         # Dark blue-gray text
+        }
         
+        # Configure modern button styles
+        style.configure('Modern.TButton', 
+                       padding=(12, 8), 
+                       font=('Segoe UI', 9),
+                       background=colors['primary_blue'],
+                       foreground='white',
+                       borderwidth=0,
+                       focuscolor='none')
+        
+        style.map('Modern.TButton',
+                 background=[('active', colors['light_blue']),
+                           ('pressed', colors['accent_blue'])])
+        
+        # Export button style - white with blue text
+        style.configure('Export.TButton', 
+                       padding=(12, 8), 
+                       font=('Segoe UI', 9),
+                       background='white',
+                       foreground=colors['primary_blue'],
+                       borderwidth=1,
+                       bordercolor=colors['primary_blue'],
+                       focuscolor='none')
+        
+        style.map('Export.TButton',
+                 background=[('active', colors['light_gray']),
+                           ('pressed', colors['medium_gray'])])
+        
+        # Frame styles
+        style.configure('Modern.TLabelFrame',
+                       background=colors['white'],
+                       foreground=colors['text_dark'],
+                       borderwidth=1,
+                       relief='solid',
+                       bordercolor=colors['medium_gray'])
+        
+        style.configure('Modern.TLabelFrame.Label',
+                       background=colors['white'],
+                       foreground=colors['primary_blue'],
+                       font=('Segoe UI', 10, 'bold'))
+        
+        # Header style
         style.configure('Header.TLabel', 
                        font=('Segoe UI', 12, 'bold'),
-                       background='#f0f0f0')
+                       background=colors['white'],
+                       foreground=colors['primary_blue'])
+        
+        # Notebook styles
+        style.configure('Modern.TNotebook',
+                       background=colors['white'],
+                       borderwidth=0)
+        
+        style.configure('Modern.TNotebook.Tab',
+                       padding=(12, 8),
+                       background=colors['light_gray'],
+                       foreground=colors['text_dark'],
+                       borderwidth=1,
+                       bordercolor=colors['medium_gray'])
+        
+        style.map('Modern.TNotebook.Tab',
+                 background=[('selected', colors['white']),
+                           ('active', colors['medium_gray'])])
+        
+        # Treeview styles
+        style.configure('Modern.Treeview',
+                       background=colors['white'],
+                       foreground=colors['text_dark'],
+                       fieldbackground=colors['white'],
+                       borderwidth=1,
+                       bordercolor=colors['medium_gray'])
+        
+        style.configure('Modern.Treeview.Heading',
+                       background=colors['primary_blue'],
+                       foreground='white',
+                       font=('Segoe UI', 9, 'bold'))
+        
+        # Progress bar style
+        style.configure('Modern.Horizontal.TProgressbar',
+                       background=colors['primary_blue'],
+                       troughcolor=colors['light_gray'],
+                       borderwidth=0)
         
     def setup_ui(self):
         """Create the main user interface"""
@@ -86,7 +170,7 @@ class OCRViewerApp:
         
         # Create main content area with paned window
         main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
-        main_paned.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        main_paned.pack(fill=tk.BOTH, expand=True, padx=8, pady=4)
         
         # Left panel - PDF viewer
         self.create_pdf_viewer(main_paned)
@@ -158,70 +242,102 @@ class OCRViewerApp:
         
     def create_toolbar(self):
         """Create application toolbar"""
+        # Main toolbar frame with modern styling
         toolbar_frame = ttk.Frame(self.root)
-        toolbar_frame.pack(fill=tk.X, padx=5, pady=2)
+        toolbar_frame.pack(fill=tk.X, padx=8, pady=(8, 4))
         
-        ttk.Button(toolbar_frame, text="Open PDF", command=self.open_pdf, 
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        # Left section - Main actions
+        left_frame = ttk.Frame(toolbar_frame)
+        left_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
-        ttk.Button(toolbar_frame, text="Process Document", command=self.process_document,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        ttk.Button(left_frame, text="📁 Open PDF", command=self.open_pdf, 
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        ttk.Button(left_frame, text="🤖 Process Document", command=self.process_document,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        ttk.Button(toolbar_frame, text="Zoom In", command=self.zoom_in,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        # Separator
+        separator1 = ttk.Frame(toolbar_frame, width=2)
+        separator1.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
         
-        ttk.Button(toolbar_frame, text="Zoom Out", command=self.zoom_out,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        # View controls
+        view_frame = ttk.Frame(toolbar_frame)
+        view_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
-        ttk.Button(toolbar_frame, text="Fit Window", command=self.fit_to_window,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        ttk.Button(view_frame, text="🔍 Zoom In", command=self.zoom_in,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 4))
         
-        # Export buttons
-        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        ttk.Button(view_frame, text="🔍 Zoom Out", command=self.zoom_out,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 4))
         
-        ttk.Button(toolbar_frame, text="Export CSV", command=self.export_csv,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        ttk.Button(view_frame, text="📱 Fit Window", command=self.fit_to_window,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        ttk.Button(toolbar_frame, text="Export PDF", command=self.export_pdf_report,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=2)
+        # Separator
+        separator2 = ttk.Frame(toolbar_frame, width=2)
+        separator2.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
         
-        # Page navigation
-        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        # Export section
+        export_frame = ttk.Frame(toolbar_frame)
+        export_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
-        ttk.Label(toolbar_frame, text="Page:").pack(side=tk.LEFT, padx=2)
+        ttk.Button(export_frame, text="📊 Export CSV", command=self.export_csv,
+                  style='Export.TButton').pack(side=tk.LEFT, padx=(0, 4))
+        
+        ttk.Button(export_frame, text="📄 Export PDF", command=self.export_pdf_report,
+                  style='Export.TButton').pack(side=tk.LEFT, padx=(0, 8))
+        
+        # Separator
+        separator3 = ttk.Frame(toolbar_frame, width=2)
+        separator3.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
+        
+        # Page navigation with modern styling
+        nav_frame = ttk.Frame(toolbar_frame)
+        nav_frame.pack(side=tk.LEFT, padx=8, pady=8)
+        
+        ttk.Label(nav_frame, text="Page:", 
+                 font=('Segoe UI', 9)).pack(side=tk.LEFT, padx=(0, 4))
+        
         self.page_var = tk.StringVar(value="0")
-        page_spinbox = ttk.Spinbox(toolbar_frame, from_=0, to=0, width=5, 
-                                  textvariable=self.page_var, command=self.change_page)
-        page_spinbox.pack(side=tk.LEFT, padx=2)
+        page_spinbox = ttk.Spinbox(nav_frame, from_=0, to=0, width=6, 
+                                  textvariable=self.page_var, command=self.change_page,
+                                  font=('Segoe UI', 9))
+        page_spinbox.pack(side=tk.LEFT, padx=(0, 4))
         
-        self.page_label = ttk.Label(toolbar_frame, text="of 0")
-        self.page_label.pack(side=tk.LEFT, padx=2)
+        self.page_label = ttk.Label(nav_frame, text="of 0",
+                                   font=('Segoe UI', 9))
+        self.page_label.pack(side=tk.LEFT, padx=(0, 8))
         
-        # Progress bar (initially hidden)
-        ttk.Separator(toolbar_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        # Progress section (initially hidden)
+        separator4 = ttk.Frame(toolbar_frame, width=2)
+        separator4.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
+        
+        progress_frame = ttk.Frame(toolbar_frame)
+        progress_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
         self.progress_var = tk.DoubleVar()
-        self.progress_bar = ttk.Progressbar(toolbar_frame, variable=self.progress_var, 
-                                          length=150, mode='determinate')
-        self.progress_label = ttk.Label(toolbar_frame, text="")
+        self.progress_bar = ttk.Progressbar(progress_frame, variable=self.progress_var, 
+                                          length=180, mode='determinate',
+                                          style='Modern.Horizontal.TProgressbar')
+        self.progress_label = ttk.Label(progress_frame, text="",
+                                       font=('Segoe UI', 9))
         
         # Initially hidden
         self.hide_progress()
         
     def create_pdf_viewer(self, parent):
         """Create PDF viewer panel"""
-        pdf_frame = ttk.LabelFrame(parent, text="PDF Viewer", padding=10)
+        pdf_frame = ttk.LabelFrame(parent, text="📄 PDF Viewer", padding=15)
         parent.add(pdf_frame, weight=2)
         
         # Create canvas with scrollbars
         canvas_frame = ttk.Frame(pdf_frame)
         canvas_frame.pack(fill=tk.BOTH, expand=True)
         
-        self.pdf_canvas = tk.Canvas(canvas_frame, bg='white', cursor='hand2')
+        self.pdf_canvas = tk.Canvas(canvas_frame, bg='white', cursor='hand2',
+                                   highlightthickness=0, relief='flat')
         
-        # Scrollbars
+        # Modern scrollbars
         v_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL, command=self.pdf_canvas.yview)
         h_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.HORIZONTAL, command=self.pdf_canvas.xview)
         
@@ -238,7 +354,7 @@ class OCRViewerApp:
         
     def create_text_panel(self, parent):
         """Create text analysis panel"""
-        text_frame = ttk.LabelFrame(parent, text="Text Analysis", padding=10)
+        text_frame = ttk.LabelFrame(parent, text="📊 Text Analysis", padding=15)
         parent.add(text_frame, weight=1)
         
         # Create notebook for different views
@@ -257,42 +373,53 @@ class OCRViewerApp:
     def create_full_text_tab(self, notebook):
         """Create full text view tab"""
         text_tab = ttk.Frame(notebook)
-        notebook.add(text_tab, text="Full Text")
+        notebook.add(text_tab, text="📝 Full Text")
         
-        # Search frame
+        # Search frame with modern styling
         search_frame = ttk.Frame(text_tab)
-        search_frame.pack(fill=tk.X, pady=(0, 5))
+        search_frame.pack(fill=tk.X, pady=(0, 10))
         
-        ttk.Label(search_frame, text="Search:").pack(side=tk.LEFT)
+        search_label = ttk.Label(search_frame, text="🔍 Search:", 
+                                font=('Segoe UI', 10),
+                                foreground='#475569')
+        search_label.pack(side=tk.LEFT, padx=(0, 8))
+        
         self.search_var = tk.StringVar()
-        search_entry = ttk.Entry(search_frame, textvariable=self.search_var)
-        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 0))
+        search_entry = ttk.Entry(search_frame, textvariable=self.search_var,
+                               font=('Segoe UI', 10))
+        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         search_entry.bind('<KeyRelease>', self.search_text)
         
-        # Text widget
+        # Text widget with modern styling
         self.full_text_widget = scrolledtext.ScrolledText(text_tab, 
                                                          wrap=tk.WORD, 
-                                                         font=('Consolas', 10),
-                                                         state=tk.DISABLED)
+                                                         font=('Segoe UI', 10),
+                                                         state=tk.DISABLED,
+                                                         bg='white',
+                                                         fg='#1e293b',
+                                                         selectbackground='#dbeafe',
+                                                         selectforeground='#1e40af',
+                                                         relief='flat',
+                                                         borderwidth=1)
         self.full_text_widget.pack(fill=tk.BOTH, expand=True)
         
     def create_text_blocks_tab(self, notebook):
         """Create text blocks view tab"""
         blocks_tab = ttk.Frame(notebook)
-        notebook.add(blocks_tab, text="Text Blocks")
+        notebook.add(blocks_tab, text="📋 Text Blocks")
         
-        # Treeview for text blocks
+        # Treeview for text blocks with modern styling
         columns = ('Page', 'Text', 'Confidence')
         self.blocks_tree = ttk.Treeview(blocks_tab, columns=columns, show='headings', height=15)
         
         # Configure columns
         self.blocks_tree.heading('Page', text='Page')
         self.blocks_tree.heading('Text', text='Text Content')
-        self.blocks_tree.heading('Confidence', text='Confidence')
+        self.blocks_tree.heading('Confidence', text='Confidence %')
         
-        self.blocks_tree.column('Page', width=60)
+        self.blocks_tree.column('Page', width=80, anchor='center')
         self.blocks_tree.column('Text', width=300)
-        self.blocks_tree.column('Confidence', width=80)
+        self.blocks_tree.column('Confidence', width=100, anchor='center')
         
         # Scrollbar for treeview
         tree_scroll = ttk.Scrollbar(blocks_tab, orient=tk.VERTICAL, command=self.blocks_tree.yview)
@@ -308,22 +435,43 @@ class OCRViewerApp:
     def create_statistics_tab(self, notebook):
         """Create statistics view tab"""
         stats_tab = ttk.Frame(notebook)
-        notebook.add(stats_tab, text="Statistics")
+        notebook.add(stats_tab, text="📈 Statistics")
         
         self.stats_text = scrolledtext.ScrolledText(stats_tab, 
                                                    wrap=tk.WORD, 
                                                    font=('Segoe UI', 10),
-                                                   state=tk.DISABLED)
+                                                   state=tk.DISABLED,
+                                                   bg='white',
+                                                   fg='#1e293b',
+                                                   selectbackground='#dbeafe',
+                                                   selectforeground='#1e40af',
+                                                   relief='flat',
+                                                   borderwidth=1)
         self.stats_text.pack(fill=tk.BOTH, expand=True)
         
     def create_status_bar(self):
         """Create status bar"""
-        self.status_bar = ttk.Label(self.root, text="Ready", relief=tk.SUNKEN, anchor=tk.W)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        status_frame = ttk.Frame(self.root)
+        status_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=8, pady=(4, 8))
+        
+        self.status_bar = ttk.Label(status_frame, text="✅ Ready", 
+                                   font=('Segoe UI', 9),
+                                   padding=(12, 8))
+        self.status_bar.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
     def update_status(self, message):
         """Update status bar message"""
-        self.status_bar.config(text=message)
+        # Add emoji indicators for different message types
+        if "error" in message.lower() or "failed" in message.lower():
+            status_message = f"❌ {message}"
+        elif "success" in message.lower() or "complete" in message.lower():
+            status_message = f"✅ {message}"
+        elif "processing" in message.lower() or "loading" in message.lower():
+            status_message = f"⏳ {message}"
+        else:
+            status_message = f"ℹ️ {message}"
+            
+        self.status_bar.config(text=status_message)
         self.root.update_idletasks()
         
     def open_pdf(self):
@@ -444,13 +592,13 @@ class OCRViewerApp:
             
             try:
                 if self.heatmap_mode:
-                    # Heatmap mode: fill boxes with confidence-based colors
+                    # Heatmap mode: fill boxes with confidence-based colors (modern blue theme)
                     if block.confidence > 0.9:
-                        fill_color = (0, 255, 0, 100)  # Green with transparency
+                        fill_color = (37, 99, 235, 80)  # Modern blue with transparency
                     elif block.confidence > 0.7:
-                        fill_color = (255, 165, 0, 100)  # Orange with transparency
+                        fill_color = (59, 130, 246, 80)  # Light blue with transparency
                     else:
-                        fill_color = (255, 0, 0, 100)  # Red with transparency
+                        fill_color = (147, 197, 253, 80)  # Very light blue with transparency
                     
                     # Create a temporary image for transparency
                     overlay = Image.new('RGBA', image.size, (255, 255, 255, 0))
@@ -463,20 +611,20 @@ class OCRViewerApp:
                     image.paste(image_rgba.convert('RGB'))
                     
                     # Still draw border
-                    border_color = "green" if block.confidence > 0.9 else "orange" if block.confidence > 0.7 else "red"
-                    draw.rectangle([x1, y1, x2, y2], outline=border_color, width=1)
+                    border_color = "#2563eb" if block.confidence > 0.9 else "#3b82f6" if block.confidence > 0.7 else "#93c5fd"
+                    draw.rectangle([x1, y1, x2, y2], outline=border_color, width=2)
                 else:
-                    # Normal mode: just outlines
+                    # Normal mode: modern blue theme outlines
                     if block.confidence > 0.9:
-                        color = "green"
+                        color = "#2563eb"  # Modern blue
                     elif block.confidence > 0.7:
-                        color = "orange"
+                        color = "#3b82f6"  # Light blue
                     else:
-                        color = "red"
+                        color = "#93c5fd"  # Very light blue
                         
                     # Draw rectangle
                     if block == self.selected_block:
-                        draw.rectangle([x1, y1, x2, y2], outline="blue", width=3)
+                        draw.rectangle([x1, y1, x2, y2], outline="#1d4ed8", width=3)  # Accent blue for selection
                     else:
                         draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
                 
@@ -489,11 +637,11 @@ class OCRViewerApp:
                     if block in page_blocks:
                         order_num = page_blocks.index(block) + 1
                         
-                        # Draw background circle for number
+                        # Draw background circle for number (modern blue theme)
                         center_x = x1 + 15
                         center_y = y1 + 15
-                        draw.ellipse([center_x-10, center_y-10, center_x+10, center_y+10], 
-                                   fill="yellow", outline="black", width=2)
+                        draw.ellipse([center_x-12, center_y-12, center_x+12, center_y+12], 
+                                   fill="#ffffff", outline="#2563eb", width=2)
                         
                         # Draw number
                         if font:
@@ -506,7 +654,7 @@ class OCRViewerApp:
                         text_x = center_x - text_width // 2
                         text_y = center_y - text_height // 2
                         
-                        draw.text((text_x, text_y), str(order_num), fill="black", font=font)
+                        draw.text((text_x, text_y), str(order_num), fill="#2563eb", font=font)
                         
             except Exception as e:
                 print(f"Warning: Could not draw bounding box for block {i}: {e}")
@@ -1627,9 +1775,9 @@ Built with Python, tkinter, and Google Cloud AI
     
     def show_progress(self, text="Processing..."):
         """Show progress bar with text"""
-        self.progress_bar.pack(side=tk.LEFT, padx=5)
+        self.progress_bar.pack(side=tk.TOP, pady=(4, 0))
         self.progress_label.config(text=text)
-        self.progress_label.pack(side=tk.LEFT, padx=5)
+        self.progress_label.pack(side=tk.TOP, pady=(2, 0))
         self.progress_var.set(0)
         self.root.update_idletasks()
     
