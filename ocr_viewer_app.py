@@ -406,11 +406,11 @@ class OCRViewerApp:
         notebook.add(blocks_tab, text="📋 Text Blocs")
 
         # Treeview for text blocks with modern styling
-        columns = ('Page', 'Text', 'Confidence')
+        columns = ('Pagina', 'Text', 'Confiança')
         self.blocks_tree = ttk.Treeview(blocks_tab, columns=columns, show='headings', height=15)
         
         # Configure columns
-        self.blocks_tree.heading('Pagina', text='Pagina')
+        self.blocks_tree.heading('Pagina', text='Pàgina')
         self.blocks_tree.heading('Text', text='Contingut del Text')
         self.blocks_tree.heading('Confiança', text='Confiança %')
 
