@@ -40,18 +40,18 @@ def process_document_sample(
 
         document = result.document
 
-        # Print the full text from the document
-        print("Document processing complete.")
+        # Imprimeix el text complet del document
+        print("Processament del document completat.")
         print("Text:")
         print(document.text)
         
     except Exception as e:
-        print(f"Error processing document: {e}")
-        print("\nTo fix authentication issues:")
-        print("1. Install Google Cloud SDK: https://cloud.google.com/sdk/docs/install")
-        print("2. Run: gcloud auth application-default login")
-        print("3. Run: gcloud config set project natural-bison-465607-b6")
-        print("4. Or provide a service account key file path as credentials_path parameter")
+        print(f"Error en processar el document: {e}")
+        print("\nPer solucionar problemes d'autenticació:")
+        print("1. Instal·la Google Cloud SDK: https://cloud.google.com/sdk/docs/install")
+        print("2. Executa: gcloud auth application-default login")
+        print("3. Executa: gcloud config set project natural-bison-465607-b6")
+        print("4. O proporciona la ruta del fitxer de la clau del compte de servei com a paràmetre credentials_path")
         return None
 
 # Use this to call your processor

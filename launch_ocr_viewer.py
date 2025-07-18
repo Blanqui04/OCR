@@ -1,21 +1,21 @@
 """
-OCR Viewer Application Launcher
-Professional Windows desktop application for Google Cloud Document AI
+Llançador de l'aplicació OCR Viewer
+Aplicació d'escriptori professional per a Windows amb Google Cloud Document AI
 """
 
 import sys
 import os
 import warnings
 
-# Suppress Google Cloud warnings
-warnings.filterwarnings("ignore", message="Your application has authenticated using end user credentials")
+# Elimina les advertències de Google Cloud
+warnings.filterwarnings("ignore", message="La vostra aplicació s'ha autenticat utilitzant credencials d'usuari final")
 
-# Add the current directory to Python path
+# Afegir el directori actual a la ruta de Python
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
 def check_dependencies():
-    """Check if all required dependencies are available"""
+    """Comprova si totes les dependències requerides estan disponibles"""
     missing_deps = []
     
     try:
@@ -41,50 +41,50 @@ def check_dependencies():
     return missing_deps
 
 if __name__ == "__main__":
-    print("🚀 Professional OCR Viewer")
+    print("🚀 Visor OCR Professional")
     print("=" * 50)
-    print("📋 Features:")
-    print("   • PDF viewing with zoom and navigation")
-    print("   • Google Cloud Document AI integration") 
-    print("   • Interactive text block visualization")
-    print("   • Text search and export capabilities")
-    print("   • Professional Windows interface")
+    print("📋 Funcionalitats:")
+    print("   • Visualització de PDF amb zoom i navegació")
+    print("   • Integració amb Google Cloud Document AI") 
+    print("   • Visualització interactiva de blocs de text")
+    print("   • Cerca i exportació de text")
+    print("   • Interfície professional per a Windows")
     print("=" * 50)
     
     # Check dependencies
-    print("🔍 Checking dependencies...")
+    print("🔍 Comprovant dependències...")
     missing = check_dependencies()
     
     if missing:
-        print(f"❌ Missing dependencies: {', '.join(missing)}")
-        print("\n📦 Please install missing packages:")
+        print(f"❌ Dependències mancants: {', '.join(missing)}")
+        print("\n📦 Si us plau, instal·leu els paquets que falten:")
         for dep in missing:
             print(f"   pip install {dep}")
-        input("\nPress Enter to exit...")
+        input("\nPrem Enter per sortir...")
         sys.exit(1)
-    
-    print("✅ All dependencies found!")
-    
+
+    print("✅ Totes les dependències s'han trobat!")
+
     try:
-        print("\n🎯 Launching application...")
+        print("\n🎯 Obrint l'aplicació...")
         from ocr_viewer_app import main
         main()
         
     except ImportError as e:
-        print(f"❌ Error importing application: {e}")
-        print("\n🔧 Troubleshooting:")
-        print("   • Ensure all files are in the same directory")
-        print("   • Check file permissions")
-        print("   • Verify Python environment")
-        input("\nPress Enter to exit...")
+        print(f"❌ Error en importar l'aplicació: {e}")
+        print("\n🔧 Solució de problemes:")
+        print("   • Assegureu-vos que tots els fitxers són al mateix directori")
+        print("   • Comproveu els permisos dels fitxers")
+        print("   • Verifiqueu l'entorn de Python")
+        input("\nPrem Enter per sortir...")
         
     except KeyboardInterrupt:
-        print("\n🛑 Application interrupted by user")
-        
+        print("\n🛑 L'aplicació s'ha interromput per l'usuari")
+
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
-        print("\n📞 If this problem persists, please check:")
-        print("   • Google Cloud authentication is working")
-        print("   • Internet connection is available")
-        print("   • No antivirus blocking the application")
-        input("\nPress Enter to exit...")
+        print(f"❌ Error inesperat: {e}")
+        print("\n📞 Si aquest problema persisteix, si us plau, comproveu:")
+        print("   • L'autenticació de Google Cloud està funcionant")
+        print("   • La connexió a Internet està disponible")
+        print("   • No hi ha antivirus bloquejant l'aplicació")
+        input("\nPrem Enter per sortir...")

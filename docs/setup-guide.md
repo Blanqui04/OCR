@@ -1,347 +1,347 @@
-# Setup Guide
+# Guia d'Instal·lació
 
-Detailed step-by-step instructions for setting up the Professional OCR Viewer application.
+Instruccions detallades pas a pas per configurar l'aplicació Professional OCR Viewer.
 
-## 📋 Prerequisites
+## 📋 Prerequisits
 
-Before starting the installation, ensure you have:
+Abans de començar la instal·lació, assegura't de tenir:
 
-- **Windows 10 or 11** (64-bit recommended)
-- **Python 3.7 or higher** installed
-- **Internet connection** for downloading dependencies and Document AI processing
-- **Google Cloud account** with Document AI enabled
-- **Administrator privileges** (may be required for some installations)
+- **Windows 10 o 11** (es recomana 64 bits)
+- **Python 3.7 o superior** instal·lat
+- **Connexió a Internet** per descarregar dependències i processar Document AI
+- **Compte de Google Cloud** amb Document AI habilitat
+- **Privilegis d'administrador** (pot ser necessari per a algunes instal·lacions)
 
-## 🚀 Quick Setup (Recommended)
+## 🚀 Instal·lació Ràpida (Recomanada)
 
-### Step 1: Download the Application
+### Pas 1: Descarrega l'Aplicació
 
 ```bash
 git clone https://github.com/your-username/professional-ocr-viewer.git
 cd professional-ocr-viewer
 ```
 
-### Step 2: Run Automated Setup
+### Pas 2: Executa la Instal·lació Automàtica
 
-Double-click `setup.bat` or run from command line:
+Fes doble clic a `setup.bat` o executa des de la línia de comandes:
 
 ```bash
 setup.bat
 ```
 
-This will:
-- Check Python installation
-- Create virtual environment
-- Install all dependencies
-- Test the installation
+Això farà:
+- Comprovar la instal·lació de Python
+- Crear un entorn virtual
+- Instal·lar totes les dependències
+- Provar la instal·lació
 
-### Step 3: Configure Google Cloud
+### Pas 3: Configura Google Cloud
 
-1. **Install Google Cloud SDK:**
-   - Download from [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-   - Run the installer and follow instructions
-   - Restart command prompt after installation
+1. **Instal·la Google Cloud SDK:**
+   - Descarrega des de [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   - Executa l'instal·lador i segueix les instruccions
+   - Reinicia la línia de comandes després de la instal·lació
 
-2. **Authenticate:**
+2. **Autentica't:**
    ```bash
    gcloud auth application-default login
    ```
 
-3. **Set your project:**
+3. **Configura el teu projecte:**
    ```bash
    gcloud config set project YOUR_PROJECT_ID
    ```
 
-### Step 4: Configure Application Settings
+### Pas 4: Configura la Aplicació
 
-Edit `ocr_viewer_app.py` and update these lines:
+Edita `ocr_viewer_app.py` i actualitza aquestes línies:
 
 ```python
-# Google Cloud settings
+# Configuració de Google Cloud
 self.project_id = "your-project-id"
-self.location = "your-location"  # e.g., "us", "eu", "asia-northeast1"
+self.location = "your-location"  # ex: "us", "eu", "asia-northeast1"
 self.processor_id = "your-processor-id"
 ```
 
-### Step 5: Launch Application
+### Pas 5: Inicia l'Aplicació
 
-Double-click `OCR_Viewer.bat` or run:
+Fes doble clic a `OCR_Viewer.bat` o executa:
 
 ```bash
 python launch_ocr_viewer.py
 ```
 
-## 🔧 Manual Setup
+## 🔧 Instal·lació Manual
 
-If you prefer manual installation or the automated setup fails:
+Si prefereixes la instal·lació manual o la instal·lació automàtica falla:
 
-### Step 1: Install Python
+### Pas 1: Instal·la Python
 
-1. Download Python 3.7+ from [python.org](https://www.python.org/downloads/)
-2. During installation:
-   - ✅ Check "Add Python to PATH"
-   - ✅ Check "Install for all users" (if administrator)
-3. Verify installation:
+1. Descarrega Python 3.7+ des de [python.org](https://www.python.org/downloads/)
+2. Durant la instal·lació:
+   - ✅ Marca "Add Python to PATH"
+   - ✅ Marca "Install for all users" (si ets administrador)
+3. Verifica la instal·lació:
    ```bash
    python --version
    pip --version
    ```
 
-### Step 2: Create Project Directory
+### Pas 2: Crea el Directori del Projecte
 
 ```bash
 mkdir professional-ocr-viewer
 cd professional-ocr-viewer
 ```
 
-### Step 3: Download Application Files
+### Pas 3: Descarrega els Fitxers de l'Aplicació
 
-Download or copy these files to your project directory:
+Descarrega o copia aquests fitxers al teu directori de projecte:
 - `ocr_viewer_app.py`
 - `launch_ocr_viewer.py`
 - `OCR_Viewer.bat`
 - `requirements.txt`
 - `README.md`
 
-### Step 4: Create Virtual Environment
+### Pas 4: Crea l'Entorn Virtual
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the environment:
+Activa l'entorn:
 ```bash
 .venv\Scripts\activate
 ```
 
-### Step 5: Install Dependencies
+### Pas 5: Instal·la les Dependències
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Or install packages individually:
+O instal·la els paquets individualment:
 ```bash
 pip install google-cloud-documentai
 pip install Pillow
 pip install PyMuPDF
 ```
 
-### Step 6: Verify Installation
+### Pas 6: Verifica la Instal·lació
 
-Test all dependencies:
+Prova totes les dependències:
 ```bash
-python -c "import tkinter; import fitz; from PIL import Image; from google.cloud import documentai_v1; print('All dependencies installed successfully!')"
+python -c "import tkinter; import fitz; from PIL import Image; from google.cloud import documentai_v1; print('Totes les dependències instal·lades correctament!')"
 ```
 
-## ☁️ Google Cloud Setup
+## ☁️ Configuració de Google Cloud
 
-### Step 1: Create Google Cloud Project
+### Pas 1: Crea un Projecte de Google Cloud
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Note your Project ID
+1. Ves a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un nou projecte o selecciona'n un d'existent
+3. Apunta el teu Project ID
 
-### Step 2: Enable Document AI API
+### Pas 2: Habilita l'API Document AI
 
-1. Go to "APIs & Services" > "Library"
-2. Search for "Document AI API"
-3. Click "Enable"
+1. Ves a "APIs & Services" > "Library"
+2. Busca "Document AI API"
+3. Fes clic a "Enable"
 
-### Step 3: Create Document AI Processor
+### Pas 3: Crea un Processador Document AI
 
-1. Go to "Document AI" in the Console
-2. Click "Create Processor"
-3. Choose processor type (e.g., "Document OCR")
-4. Select region (e.g., "us", "eu")
-5. Note the Processor ID
+1. Ves a "Document AI" al Console
+2. Fes clic a "Create Processor"
+3. Tria el tipus de processador (ex: "Document OCR")
+4. Selecciona la regió (ex: "us", "eu")
+5. Apunta el Processor ID
 
-### Step 4: Set Up Authentication
+### Pas 4: Configura l'Autenticació
 
-Choose one of these methods:
+Tria una d'aquestes opcions:
 
-#### Option A: Application Default Credentials (Recommended)
+#### Opció A: Credencials per Defecte de l'Aplicació (Recomanat)
 
-1. Install Google Cloud SDK
-2. Run authentication:
+1. Instal·la Google Cloud SDK
+2. Executa l'autenticació:
    ```bash
    gcloud auth application-default login
    ```
-3. Set project:
+3. Configura el projecte:
    ```bash
    gcloud config set project YOUR_PROJECT_ID
    ```
 
-#### Option B: Service Account Key
+#### Opció B: Clau de Compte de Servei
 
-1. Go to "IAM & Admin" > "Service Accounts"
-2. Create new service account
-3. Download JSON key file
-4. Set environment variable:
+1. Ves a "IAM & Admin" > "Service Accounts"
+2. Crea un nou compte de servei
+3. Descarrega el fitxer JSON de la clau
+4. Configura la variable d'entorn:
    ```bash
    set GOOGLE_APPLICATION_CREDENTIALS=path\to\your\key.json
    ```
 
-## ⚙️ Configuration
+## ⚙️ Configuració
 
-### Application Settings
+### Paràmetres de l'Aplicació
 
-Edit `ocr_viewer_app.py` to configure:
+Edita `ocr_viewer_app.py` per configurar:
 
 ```python
 class OCRViewerApp:
     def __init__(self, root):
-        # ... other code ...
+        # ... altre codi ...
         
-        # Google Cloud settings - UPDATE THESE
-        self.project_id = "your-project-id"           # Your Google Cloud Project ID
-        self.location = "eu"                          # Processor location: "us", "eu", etc.
-        self.processor_id = "your-processor-id"       # Your Document AI Processor ID
+        # Configuració de Google Cloud - ACTUALITZA AIXÒ
+        self.project_id = "your-project-id"           # El teu Project ID de Google Cloud
+        self.location = "eu"                          # Ubicació del processador: "us", "eu", etc.
+        self.processor_id = "your-processor-id"       # El teu Processor ID de Document AI
 ```
 
-### Default File Paths
+### Camins de Fitxers per Defecte
 
-The application will look for PDFs in the same directory by default. You can change this by modifying the `open_pdf()` function.
+L'aplicació buscarà PDFs al mateix directori per defecte. Pots canviar-ho modificant la funció `open_pdf()`.
 
-### UI Customization
+### Personalització de la Interfície
 
-You can customize the interface by modifying these settings in `ocr_viewer_app.py`:
+Pots personalitzar la interfície modificant aquests paràmetres a `ocr_viewer_app.py`:
 
 ```python
-# Window size
+# Mida de la finestra
 self.root.geometry("1400x900")
 
-# Colors for confidence levels
-color = "green"    # High confidence (>90%)
-color = "orange"   # Medium confidence (70-90%)
-color = "red"      # Low confidence (<70%)
-color = "blue"     # Selected block
+# Colors per als nivells de confiança
+color = "green"    # Alta confiança (>90%)
+color = "orange"   # Confiança mitjana (70-90%)
+color = "red"      # Baixa confiança (<70%)
+color = "blue"     # Bloc seleccionat
 ```
 
-## 🧪 Testing Installation
+## 🧪 Prova de la Instal·lació
 
-### Step 1: Test Basic Functionality
+### Pas 1: Prova la Funcionalitat Bàsica
 
-Run the test script:
+Executa l'script de prova:
 ```bash
 python test_ocr.py
 ```
 
-This will verify:
-- Google Cloud connection
-- Document AI processing
-- PDF file reading
+Això verificarà:
+- Connexió amb Google Cloud
+- Processament Document AI
+- Lectura de fitxers PDF
 
-### Step 2: Test GUI Application
+### Pas 2: Prova l'Aplicació Gràfica
 
-1. Launch the application:
+1. Inicia l'aplicació:
    ```bash
    python launch_ocr_viewer.py
    ```
 
-2. Try opening a sample PDF
-3. Process with Document AI
-4. Verify bounding boxes appear
+2. Prova d'obrir un PDF de mostra
+3. Processa amb Document AI
+4. Verifica que apareguin les caixes delimitadores
 
-### Step 3: Test Export Functions
+### Pas 3: Prova les Funcions d'Exportació
 
-1. Process a document
-2. Try exporting to TXT format
-3. Try exporting to JSON format
+1. Processa un document
+2. Prova d'exportar a format TXT
+3. Prova d'exportar a format JSON
 
-## 📁 Directory Structure After Setup
+## 📁 Estructura de Directoris Després de la Instal·lació
 
 ```
 professional-ocr-viewer/
-├── .venv/                     # Virtual environment (created by setup)
+├── .venv/                     # Entorn virtual (creat per la instal·lació)
 │   ├── Scripts/
 │   │   ├── python.exe
 │   │   └── pip.exe
 │   └── Lib/
-├── docs/                      # Documentation
+├── docs/                      # Documentació
 │   ├── setup-guide.md
 │   └── troubleshooting.md
-├── OCR_Viewer.bat            # Main launcher
-├── launch_ocr_viewer.py      # Python launcher
-├── ocr_viewer_app.py         # Main application
-├── test_ocr.py              # Test script
-├── requirements.txt          # Dependencies
-├── setup.bat                # Setup script
-├── README.md                # Main documentation
-└── LICENSE                  # License file
+├── OCR_Viewer.bat            # Llançador principal
+├── launch_ocr_viewer.py      # Llançador Python
+├── ocr_viewer_app.py         # Aplicació principal
+├── test_ocr.py              # Script de prova
+├── requirements.txt          # Dependències
+├── setup.bat                # Script d'instal·lació
+├── README.md                # Documentació principal
+└── LICENSE                  # Fitxer de llicència
 ```
 
-## 🔄 Updating the Application
+## 🔄 Actualització de l'Aplicació
 
-To update to a newer version:
+Per actualitzar a una versió més nova:
 
-1. **Backup your configuration:**
-   - Copy your modified `ocr_viewer_app.py` settings
+1. **Fes una còpia de seguretat de la configuració:**
+   - Copia els paràmetres modificats de `ocr_viewer_app.py`
 
-2. **Download new version:**
+2. **Descarrega la nova versió:**
    ```bash
    git pull origin main
    ```
 
-3. **Update dependencies:**
+3. **Actualitza les dependències:**
    ```bash
    .venv\Scripts\activate
    pip install --upgrade -r requirements.txt
    ```
 
-4. **Restore configuration:**
-   - Update the new `ocr_viewer_app.py` with your settings
+4. **Restaura la configuració:**
+   - Actualitza el nou `ocr_viewer_app.py` amb els teus paràmetres
 
-## 🚨 Common Setup Issues
+## 🚨 Problemes Comuns d'Instal·lació
 
-### Python Not Found
-- Ensure Python is in your PATH
-- Try `py` instead of `python` command
-- Reinstall Python with "Add to PATH" option
+### Python No Trobat
+- Assegura't que Python està al PATH
+- Prova la comanda `py` en lloc de `python`
+- Reinstal·la Python amb l'opció "Add to PATH"
 
-### Virtual Environment Issues
-- Delete `.venv` folder and recreate
-- Ensure sufficient disk space
-- Run as administrator if needed
+### Problemes amb l'Entorn Virtual
+- Elimina la carpeta `.venv` i torna-la a crear
+- Assegura espai suficient al disc
+- Executa com a administrador si cal
 
-### Google Cloud Authentication
-- Verify internet connection
-- Check firewall/antivirus settings
-- Ensure correct project permissions
+### Autenticació Google Cloud
+- Verifica la connexió a Internet
+- Comprova la configuració del tallafoc/antivirus
+- Assegura't de tenir permisos correctes al projecte
 
-### Permission Errors
-- Run command prompt as administrator
-- Check file/folder permissions
-- Temporarily disable antivirus
+### Errors de Permís
+- Executa la línia de comandes com a administrador
+- Comprova els permisos de fitxer/carpeta
+- Desactiva temporalment l'antivirus
 
-For more detailed troubleshooting, see [troubleshooting.md](troubleshooting.md).
+Per a més detalls de resolució de problemes, consulta [troubleshooting.md](troubleshooting.md).
 
-## ✅ Verification Checklist
+## ✅ Llista de Verificació
 
-Before using the application, verify:
+Abans d'utilitzar l'aplicació, verifica:
 
-- [ ] Python 3.7+ installed and in PATH
-- [ ] Virtual environment created successfully
-- [ ] All dependencies installed without errors
-- [ ] Google Cloud SDK installed and authenticated
-- [ ] Project ID, location, and processor ID configured
-- [ ] Test script runs successfully
-- [ ] GUI application launches without errors
-- [ ] Sample PDF can be loaded and processed
-- [ ] Bounding boxes are visible on processed documents
-- [ ] Export functions work correctly
+- [ ] Python 3.7+ instal·lat i al PATH
+- [ ] Entorn virtual creat correctament
+- [ ] Totes les dependències instal·lades sense errors
+- [ ] Google Cloud SDK instal·lat i autenticat
+- [ ] Project ID, ubicació i processor ID configurats
+- [ ] Script de prova executat correctament
+- [ ] L'aplicació gràfica s'inicia sense errors
+- [ ] Es pot carregar i processar un PDF de mostra
+- [ ] Les caixes delimitadores són visibles als documents processats
+- [ ] Les funcions d'exportació funcionen correctament
 
-## 📞 Support
+## 📞 Suport
 
-If you encounter issues during setup:
+Si tens problemes durant la instal·lació:
 
-1. Check [troubleshooting.md](troubleshooting.md)
-2. Search GitHub issues
-3. Create new issue with setup details
+1. Consulta [troubleshooting.md](troubleshooting.md)
+2. Cerca incidències a GitHub
+3. Crea una nova incidència amb els detalls de la instal·lació
 
-Include this information when reporting setup issues:
-- Operating system version
-- Python version
-- Error messages (complete text)
-- Steps that led to the error
+Inclou aquesta informació quan informis de problemes:
+- Versió del sistema operatiu
+- Versió de Python
+- Missatges d'error (text complet)
+- Passos seguits fins a l'error

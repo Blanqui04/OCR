@@ -1,288 +1,288 @@
-# Troubleshooting Guide
+# Guia de resolució de problemes
 
-This guide helps you resolve common issues with the Professional OCR Viewer application.
+Aquesta guia t'ajuda a resoldre problemes comuns amb l'aplicació Professional OCR Viewer.
 
-## 🔧 Installation Issues
+## 🔧 Problemes d'instal·lació
 
-### Python Not Found
-**Error:** `'python' is not recognized as an internal or external command`
+### Python no trobat
+**Error:** `'python' no es reconeix com a comandament intern o extern`
 
-**Solution:**
-1. Install Python 3.7+ from [python.org](https://www.python.org/downloads/)
-2. During installation, check "Add Python to PATH"
-3. Restart your command prompt/terminal
-4. Verify with: `python --version`
+**Solució:**
+1. Instal·la Python 3.7+ des de [python.org](https://www.python.org/downloads/)
+2. Durant la instal·lació, marca "Add Python to PATH"
+3. Reinicia el terminal o la línia de comandes
+4. Verifica amb: `python --version`
 
-### Virtual Environment Creation Failed
+### Error en la creació de l'entorn virtual
 **Error:** `Failed to create virtual environment`
 
-**Solution:**
-1. Ensure you have sufficient disk space
-2. Run as administrator if necessary
-3. Try manually: `python -m venv .venv`
-4. Check Python installation integrity
+**Solució:**
+1. Assegura't que tens prou espai en disc
+2. Executa com a administrador si cal
+3. Prova manualment: `python -m venv .venv`
+4. Comprova la integritat de la instal·lació de Python
 
-### Dependency Installation Errors
+### Errors d'instal·lació de dependències
 **Error:** `Failed to install dependencies`
 
-**Solutions:**
-1. **Update pip first:**
+**Solucions:**
+1. **Actualitza pip primer:**
    ```bash
    python -m pip install --upgrade pip
    ```
 
-2. **Install packages individually:**
+2. **Instal·la els paquets individualment:**
    ```bash
    pip install google-cloud-documentai
    pip install Pillow
    pip install PyMuPDF
    ```
 
-3. **Use alternative index (if behind firewall):**
+3. **Utilitza un índex alternatiu (si estàs darrere d'un tallafoc):**
    ```bash
    pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r requirements.txt
    ```
 
-## 🔐 Authentication Issues
+## 🔐 Problemes d'autenticació
 
-### Default Credentials Not Found
+### Credencials per defecte no trobades
 **Error:** `Your default credentials were not found`
 
-**Solution:**
-1. **Install Google Cloud SDK:**
-   - Download from [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-   - Follow installation instructions for Windows
+**Solució:**
+1. **Instal·la Google Cloud SDK:**
+   - Descarrega des de [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+   - Segueix les instruccions d'instal·lació per a Windows
 
-2. **Authenticate:**
+2. **Autentica't:**
    ```bash
    gcloud auth application-default login
    ```
 
-3. **Set project:**
+3. **Configura el projecte:**
    ```bash
    gcloud config set project YOUR_PROJECT_ID
    ```
 
-4. **Verify authentication:**
+4. **Verifica l'autenticació:**
    ```bash
    gcloud auth list
    ```
 
-### Invalid Project ID
-**Error:** `Project not found` or `Permission denied`
+### ID de projecte invàlid
+**Error:** `Project not found` o `Permission denied`
 
-**Solution:**
-1. Verify project ID in Google Cloud Console
-2. Ensure you have access to the project
-3. Update project ID in `ocr_viewer_app.py`:
+**Solució:**
+1. Verifica l'ID del projecte a Google Cloud Console
+2. Assegura't que tens accés al projecte
+3. Actualitza l'ID del projecte a `ocr_viewer_app.py`:
    ```python
    self.project_id = "your-correct-project-id"
    ```
 
-### Processor Not Found
-**Error:** `Processor not found` or `Invalid processor ID`
+### Processador no trobat
+**Error:** `Processor not found` o `Invalid processor ID`
 
-**Solution:**
-1. Go to Google Cloud Console > Document AI
-2. Find your processor and copy the ID
-3. Update processor ID in `ocr_viewer_app.py`:
+**Solució:**
+1. Ves a Google Cloud Console > Document AI
+2. Troba el teu processador i copia l'ID
+3. Actualitza l'ID del processador a `ocr_viewer_app.py`:
    ```python
    self.processor_id = "your-processor-id"
    ```
 
-### Quota Exceeded
-**Error:** `Quota exceeded` or `Rate limit exceeded`
+### Quota excedida
+**Error:** `Quota exceeded` o `Rate limit exceeded`
 
-**Solutions:**
-1. Check quotas in Google Cloud Console
-2. Request quota increase if needed
-3. Wait before retrying (rate limits reset)
-4. Consider using a different project
+**Solucions:**
+1. Comprova les quotes a Google Cloud Console
+2. Sol·licita un augment de quota si cal
+3. Espera abans de tornar a intentar-ho (els límits es reinicien)
+4. Considera utilitzar un altre projecte
 
-## 📄 PDF Processing Issues
+## 📄 Problemes amb el processament de PDF
 
-### PDF Won't Load
+### El PDF no es carrega
 **Error:** `Failed to load PDF`
 
-**Solutions:**
-1. **Check file format:**
-   - Ensure file is actually a PDF
-   - Try with a different PDF file
+**Solucions:**
+1. **Comprova el format del fitxer:**
+   - Assegura't que el fitxer és realment un PDF
+   - Prova amb un altre fitxer PDF
 
-2. **File permissions:**
-   - Ensure file is not open in another program
-   - Check read permissions on the file
-   - Try copying file to a different location
+2. **Permisos del fitxer:**
+   - Assegura't que el fitxer no està obert en un altre programa
+   - Comprova els permisos de lectura del fitxer
+   - Prova de copiar el fitxer a una altra ubicació
 
-3. **File corruption:**
-   - Try opening PDF in Adobe Reader
-   - Use a different PDF if original is corrupted
+3. **Corruptió del fitxer:**
+   - Prova d'obrir el PDF amb Adobe Reader
+   - Utilitza un altre PDF si l'original està corrupte
 
-### Blank or Missing Text
-**Error:** PDF loads but no text is extracted
+### Text en blanc o absent
+**Error:** El PDF es carrega però no s'extreu cap text
 
-**Solutions:**
-1. **Scanned PDFs:**
-   - Document may be image-based
-   - OCR processing should still work via Document AI
+**Solucions:**
+1. **PDFs escanejats:**
+   - El document pot ser basat en imatge
+   - El processament OCR hauria de funcionar igualment amb Document AI
 
-2. **Font issues:**
-   - Some fonts may not be recognized properly
-   - Try with a standard PDF with common fonts
+2. **Problemes de fonts:**
+   - Algunes fonts poden no ser reconegudes correctament
+   - Prova amb un PDF estàndard amb fonts comunes
 
-3. **Language settings:**
-   - Ensure Document AI processor supports the document language
+3. **Configuració d'idioma:**
+   - Assegura't que el processador Document AI suporta l'idioma del document
 
-## 🖥️ Interface Issues
+## 🖥️ Problemes d'interfície
 
-### Application Won't Start
-**Error:** Application closes immediately or doesn't open
+### L'aplicació no s'inicia
+**Error:** L'aplicació es tanca immediatament o no s'obre
 
-**Solutions:**
-1. **Check error messages:**
-   - Run from command line to see errors:
+**Solucions:**
+1. **Comprova els missatges d'error:**
+   - Executa des de la línia de comandes per veure errors:
      ```bash
      python launch_ocr_viewer.py
      ```
 
-2. **Graphics issues:**
-   - Update graphics drivers
-   - Try running on different display
+2. **Problemes gràfics:**
+   - Actualitza els controladors gràfics
+   - Prova d'executar en una pantalla diferent
 
-3. **Dependencies:**
-   - Verify all packages installed:
+3. **Dependències:**
+   - Verifica que tots els paquets estan instal·lats:
      ```bash
      python -c "import tkinter, fitz, PIL, google.cloud.documentai_v1"
      ```
 
-### Bounding Boxes Not Visible
-**Issue:** PDF displays but no overlay boxes appear
+### No es veuen les caixes delimitadores
+**Problema:** El PDF es mostra però no apareixen les caixes superposades
 
-**Solutions:**
-1. **Process document first:**
-   - Click "Process Document" button
-   - Wait for processing to complete
+**Solucions:**
+1. **Processa el document primer:**
+   - Fes clic al botó "Processa Document"
+   - Espera que el processament acabi
 
-2. **Zoom level:**
-   - Try different zoom levels
-   - Use "Fit Window" option
+2. **Nivell de zoom:**
+   - Prova diferents nivells de zoom
+   - Utilitza l'opció "Ajusta a la finestra"
 
-3. **Color visibility:**
-   - Boxes may be same color as background
-   - Try selecting text blocks from the right panel
+3. **Visibilitat del color:**
+   - Les caixes poden tenir el mateix color que el fons
+   - Prova de seleccionar blocs de text des del panell dret
 
-### Slow Performance
-**Issue:** Application is slow or unresponsive
+### Baix rendiment
+**Problema:** L'aplicació és lenta o no respon
 
-**Solutions:**
-1. **Large files:**
-   - Try with smaller PDF files first
-   - Consider splitting large documents
+**Solucions:**
+1. **Fitxers grans:**
+   - Prova primer amb fitxers PDF més petits
+   - Considera dividir documents grans
 
-2. **Memory issues:**
-   - Close other applications
-   - Restart the OCR Viewer
+2. **Problemes de memòria:**
+   - Tanca altres aplicacions
+   - Reinicia l'OCR Viewer
 
-3. **Network speed:**
-   - Document AI processing requires internet
-   - Check network connection speed
+3. **Velocitat de xarxa:**
+   - El processament amb Document AI requereix internet
+   - Comprova la velocitat de la connexió
 
-## 🌐 Network Issues
+## 🌐 Problemes de xarxa
 
-### Connection Timeout
-**Error:** `Connection timeout` or `Network error`
+### Temps d'espera excedit
+**Error:** `Connection timeout` o `Network error`
 
-**Solutions:**
-1. **Check internet connection**
-2. **Firewall/antivirus:**
-   - Temporarily disable to test
-   - Add exceptions for Python and the application
+**Solucions:**
+1. **Comprova la connexió a internet**
+2. **Tallafoc/antivirus:**
+   - Desactiva temporalment per fer proves
+   - Afegeix excepcions per a Python i l'aplicació
 
-3. **Proxy settings:**
-   - Configure proxy if behind corporate firewall
-   - Set environment variables if needed
+3. **Configuració de proxy:**
+   - Configura el proxy si estàs darrere d'un tallafoc corporatiu
+   - Defineix variables d'entorn si cal
 
-4. **VPN issues:**
-   - Try disconnecting VPN
-   - Some VPNs may block Google services
+4. **Problemes amb VPN:**
+   - Prova de desconnectar la VPN
+   - Algunes VPN poden bloquejar serveis de Google
 
-## 📊 Data Export Issues
+## 📊 Problemes d'exportació de dades
 
-### Export Failed
-**Error:** `Failed to export` or permission errors
+### Error d'exportació
+**Error:** `Failed to export` o errors de permisos
 
-**Solutions:**
-1. **File permissions:**
-   - Choose a different export location
-   - Ensure write permissions to target folder
+**Solucions:**
+1. **Permisos de fitxer:**
+   - Tria una ubicació d'exportació diferent
+   - Assegura't que tens permisos d'escriptura a la carpeta de destinació
 
-2. **File in use:**
-   - Close exported file if open in another program
-   - Choose different filename
+2. **Fitxer en ús:**
+   - Tanca el fitxer exportat si està obert en un altre programa
+   - Tria un nom de fitxer diferent
 
-3. **Disk space:**
-   - Ensure sufficient disk space
-   - Clean up temporary files
+3. **Espai en disc:**
+   - Assegura't que tens prou espai en disc
+   - Neteja fitxers temporals
 
-## 🔄 General Troubleshooting Steps
+## 🔄 Passos generals de resolució de problemes
 
-### Reset Application
-1. Close the application completely
-2. Delete `.venv` folder
-3. Run `setup.bat` again
-4. Reconfigure Google Cloud settings
+### Reinicia l'aplicació
+1. Tanca completament l'aplicació
+2. Elimina la carpeta `.venv`
+3. Executa `setup.bat` de nou
+4. Reconfigura la configuració de Google Cloud
 
-### Clean Installation
-1. Delete all application files
-2. Download fresh copy from GitHub
-3. Follow installation guide step by step
-4. Test with sample PDF
+### Instal·lació neta
+1. Elimina tots els fitxers de l'aplicació
+2. Descarrega una còpia nova des de GitHub
+3. Segueix la guia d'instal·lació pas a pas
+4. Prova amb un PDF de mostra
 
-### Check System Requirements
-- **OS:** Windows 10/11
-- **Python:** 3.7 or higher
-- **RAM:** 4GB minimum, 8GB recommended
-- **Disk:** 500MB free space minimum
-- **Internet:** Required for Document AI processing
+### Comprova els requisits del sistema
+- **SO:** Windows 10/11
+- **Python:** 3.7 o superior
+- **RAM:** mínim 4GB, recomanat 8GB
+- **Disc:** mínim 500MB d'espai lliure
+- **Internet:** Necessari per al processament amb Document AI
 
-## 📞 Getting Additional Help
+## 📞 Obtenir ajuda addicional
 
-If you're still experiencing issues:
+Si encara tens problemes:
 
-1. **Check GitHub Issues:**
-   - Search for similar problems
-   - Check closed issues for solutions
+1. **Comprova els Issues de GitHub:**
+   - Cerca problemes similars
+   - Consulta els issues tancats per solucions
 
-2. **Create New Issue:**
-   - Include error messages
-   - Describe steps to reproduce
-   - Include system information
-   - Attach relevant files if possible
+2. **Crea un nou Issue:**
+   - Inclou els missatges d'error
+   - Descriu els passos per reproduir el problema
+   - Inclou informació del sistema
+   - Adjunta fitxers rellevants si és possible
 
-3. **Diagnostic Information:**
-   When reporting issues, include:
-   - Operating system version
-   - Python version (`python --version`)
-   - Error messages (full text)
-   - Steps that led to the error
-   - PDF file characteristics (if relevant)
+3. **Informació de diagnòstic:**
+   Quan informis de problemes, inclou:
+   - Versió del sistema operatiu
+   - Versió de Python (`python --version`)
+   - Missatges d'error (text complet)
+   - Passos que han portat a l'error
+   - Característiques del fitxer PDF (si és rellevant)
 
-## 📝 Diagnostic Commands
+## 📝 Comandes de diagnòstic
 
-Run these commands to gather system information:
+Executa aquestes comandes per obtenir informació del sistema:
 
 ```bash
-# Python version
+# Versió de Python
 python --version
 
-# Installed packages
+# Paquets instal·lats
 pip list
 
-# Google Cloud authentication status
+# Estat d'autenticació de Google Cloud
 gcloud auth list
 
-# System information
+# Informació del sistema
 systeminfo | findstr "OS"
 ```
 
-Remember to never share sensitive information like API keys or authentication tokens when reporting issues.
+Recorda no compartir mai informació sensible com claus API o tokens d'autenticació quan informis de problemes.

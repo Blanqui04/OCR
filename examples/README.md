@@ -1,67 +1,67 @@
-# Example Files
+# Fitxers d'exemple
 
-This directory contains example files for testing the Professional OCR Viewer application.
+Aquest directori conté fitxers d'exemple per provar l'aplicació Professional OCR Viewer.
 
-## 📄 Sample Files
+## 📄 Fitxers de mostra
 
 ### sample.pdf
-A sample PDF document for testing OCR functionality. This file demonstrates:
-- Mixed text and graphics
-- Various font sizes and styles
-- Technical drawings (if available)
-- Multi-column layouts
+Un document PDF de mostra per provar la funcionalitat OCR. Aquest fitxer demostra:
+- Text i gràfics barrejats
+- Diverses mides i estils de lletra
+- Dibuixos tècnics (si n'hi ha)
+- Dissenys de diverses columnes
 
-## 🧪 Testing Instructions
+## 🧪 Instruccions de prova
 
-1. **Launch the OCR Viewer:**
+1. **Inicia l'OCR Viewer:**
    ```bash
    python launch_ocr_viewer.py
    ```
 
-2. **Open the sample file:**
-   - Click "Open PDF" or press Ctrl+O
-   - Navigate to this examples folder
-   - Select `sample.pdf`
+2. **Obre el fitxer de mostra:**
+   - Fes clic a "Obre PDF" o prem Ctrl+O
+   - Navega fins a aquesta carpeta d'exemples
+   - Selecciona `sample.pdf`
 
-3. **Process the document:**
-   - Click "Process Document" or press Ctrl+P
-   - Wait for processing to complete
+3. **Processa el document:**
+   - Fes clic a "Processa Document" o prem Ctrl+P
+   - Espera que el processament acabi
 
-4. **Explore the results:**
-   - View bounding boxes on the PDF
-   - Check the text extraction quality
-   - Try different zoom levels
-   - Test the export functions
+4. **Explora els resultats:**
+   - Visualitza les caixes delimitadores al PDF
+   - Comprova la qualitat de l'extracció de text
+   - Prova diferents nivells de zoom
+   - Testeja les funcions d'exportació
 
-## 📝 Expected Results
+## 📝 Resultats esperats
 
-When processing the sample file, you should see:
-- Green bounding boxes for high-confidence text
-- Orange boxes for medium-confidence text
-- Red boxes for low-confidence areas
-- Clickable text blocks for selection
+En processar el fitxer de mostra, hauràs de veure:
+- Caixes verdes per text d'alta confiança
+- Caixes taronges per text de confiança mitjana
+- Caixes vermelles per àrees de baixa confiança
+- Blocs de text clicables per seleccionar
 
-## 🔄 Adding Your Own Test Files
+## 🔄 Afegir els teus propis fitxers de prova
 
-To test with your own documents:
+Per provar amb els teus propis documents:
 
-1. Copy PDF files to this directory
-2. Use the application to open them
-3. Compare results with different document types:
-   - Scanned documents
-   - Text-based PDFs
-   - Documents with images
-   - Multi-language content
+1. Copia els fitxers PDF en aquest directori
+2. Utilitza l'aplicació per obrir-los
+3. Compara els resultats amb diferents tipus de documents:
+   - Documents escanejats
+   - PDFs basats en text
+   - Documents amb imatges
+   - Contingut multilingüe
 
-## 📊 Performance Benchmarks
+## 📊 Ràtios de rendiment
 
-Use these files to test performance:
-- Small documents (< 1MB): Should process in 2-5 seconds
-- Medium documents (1-5MB): Should process in 5-15 seconds
-- Large documents (> 5MB): May take 15+ seconds
+Utilitza aquests fitxers per provar el rendiment:
+- Documents petits (< 1MB): S'haurien de processar en 2-5 segons
+- Documents mitjans (1-5MB): S'haurien de processar en 5-15 segons
+- Documents grans (> 5MB): Podrien trigar més de 15 segons
 
-Note: Processing time depends on:
-- Document complexity
-- Image quality
-- Network speed
-- Google Cloud processing load
+Nota: El temps de processament depèn de:
+- Complexitat del document
+- Qualitat de la imatge
+- Velocitat de la xarxa
+- Càrrega de processament de Google Cloud

@@ -1,33 +1,33 @@
 @echo off
-title Professional OCR Viewer
+title Visualitzador Professional d'OCR
 color 0A
 echo.
 echo ========================================
-echo    Professional OCR Viewer v1.0
-echo    Google Cloud Document AI Integration
+echo    Visualitzador Professional d'OCR v1.0
+echo    Integració amb Google Cloud Document AI
 echo ========================================
 echo.
 
-REM Change to the script directory
+REM Canvia al directori de l'script
 cd /d "%~dp0"
 
-REM Check if virtual environment exists
+REM Comprova si existeix l'entorn virtual
 if not exist ".venv\Scripts\python.exe" (
-    echo ❌ Error: Virtual environment not found!
+    echo ❌ Error: No s'ha trobat l'entorn virtual!
     echo.
-    echo Please ensure the .venv folder exists in this directory.
-    echo You may need to run the setup again.
+    echo Assegura't que la carpeta .venv existeix en aquest directori.
+    echo Potser cal que executis la configuració de nou.
     echo.
     pause
     exit /b 1
 )
 
-echo 🚀 Starting application...
+echo 🚀 Iniciant l'aplicació...
 echo.
 
-REM Run the application using the virtual environment Python
+REM Executa l'aplicació utilitzant Python de l'entorn virtual
 ".venv\Scripts\python.exe" "launch_ocr_viewer.py"
 
 echo.
-echo 👋 Application closed.
+echo 👋 Aplicació tancada.
 pause

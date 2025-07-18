@@ -1,14 +1,14 @@
 """
-Professional OCR Viewer Application
-A Windows desktop app for visualizing Google Cloud Document AI results
-with PDF rendering and text bounding boxes overlay.
+Aplicació Professional de Visualització OCR
+Una aplicació d'escriptori per a Windows per visualitzar els resultats de Google Cloud Document AI
+amb renderització de PDF i superposició de caixes delimitadores de text.
 """
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
 import tkinter.font as tkFont
 from PIL import Image, ImageTk, ImageDraw
-import fitz  # PyMuPDF for PDF rendering
+import fitz 
 from google.cloud import documentai_v1 as documentai
 from google.api_core.client_options import ClientOptions
 import os
@@ -25,12 +25,12 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 
-# Suppress Google Cloud authentication warnings
-warnings.filterwarnings("ignore", message="Your application has authenticated using end user credentials")
+# Suprimeix els avisos d'autenticació de Google Cloud
+warnings.filterwarnings("ignore", message="La vostra aplicació s'ha autenticat utilitzant credencials d'usuari final")
 
 @dataclass
 class TextBlock:
-    """Represents a text block with its content and bounding box"""
+    """Representa un bloc de text amb el seu contingut i caixa delimitadora"""
     text: str
     confidence: float
     bbox: tuple  # (x1, y1, x2, y2)
@@ -39,11 +39,11 @@ class TextBlock:
 class OCRViewerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Professional OCR Viewer - Google Cloud Document AI")
+        self.root.title("Visor OCR Professional - Google Cloud Document AI")
         self.root.geometry("1400x900")
-        self.root.configure(bg='#f8fafc')  # Light blue-gray background
-        
-        # Application state
+        self.root.configure(bg='#f8fafc')  # Blau gris molt clar
+
+        # Estat de l'aplicació
         self.current_pdf_path = None
         self.pdf_document = None
         self.text_blocks = []
@@ -54,7 +54,7 @@ class OCRViewerApp:
         self.heatmap_mode = False
         self.show_reading_order_mode = False
         
-        # Google Cloud settings
+        # Google Cloud configuració
         self.project_id = "natural-bison-465607-b6"
         self.location = "eu"
         self.processor_id = "4369d16f70cb0a26"
@@ -63,23 +63,23 @@ class OCRViewerApp:
         self.setup_styles()
         
     def setup_styles(self):
-        """Configure modern UI styles"""
+        """Configurar estil de l'UI"""
         style = ttk.Style()
         style.theme_use('clam')
         
-        # Modern blue and white color scheme
+        # Esquema de colors blau i blanc
         colors = {
-            'primary_blue': '#2563eb',      # Modern blue
-            'light_blue': '#3b82f6',       # Lighter blue
-            'accent_blue': '#1d4ed8',      # Darker blue
-            'white': '#ffffff',            # Pure white
-            'light_gray': '#f8fafc',       # Very light blue-gray
-            'medium_gray': '#e2e8f0',      # Light blue-gray
-            'dark_gray': '#475569',        # Dark blue-gray
-            'text_dark': '#1e293b'         # Dark blue-gray text
+            'primary_blue': '#2563eb',      # Blau modern
+            'light_blue': '#3b82f6',       # Blau més clar
+            'accent_blue': '#1d4ed8',      # Blau més fosc
+            'white': '#ffffff',            # Blanc pur
+            'light_gray': '#f8fafc',       # Blau gris molt clar
+            'medium_gray': '#e2e8f0',      # Blau gris clar
+            'dark_gray': '#475569',        # Blau gris fosc
+            'text_dark': '#1e293b'         # Text blau gris fosc
         }
         
-        # Configure modern button styles
+        # Configurar estils de botons moderns
         style.configure('Modern.TButton', 
                        padding=(12, 8), 
                        font=('Segoe UI', 9),
@@ -92,7 +92,7 @@ class OCRViewerApp:
                  background=[('active', colors['light_blue']),
                            ('pressed', colors['accent_blue'])])
         
-        # Export button style - white with blue text
+        # Botó d'exportació amb estil modern
         style.configure('Export.TButton', 
                        padding=(12, 8), 
                        font=('Segoe UI', 9),
@@ -106,7 +106,7 @@ class OCRViewerApp:
                  background=[('active', colors['light_gray']),
                            ('pressed', colors['medium_gray'])])
         
-        # Frame styles
+        # Estil de les etiquetes
         style.configure('Modern.TLabelFrame',
                        background=colors['white'],
                        foreground=colors['text_dark'],
@@ -119,13 +119,13 @@ class OCRViewerApp:
                        foreground=colors['primary_blue'],
                        font=('Segoe UI', 10, 'bold'))
         
-        # Header style
+        # Estil de la capçalera
         style.configure('Header.TLabel', 
                        font=('Segoe UI', 12, 'bold'),
                        background=colors['white'],
                        foreground=colors['primary_blue'])
         
-        # Notebook styles
+        # Estil de les pestanyes
         style.configure('Modern.TNotebook',
                        background=colors['white'],
                        borderwidth=0)
@@ -141,7 +141,7 @@ class OCRViewerApp:
                  background=[('selected', colors['white']),
                            ('active', colors['medium_gray'])])
         
-        # Treeview styles
+        # Estil de la taula
         style.configure('Modern.Treeview',
                        background=colors['white'],
                        foreground=colors['text_dark'],
@@ -154,82 +154,82 @@ class OCRViewerApp:
                        foreground='white',
                        font=('Segoe UI', 9, 'bold'))
         
-        # Progress bar style
+        # Estil de la barra de progrés
         style.configure('Modern.Horizontal.TProgressbar',
                        background=colors['primary_blue'],
                        troughcolor=colors['light_gray'],
                        borderwidth=0)
         
     def setup_ui(self):
-        """Create the main user interface"""
-        # Create main menu
+        """Creació de la interfície d'usuari principal"""
+        # Creació del menú principal
         self.create_menu()
-        
-        # Create toolbar
+
+        # Creació de la barra d'eines
         self.create_toolbar()
-        
-        # Create main content area with paned window
+
+        # Creació de l'àrea de contingut principal amb finestra dividida
         main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
         main_paned.pack(fill=tk.BOTH, expand=True, padx=8, pady=4)
         
-        # Left panel - PDF viewer
+        # Panel esquerre - Visualització de PDF
         self.create_pdf_viewer(main_paned)
-        
-        # Right panel - Text analysis
+
+        # Panel dret - Anàlisi de text
         self.create_text_panel(main_paned)
         
-        # Status bar
+        # Barra d'estat
         self.create_status_bar()
         
     def create_menu(self):
-        """Create application menu"""
+        """Creació del menú de l'aplicació"""
         menubar = tk.Menu(self.root)
         self.root.config(menu=menubar)
         
-        # File menu
+        # Menu de fitxers
         file_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="Open PDF...", command=self.open_pdf, accelerator="Ctrl+O")
-        
-        # Recent files submenu
+        menubar.add_cascade(label="Fitxer", menu=file_menu)
+        file_menu.add_command(label="Obrir PDF...", command=self.open_pdf, accelerator="Ctrl+O")
+
+        # Submenú de fitxers recents
         self.recent_files_menu = tk.Menu(file_menu, tearoff=0)
-        file_menu.add_cascade(label="Recent Files", menu=self.recent_files_menu)
+        file_menu.add_cascade(label="Fitxers Recents", menu=self.recent_files_menu)
         self.update_recent_files_menu()
-        
-        file_menu.add_command(label="Process Document", command=self.process_document, accelerator="Ctrl+P")
-        file_menu.add_command(label="Batch Process...", command=self.batch_process, accelerator="Ctrl+B")
+
+        file_menu.add_command(label="Processar Document", command=self.process_document, accelerator="Ctrl+P")
+        file_menu.add_command(label="Processament per Lotes...", command=self.batch_process, accelerator="Ctrl+B")
         file_menu.add_separator()
-        file_menu.add_command(label="Export Text...", command=self.export_text)
-        file_menu.add_command(label="Export JSON...", command=self.export_json)
-        file_menu.add_command(label="Export CSV...", command=self.export_csv)
-        file_menu.add_command(label="Export PDF Report...", command=self.export_pdf_report)
+        file_menu.add_command(label="Exportar Text...", command=self.export_text)
+        file_menu.add_command(label="Exportar JSON...", command=self.export_json)
+        file_menu.add_command(label="Exportar CSV...", command=self.export_csv)
+        file_menu.add_command(label="Exportar PDF Report...", command=self.export_pdf_report)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.root.quit)
-        
-        # View menu
+        file_menu.add_command(label="Sortir", command=self.root.quit)
+
+        # Menu de visualització
         view_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="View", menu=view_menu)
+        menubar.add_cascade(label="Visualització", menu=view_menu)
         view_menu.add_command(label="Zoom In", command=self.zoom_in, accelerator="Ctrl++")
         view_menu.add_command(label="Zoom Out", command=self.zoom_out, accelerator="Ctrl+-")
-        view_menu.add_command(label="Fit to Window", command=self.fit_to_window, accelerator="Ctrl+0")
+        view_menu.add_command(label="Ajustar a la finestra", command=self.fit_to_window, accelerator="Ctrl+0")
         view_menu.add_separator()
-        view_menu.add_command(label="Toggle Confidence Heatmap", command=self.toggle_heatmap, accelerator="Ctrl+H")
-        view_menu.add_command(label="Show Reading Order", command=self.show_reading_order, accelerator="Ctrl+R")
-        
-        # Tools menu
+        view_menu.add_command(label="Activar mapa de calor de confiança", command=self.toggle_heatmap, accelerator="Ctrl+H")
+        view_menu.add_command(label="Mostrar ordre de lectura", command=self.show_reading_order, accelerator="Ctrl+R")
+
+        # Menu d'eines
         tools_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Tools", menu=tools_menu)
-        tools_menu.add_command(label="Language Detection", command=self.detect_language)
-        tools_menu.add_command(label="Extract Tables", command=self.extract_tables)
-        tools_menu.add_command(label="Text Statistics", command=self.show_detailed_stats)
-        
-        # Help menu
+        menubar.add_cascade(label="Eines", menu=tools_menu)
+        tools_menu.add_command(label="Detecció d'idioma", command=self.detect_language)
+        tools_menu.add_command(label="Extracció de taules", command=self.extract_tables)
+        tools_menu.add_command(label="Estadístiques de Text", command=self.show_detailed_stats)
+
+        # Menu d'ajuda
         help_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="Keyboard Shortcuts", command=self.show_shortcuts)
-        help_menu.add_command(label="About", command=self.show_about)
+        menubar.add_cascade(label="Ajuda", menu=help_menu)
+        help_menu.add_command(label="Dreceres de teclat", command=self.show_shortcuts)
+        help_menu.add_command(label="Quant a", command=self.show_about)
         
-        # Bind keyboard shortcuts
+        # Dreceres de teclat
         self.root.bind('<Control-o>', lambda e: self.open_pdf())
         self.root.bind('<Control-p>', lambda e: self.process_document())
         self.root.bind('<Control-b>', lambda e: self.batch_process())
@@ -241,26 +241,24 @@ class OCRViewerApp:
         self.root.bind('<F1>', lambda e: self.show_shortcuts())
         
     def create_toolbar(self):
-        """Create application toolbar"""
-        # Main toolbar frame with modern styling
+        """Creació de la barra d'eines principal amb estil modern"""
+        # Barra d'eines principal 
         toolbar_frame = ttk.Frame(self.root)
         toolbar_frame.pack(fill=tk.X, padx=8, pady=(8, 4))
         
-        # Left section - Main actions
+        # Secció de botons de la barra d'eines
         left_frame = ttk.Frame(toolbar_frame)
         left_frame.pack(side=tk.LEFT, padx=8, pady=8)
-        
-        ttk.Button(left_frame, text="📁 Open PDF", command=self.open_pdf, 
+
+        ttk.Button(left_frame, text="📁 Obrir PDF", command=self.open_pdf,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
+
+        ttk.Button(left_frame, text="🤖 Processar Document", command=self.process_document,
                   style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        ttk.Button(left_frame, text="🤖 Process Document", command=self.process_document,
-                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
-        
-        # Separator
         separator1 = ttk.Frame(toolbar_frame, width=2)
         separator1.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
-        
-        # View controls
+
         view_frame = ttk.Frame(toolbar_frame)
         view_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
@@ -269,33 +267,32 @@ class OCRViewerApp:
         
         ttk.Button(view_frame, text="🔍 Zoom Out", command=self.zoom_out,
                   style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 4))
-        
-        ttk.Button(view_frame, text="📱 Fit Window", command=self.fit_to_window,
+
+        ttk.Button(view_frame, text="📱 Ajustar a la finestra", command=self.fit_to_window,
                   style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        # Separator
         separator2 = ttk.Frame(toolbar_frame, width=2)
         separator2.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
-        
-        # Export section
+
+        # Secció d'exportació
         export_frame = ttk.Frame(toolbar_frame)
         export_frame.pack(side=tk.LEFT, padx=8, pady=8)
         
-        ttk.Button(export_frame, text="📊 Export CSV", command=self.export_csv,
+        ttk.Button(export_frame, text="📊 Exportar CSV", command=self.export_csv,
                   style='Export.TButton').pack(side=tk.LEFT, padx=(0, 4))
         
-        ttk.Button(export_frame, text="📄 Export PDF", command=self.export_pdf_report,
+        ttk.Button(export_frame, text="📄 Exportar PDF", command=self.export_pdf_report,
                   style='Export.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
-        # Separator
+        # Separador per a la navegació de pàgines
         separator3 = ttk.Frame(toolbar_frame, width=2)
         separator3.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
-        
-        # Page navigation with modern styling
+
+        # Navegació de pàgines amb estil modern
         nav_frame = ttk.Frame(toolbar_frame)
         nav_frame.pack(side=tk.LEFT, padx=8, pady=8)
-        
-        ttk.Label(nav_frame, text="Page:", 
+
+        ttk.Label(nav_frame, text="Pàgina:", 
                  font=('Segoe UI', 9)).pack(side=tk.LEFT, padx=(0, 4))
         
         self.page_var = tk.StringVar(value="0")
@@ -308,7 +305,7 @@ class OCRViewerApp:
                                    font=('Segoe UI', 9))
         self.page_label.pack(side=tk.LEFT, padx=(0, 8))
         
-        # Progress section (initially hidden)
+        # Separador per a la barra de progrés
         separator4 = ttk.Frame(toolbar_frame, width=2)
         separator4.pack(side=tk.LEFT, fill=tk.Y, padx=8, pady=8)
         
@@ -322,39 +319,39 @@ class OCRViewerApp:
         self.progress_label = ttk.Label(progress_frame, text="",
                                        font=('Segoe UI', 9))
         
-        # Initially hidden
+        # Inicialment ocultem la barra de progrés
         self.hide_progress()
         
     def create_pdf_viewer(self, parent):
-        """Create PDF viewer panel"""
-        pdf_frame = ttk.LabelFrame(parent, text="📄 PDF Viewer", padding=15)
+        """Creació del visualitzador de PDF"""
+        pdf_frame = ttk.LabelFrame(parent, text="📄 Visualitzador de PDF", padding=15)
         parent.add(pdf_frame, weight=2)
         
-        # Create canvas with scrollbars
+        # Creació del canvas amb scrollbars
         canvas_frame = ttk.Frame(pdf_frame)
         canvas_frame.pack(fill=tk.BOTH, expand=True)
         
         self.pdf_canvas = tk.Canvas(canvas_frame, bg='white', cursor='hand2',
                                    highlightthickness=0, relief='flat')
         
-        # Modern scrollbars
+        # Scrollbars per al canvas
         v_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL, command=self.pdf_canvas.yview)
         h_scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.HORIZONTAL, command=self.pdf_canvas.xview)
         
         self.pdf_canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         
-        # Pack scrollbars and canvas
+        # Scrollbars i canvas
         v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         self.pdf_canvas.pack(fill=tk.BOTH, expand=True)
         
-        # Bind mouse events for text block selection
+        # Draceres d'esdeveniments per a la selecció de blocs de text
         self.pdf_canvas.bind("<Button-1>", self.on_canvas_click)
         self.pdf_canvas.bind("<Motion>", self.on_canvas_motion)
         
     def create_text_panel(self, parent):
-        """Create text analysis panel"""
-        text_frame = ttk.LabelFrame(parent, text="📊 Text Analysis", padding=15)
+        """Creació del panell d'anàlisi de text"""
+        text_frame = ttk.LabelFrame(parent, text="📊 Anàlisi de Text", padding=15)
         parent.add(text_frame, weight=1)
         
         # Create notebook for different views
@@ -371,15 +368,15 @@ class OCRViewerApp:
         self.create_statistics_tab(notebook)
         
     def create_full_text_tab(self, notebook):
-        """Create full text view tab"""
+        """Creació de la pestanya de visualització de text complet"""
         text_tab = ttk.Frame(notebook)
-        notebook.add(text_tab, text="📝 Full Text")
+        notebook.add(text_tab, text="📝 Text Complet")
         
         # Search frame with modern styling
         search_frame = ttk.Frame(text_tab)
         search_frame.pack(fill=tk.X, pady=(0, 10))
         
-        search_label = ttk.Label(search_frame, text="🔍 Search:", 
+        search_label = ttk.Label(search_frame, text="🔍 Cerca:", 
                                 font=('Segoe UI', 10),
                                 foreground='#475569')
         search_label.pack(side=tk.LEFT, padx=(0, 8))
@@ -404,23 +401,23 @@ class OCRViewerApp:
         self.full_text_widget.pack(fill=tk.BOTH, expand=True)
         
     def create_text_blocks_tab(self, notebook):
-        """Create text blocks view tab"""
+        """Creació de la pestanya de blocs de text"""
         blocks_tab = ttk.Frame(notebook)
-        notebook.add(blocks_tab, text="📋 Text Blocks")
-        
+        notebook.add(blocks_tab, text="📋 Text Blocs")
+
         # Treeview for text blocks with modern styling
         columns = ('Page', 'Text', 'Confidence')
         self.blocks_tree = ttk.Treeview(blocks_tab, columns=columns, show='headings', height=15)
         
         # Configure columns
-        self.blocks_tree.heading('Page', text='Page')
-        self.blocks_tree.heading('Text', text='Text Content')
-        self.blocks_tree.heading('Confidence', text='Confidence %')
-        
-        self.blocks_tree.column('Page', width=80, anchor='center')
+        self.blocks_tree.heading('Pagina', text='Pagina')
+        self.blocks_tree.heading('Text', text='Contingut del Text')
+        self.blocks_tree.heading('Confiança', text='Confiança %')
+
+        self.blocks_tree.column('Pagina', width=80, anchor='center')
         self.blocks_tree.column('Text', width=300)
-        self.blocks_tree.column('Confidence', width=100, anchor='center')
-        
+        self.blocks_tree.column('Confiança', width=100, anchor='center')
+
         # Scrollbar for treeview
         tree_scroll = ttk.Scrollbar(blocks_tab, orient=tk.VERTICAL, command=self.blocks_tree.yview)
         self.blocks_tree.configure(yscrollcommand=tree_scroll.set)
@@ -435,10 +432,10 @@ class OCRViewerApp:
     def create_statistics_tab(self, notebook):
         """Create statistics view tab"""
         stats_tab = ttk.Frame(notebook)
-        notebook.add(stats_tab, text="📈 Statistics")
-        
-        self.stats_text = scrolledtext.ScrolledText(stats_tab, 
-                                                   wrap=tk.WORD, 
+        notebook.add(stats_tab, text="📈 Estadístiques")
+
+        self.stats_text = scrolledtext.ScrolledText(stats_tab,
+                                                   wrap=tk.WORD,
                                                    font=('Segoe UI', 10),
                                                    state=tk.DISABLED,
                                                    bg='white',
@@ -454,7 +451,7 @@ class OCRViewerApp:
         status_frame = ttk.Frame(self.root)
         status_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=8, pady=(4, 8))
         
-        self.status_bar = ttk.Label(status_frame, text="✅ Ready", 
+        self.status_bar = ttk.Label(status_frame, text="✅ L'aplicació està llesta", 
                                    font=('Segoe UI', 9),
                                    padding=(12, 8))
         self.status_bar.pack(side=tk.LEFT, fill=tk.X, expand=True)
@@ -477,8 +474,8 @@ class OCRViewerApp:
     def open_pdf(self):
         """Open PDF file dialog"""
         file_path = filedialog.askopenfilename(
-            title="Select PDF file",
-            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+            title="Selecciona un fitxer PDF",
+            filetypes=[("Fitxers PDF", "*.pdf"), ("Tots els fitxers", "*.*")]
         )
         
         if file_path:
@@ -487,7 +484,7 @@ class OCRViewerApp:
     def load_pdf(self, file_path):
         """Load PDF file"""
         try:
-            self.update_status("Loading PDF...")
+            self.update_status("Carregant PDF...")
             
             if self.pdf_document:
                 self.pdf_document.close()
@@ -497,10 +494,8 @@ class OCRViewerApp:
             self.current_page = 0
             self.text_blocks = []
             
-            # Add to recent files
             self.add_recent_file(file_path)
             
-            # Update page navigation
             page_count = len(self.pdf_document)
             self.page_var.set("1")
             self.page_label.config(text=f"of {page_count}")
@@ -513,12 +508,12 @@ class OCRViewerApp:
                             child.config(from_=1, to=page_count)
             
             self.display_current_page()
-            self.update_status(f"Loaded: {os.path.basename(file_path)} ({page_count} pages)")
+            self.update_status(f"Carregat: {os.path.basename(file_path)} ({page_count} pàgines)")
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load PDF: {str(e)}")
-            self.update_status("Error loading PDF")
-            
+            messagebox.showerror("Error", f"Carregant PDF: {str(e)}")
+            self.update_status("Error carregant PDF")
+
     def display_current_page(self):
         """Display current PDF page"""
         if not self.pdf_document:
@@ -548,8 +543,8 @@ class OCRViewerApp:
             self.pdf_canvas.configure(scrollregion=self.pdf_canvas.bbox("all"))
             
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to display page: {str(e)}")
-            
+            messagebox.showerror("Error", f"Error mostrant la pàgina: {str(e)}")
+
     def draw_text_overlays(self, image):
         """Draw text block bounding boxes on image"""
         draw = ImageDraw.Draw(image)
@@ -657,14 +652,14 @@ class OCRViewerApp:
                         draw.text((text_x, text_y), str(order_num), fill="#2563eb", font=font)
                         
             except Exception as e:
-                print(f"Warning: Could not draw bounding box for block {i}: {e}")
+                print(f"Avís: No s'ha pogut dibuixar la caixa delimitadora pel bloc {i}: {e}")
                 # Skip this block if drawing fails
                 continue
                 
     def process_document(self):
         """Process document with Google Cloud Document AI"""
         if not self.current_pdf_path:
-            messagebox.showwarning("Warning", "Please open a PDF file first")
+            messagebox.showwarning("Avís", "Si us plau, obre primer un fitxer PDF")
             return
             
         # Run processing in separate thread to avoid UI freeze
@@ -673,20 +668,20 @@ class OCRViewerApp:
     def _process_document_thread(self):
         """Process document in background thread"""
         try:
-            self.root.after(0, lambda: self.show_progress("Connecting to Google Cloud..."))
+            self.root.after(0, lambda: self.show_progress("Connexió a Google Cloud..."))
             self.root.after(0, lambda: self.update_progress(10))
             
             # Set up Document AI client
             opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
             client = documentai.DocumentProcessorServiceClient(client_options=opts)
-            
-            self.root.after(0, lambda: self.update_progress(20, "Reading PDF file..."))
-            
+
+            self.root.after(0, lambda: self.update_progress(20, "Llegint fitxer PDF..."))
+
             # Read file
             with open(self.current_pdf_path, "rb") as pdf_file:
                 content = pdf_file.read()
-            
-            self.root.after(0, lambda: self.update_progress(30, "Preparing request..."))
+
+            self.root.after(0, lambda: self.update_progress(30, "Preparant sol·licitud..."))
                 
             # Create request
             raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
@@ -694,33 +689,33 @@ class OCRViewerApp:
             request = documentai.ProcessRequest(name=name, raw_document=raw_document)
             
             # Process document
-            self.root.after(0, lambda: self.update_progress(50, "Processing with Document AI..."))
+            self.root.after(0, lambda: self.update_progress(50, "Processant amb Document AI..."))
             result = client.process_document(request=request)
             document = result.document
-            
-            self.root.after(0, lambda: self.update_progress(80, "Extracting text blocks..."))
-            
+
+            self.root.after(0, lambda: self.update_progress(80, "Extracció de blocs de text..."))
+
             # Extract text blocks with error handling
             try:
                 self._extract_text_blocks(document)
-                self.root.after(0, lambda: self.update_progress(90, "Finalizing..."))
+                self.root.after(0, lambda: self.update_progress(90, "Finalitzant..."))
             except Exception as extract_error:
-                print(f"Error extracting text blocks: {extract_error}")
+                print(f"Error extraient blocs de text: {extract_error}")
                 # Fallback: extract basic text
                 self._extract_basic_text(document)
-                self.root.after(0, lambda: self.update_progress(90, "Basic extraction complete..."))
-            
-            self.root.after(0, lambda: self.update_progress(100, "Complete!"))
-            
+                self.root.after(0, lambda: self.update_progress(90, "Extracció bàsica completa..."))
+
+            self.root.after(0, lambda: self.update_progress(100, "Completa!"))
+
             # Update UI on main thread
             self.root.after(0, self._update_ui_after_processing)
             self.root.after(2000, self.hide_progress)  # Hide after 2 seconds
             
         except Exception as e:
-            error_msg = f"Processing failed: {str(e)}"
-            print(f"Full error: {e}")
-            self.root.after(0, lambda: messagebox.showerror("Processing Error", error_msg))
-            self.root.after(0, lambda: self.update_status("Processing failed"))
+            error_msg = f"Error en el processat: {str(e)}"
+            print(f"Error complert: {e}")
+            self.root.after(0, lambda: messagebox.showerror("Error en el processat", error_msg))
+            self.root.after(0, lambda: self.update_status("El processament ha fallat"))
             self.root.after(0, self.hide_progress)
     
     def _extract_basic_text(self, document):
@@ -772,7 +767,7 @@ class OCRViewerApp:
                             self.text_blocks.append(text_block)
                             
         except Exception as e:
-            print(f"Error in basic text extraction: {e}")
+            print(f"Error en l'extracció bàsica de text: {e}")
             # Create at least one text block with the full text
             if hasattr(document, 'text') and document.text:
                 # Safe default bounding box
@@ -923,7 +918,7 @@ class OCRViewerApp:
                             return (x1, y1, x2, y2)
                             
         except Exception as e:
-            print(f"Warning: Could not extract bounding box: {e}")
+            print(f"Avís: No s'ha pogut extreure la caixa delimitadora: {e}")
             
         # Return a default valid rectangle
         return (10, 10, 100, 30)
@@ -954,7 +949,7 @@ class OCRViewerApp:
         # Refresh PDF display with overlays
         self.display_current_page()
         
-        self.update_status(f"Processing complete. Found {len(self.text_blocks)} text blocks.")
+        self.update_status(f"Processament complet. S'han trobat {len(self.text_blocks)} blocs de text.")
         
     def _update_statistics(self):
         """Update statistics tab"""
@@ -969,22 +964,22 @@ class OCRViewerApp:
         
         pages_with_text = len(set(block.page_num for block in self.text_blocks))
         
-        stats_text = f"""Document Statistics:
-        
-Total Pages: {len(self.pdf_document)}
-Pages with Text: {pages_with_text}
-Total Text Blocks: {total_blocks}
-Total Characters: {total_chars:,}
-Total Words: {total_words:,}
-Average Confidence: {avg_confidence:.2%}
+        stats_text = f"""Estadístiques del Document OCR:
 
-Confidence Distribution:
-High (>90%): {sum(1 for b in self.text_blocks if b.confidence > 0.9)}
-Medium (70-90%): {sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)}
-Low (<70%): {sum(1 for b in self.text_blocks if b.confidence < 0.7)}
+    Total de pàgines: {len(self.pdf_document)}
+    Pàgines amb text: {pages_with_text}
+    Total de blocs de text: {total_blocks}
+    Total de caràcters: {total_chars:,}
+    Total de paraules: {total_words:,}
+    Confiança mitjana: {avg_confidence:.2%}
 
-File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/A'}
-"""
+    Distribució de confiança:
+    Alta (>90%): {sum(1 for b in self.text_blocks if b.confidence > 0.9)}
+    Mitjana (70-90%): {sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)}
+    Baixa (<70%): {sum(1 for b in self.text_blocks if b.confidence < 0.7)}
+
+    Fitxer: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/A'}
+    """
         
         self.stats_text.config(state=tk.NORMAL)
         self.stats_text.delete(1.0, tk.END)
@@ -1039,7 +1034,7 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                             self.blocks_tree.see(item)
                             break
                 except Exception as e:
-                    print(f"Warning: Could not update tree selection: {e}")
+                    print(f"Avís: No s'ha pogut actualitzar la selecció de l'arbre: {e}")
                 break
                 
     def on_canvas_motion(self, event):
@@ -1130,11 +1125,11 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
     def export_text(self):
         """Export extracted text to file"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data to export")
+            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
             return
             
         file_path = filedialog.asksaveasfilename(
-            title="Save text as...",
+            title="Gurdar com a...",
             defaultextension=".txt",
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
         )
@@ -1143,22 +1138,22 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     for block in self.text_blocks:
-                        f.write(f"Page {block.page_num + 1}: {block.text}\n\n")
-                        
-                messagebox.showinfo("Success", f"Text exported to {file_path}")
+                        f.write(f"Pagina {block.page_num + 1}: {block.text}\n\n")
+
+                messagebox.showinfo("Èxit", f"Text exportat a {file_path}")
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to export text: {str(e)}")
+                messagebox.showerror("Error", f"Error al exportar text: {str(e)}")
                 
     def export_json(self):
         """Export text blocks data as JSON"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data to export")
+            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
             return
             
         file_path = filedialog.asksaveasfilename(
-            title="Save JSON as...",
+            title="Gurdar com a...",
             defaultextension=".json",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
+            filetypes=[("arxius JSON", "*.json"), ("Tots els fitxers", "*.*")]
         )
         
         if file_path:
@@ -1180,20 +1175,20 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                     
-                messagebox.showinfo("Success", f"JSON data exported to {file_path}")
+                messagebox.showinfo("Èxit", f"Dades JSON exportades a {file_path}")
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to export JSON: {str(e)}")
+                messagebox.showerror("Error", f"No s'ha pogut exportar el JSON: {str(e)}")
     
     def export_csv(self):
         """Export text blocks data as CSV"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data to export")
+            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
             return
             
         file_path = filedialog.asksaveasfilename(
-            title="Save CSV as...",
+            title="Guarda CSV com a...",
             defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+            filetypes=[("arxius CSV", "*.csv"), ("Tots els fitxers", "*.*")]
         )
         
         if file_path:
@@ -1230,20 +1225,20 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                             word_count
                         ])
                         
-                messagebox.showinfo("Success", f"CSV data exported to {file_path}")
+                messagebox.showinfo("Èxit", f"Dades CSV exportades a {file_path}")
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to export CSV: {str(e)}")
+                messagebox.showerror("Error", f"No s'ha pogut exportar el CSV: {str(e)}")
     
     def export_pdf_report(self):
         """Export comprehensive PDF report with tables and statistics"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data to export")
+            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
             return
             
         file_path = filedialog.asksaveasfilename(
-            title="Save PDF Report as...",
+            title="Guarda el informe PDF com a...",
             defaultextension=".pdf",
-            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+            filetypes=[("arxius PDF", "*.pdf"), ("Tots els fitxers", "*.*")]
         )
         
         if file_path:
@@ -1301,8 +1296,8 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 story.append(Spacer(1, 20))
                 
                 # Statistics by confidence
-                story.append(Paragraph("Confidence Statistics", heading_style))
-                
+                story.append(Paragraph("Estadístiques de confiança", heading_style))
+
                 high_conf = sum(1 for b in self.text_blocks if b.confidence > 0.9)
                 med_conf = sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)
                 low_conf = sum(1 for b in self.text_blocks if b.confidence < 0.7)
@@ -1335,7 +1330,7 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 story.append(Spacer(1, 20))
                 
                 # Detailed text blocks table
-                story.append(Paragraph("Detailed Text Blocks", heading_style))
+                story.append(Paragraph("Blocs de text detallat", heading_style))
                 
                 # Prepare data for text blocks table
                 table_data = [["Page", "Text Preview", "Confidence", "Position (X,Y)", "Size (W×H)"]]
@@ -1386,16 +1381,16 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 if len(self.text_blocks) > 50:
                     story.append(Spacer(1, 12))
                     story.append(Paragraph(
-                        f"<i>Note: Showing first 50 of {len(self.text_blocks)} total text blocks. "
-                        f"Export CSV for complete data.</i>", 
+                        f"<i>Nota: Mostrant els primers 50 dels {len(self.text_blocks)} blocs de text totals. "
+                        f"Exporta CSV per a dades completes.</i>",
                         styles['Normal']
                     ))
                 
                 # Summary statistics by page
                 if self.pdf_document and len(self.pdf_document) > 1:
                     story.append(Spacer(1, 20))
-                    story.append(Paragraph("Statistics by Page", heading_style))
-                    
+                    story.append(Paragraph("Estadístiques per pàgina", heading_style))
+
                     page_stats = []
                     page_stats.append(["Page", "Text Blocks", "Characters", "Words", "Avg Confidence"])
                     
@@ -1430,11 +1425,11 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 
                 # Build PDF
                 doc.build(story)
-                messagebox.showinfo("Success", f"PDF report exported to {file_path}")
-                
+                messagebox.showinfo("Èxit", f"Informe PDF exportat a {file_path}")
+
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to export PDF report: {str(e)}")
-                print(f"PDF export error details: {e}")  # For debugging
+                messagebox.showerror("Error", f"No s'ha pogut exportar l'informe PDF: {str(e)}")
+                print(f"Detalls de l'error d'exportació PDF: {e}")  # Per a depuració
     
     def load_recent_files(self):
         """Load recent files from settings"""
@@ -1466,7 +1461,7 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
         self.recent_files_menu.delete(0, tk.END)
         
         if not self.recent_files:
-            self.recent_files_menu.add_command(label="(No recent files)", state=tk.DISABLED)
+            self.recent_files_menu.add_command(label="(No hi ha fitxers recents)", state=tk.DISABLED)
         else:
             for i, file_path in enumerate(self.recent_files):
                 filename = os.path.basename(file_path)
@@ -1478,8 +1473,8 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
     def batch_process(self):
         """Process multiple PDF files in batch"""
         file_paths = filedialog.askopenfilenames(
-            title="Select PDF files for batch processing",
-            filetypes=[("PDF files", "*.pdf")]
+            title="Selecciona fitxers PDF per al processament en lot",
+            filetypes=[("Fitxers PDF", "*.pdf")]
         )
         
         if not file_paths:
@@ -1487,7 +1482,7 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
             
         # Create progress window
         progress_window = tk.Toplevel(self.root)
-        progress_window.title("Batch Processing")
+        progress_window.title("Processament en lot")
         progress_window.geometry("400x150")
         progress_window.transient(self.root)
         progress_window.grab_set()
@@ -1496,15 +1491,15 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
         progress_var = tk.DoubleVar()
         progress_bar = ttk.Progressbar(progress_window, variable=progress_var, maximum=len(file_paths))
         progress_bar.pack(pady=20, padx=20, fill=tk.X)
-        
-        status_label = ttk.Label(progress_window, text="Starting batch processing...")
+
+        status_label = ttk.Label(progress_window, text="Iniciant el processament en lot...")
         status_label.pack(pady=10)
         
         def process_batch():
             results = []
             for i, file_path in enumerate(file_paths):
                 try:
-                    status_label.config(text=f"Processing: {os.path.basename(file_path)}")
+                    status_label.config(text=f"Processant: {os.path.basename(file_path)}")
                     progress_window.update()
                     
                     # Load and process file
@@ -1538,39 +1533,39 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
     def show_batch_results(self, results):
         """Show batch processing results"""
         result_window = tk.Toplevel(self.root)
-        result_window.title("Batch Processing Results")
+        result_window.title("Resultats del Processament en Lot")
         result_window.geometry("600x400")
         
         # Results tree
-        columns = ('File', 'Status', 'Text Blocks')
+        columns = ('Fitxer', 'Estat', 'Blocs de Text')
         results_tree = ttk.Treeview(result_window, columns=columns, show='headings')
         
         for col in columns:
             results_tree.heading(col, text=col)
             
-        results_tree.column('File', width=300)
-        results_tree.column('Status', width=100)
-        results_tree.column('Text Blocks', width=100)
+        results_tree.column('Fitxer', width=300)
+        results_tree.column('Estat', width=100)
+        results_tree.column('Blocs de Text', width=100)
         
         for result in results:
             filename = os.path.basename(result['file'])
             if result['success']:
-                results_tree.insert('', tk.END, values=(filename, 'Success', result['blocks']))
+                results_tree.insert('', tk.END, values=(filename, 'Èxit', result['blocks']))
             else:
-                results_tree.insert('', tk.END, values=(filename, 'Failed', 'N/A'))
-        
+                results_tree.insert('', tk.END, values=(filename, 'Error', 'N/A'))
+
         results_tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         # Close button
-        ttk.Button(result_window, text="Close", command=result_window.destroy).pack(pady=10)
-    
+        ttk.Button(result_window, text="Tancar", command=result_window.destroy).pack(pady=10)
+
     def toggle_heatmap(self):
         """Toggle confidence heatmap view"""
         self.heatmap_mode = not self.heatmap_mode
         self.display_current_page()
         
         mode_text = "enabled" if self.heatmap_mode else "disabled"
-        self.update_status(f"Confidence heatmap {mode_text}")
+        self.update_status(f"Mapa de calor de confiança {mode_text}")
     
     def show_reading_order(self):
         """Show reading order of text blocks"""
@@ -1583,7 +1578,7 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
     def detect_language(self):
         """Detect language of extracted text"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data available")
+            messagebox.showwarning("Avís", "No hi ha dades de text disponibles")
             return
         
         # Simple language detection based on character patterns
@@ -1605,29 +1600,29 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                           f"Total characters analyzed: {len(full_text):,}")
     
     def extract_tables(self):
-        """Extract table-like structures from text blocks"""
+        """Extracció d'estructures de taula dels blocs de text"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data available")
+            messagebox.showwarning("Avís", "No hi ha dades de text disponibles")
             return
         
-        # Simple table detection based on alignment and spacing
+        # Detecció simple de taules basada en alineació i espaiat
         table_candidates = []
         
         for page_num in range(len(self.pdf_document)):
             page_blocks = [b for b in self.text_blocks if b.page_num == page_num]
             
-            # Group blocks by similar Y coordinates (potential table rows)
+            # Agrupa blocs per coordenada Y similar (possibles files de taula)
             rows = {}
             for block in page_blocks:
-                y_pos = int(block.bbox[1] / 10) * 10  # Round to nearest 10
+                y_pos = int(block.bbox[1] / 10) * 10  # Arrodonir a la desena més propera
                 if y_pos not in rows:
                     rows[y_pos] = []
                 rows[y_pos].append(block)
             
-            # Find rows with multiple aligned blocks (potential tables)
+            # Troba files amb múltiples blocs alineats (possibles taules)
             for y_pos, row_blocks in rows.items():
-                if len(row_blocks) >= 3:  # At least 3 columns
-                    # Sort by X position
+                if len(row_blocks) >= 3:  # Almenys 3 columnes
+                    # Ordena per posició X
                     row_blocks.sort(key=lambda b: b.bbox[0])
                     table_candidates.append({
                         'page': page_num + 1,
@@ -1637,53 +1632,53 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                     })
         
         if table_candidates:
-            # Show table extraction results
+            # Mostra els resultats de l'extracció de taules
             result_window = tk.Toplevel(self.root)
-            result_window.title("Extracted Tables")
+            result_window.title("Taules extretes")
             result_window.geometry("800x500")
             
             text_widget = scrolledtext.ScrolledText(result_window, wrap=tk.WORD)
             text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
             
-            text_widget.insert(tk.END, f"Found {len(table_candidates)} potential table rows:\n\n")
+            text_widget.insert(tk.END, f"S'han trobat {len(table_candidates)} files potencials de taula:\n\n")
             
             for i, table in enumerate(table_candidates):
-                text_widget.insert(tk.END, f"Table Row {i+1} (Page {table['page']}):\n")
+                text_widget.insert(tk.END, f"Fila de taula {i+1} (Pàgina {table['page']}):\n")
                 text_widget.insert(tk.END, " | ".join(table['content']) + "\n\n")
         else:
-            messagebox.showinfo("Table Extraction", "No table structures detected in the document.")
+            messagebox.showinfo("Extracció de taules", "No s'han detectat estructures de taula al document.")
     
     def show_detailed_stats(self):
-        """Show detailed text statistics"""
+        """Mostra estadístiques detallades del text"""
         if not self.text_blocks:
-            messagebox.showwarning("Warning", "No text data available")
+            messagebox.showwarning("Avís", "No hi ha dades de text disponibles")
             return
         
-        # Calculate detailed statistics
+        # Calcula estadístiques detallades
         full_text = " ".join([block.text for block in self.text_blocks])
         
         stats = {
-            'Total Characters': len(full_text),
-            'Total Words': len(full_text.split()),
-            'Total Sentences': full_text.count('.') + full_text.count('!') + full_text.count('?'),
-            'Total Paragraphs': len(self.text_blocks),
-            'Average Words per Block': len(full_text.split()) / len(self.text_blocks) if self.text_blocks else 0,
-            'Most Common Words': self.get_word_frequency(full_text),
+            'Total de caràcters': len(full_text),
+            'Total de paraules': len(full_text.split()),
+            'Total de frases': full_text.count('.') + full_text.count('!') + full_text.count('?'),
+            'Total de paràgrafs': len(self.text_blocks),
+            'Mitjana de paraules per bloc': len(full_text.split()) / len(self.text_blocks) if self.text_blocks else 0,
+            'Paraules més comunes': self.get_word_frequency(full_text),
         }
         
-        # Show in new window
+        # Mostra en una nova finestra
         stats_window = tk.Toplevel(self.root)
-        stats_window.title("Detailed Text Statistics")
+        stats_window.title("Estadístiques detallades del text")
         stats_window.geometry("500x400")
         
         text_widget = scrolledtext.ScrolledText(stats_window, wrap=tk.WORD)
         text_widget.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        text_widget.insert(tk.END, "DETAILED TEXT STATISTICS\n")
+        text_widget.insert(tk.END, "ESTADÍSTIQUES DETALLADES DEL TEXT\n")
         text_widget.insert(tk.END, "=" * 30 + "\n\n")
         
         for key, value in stats.items():
-            if key == 'Most Common Words':
+            if key == 'Paraules més comunes':
                 text_widget.insert(tk.END, f"{key}:\n")
                 for word, count in value:
                     text_widget.insert(tk.END, f"  {word}: {count}\n")
@@ -1692,14 +1687,14 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
                 text_widget.insert(tk.END, f"{key}: {value:,.2f}\n" if isinstance(value, float) else f"{key}: {value:,}\n")
     
     def get_word_frequency(self, text):
-        """Get top 10 most frequent words"""
+        """Obté les 10 paraules més freqüents"""
         import re
         from collections import Counter
         
-        # Clean and split text
+        # Neteja i separa el text
         words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
         
-        # Filter out common stop words
+        # Filtra paraules comunes
         stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
         filtered_words = [word for word in words if word not in stop_words and len(word) > 2]
         
@@ -1708,40 +1703,40 @@ File: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/
     def show_shortcuts(self):
         """Show keyboard shortcuts help"""
         shortcuts_window = tk.Toplevel(self.root)
-        shortcuts_window.title("Keyboard Shortcuts")
+        shortcuts_window.title("Dreceres de teclat")
         shortcuts_window.geometry("400x500")
         shortcuts_window.transient(self.root)
         
         shortcuts_text = """
-KEYBOARD SHORTCUTS
+    DRECERES DE TECLAT
 
-File Operations:
-  Ctrl + O        Open PDF file
-  Ctrl + P        Process document
-  Ctrl + B        Batch process files
+    Operacions de fitxer:
+      Ctrl + O        Obre fitxer PDF
+      Ctrl + P        Processa document
+      Ctrl + B        Processament per lot
 
-View Controls:
-  Ctrl + +        Zoom in
-  Ctrl + -        Zoom out
-  Ctrl + 0        Fit to window
-  Ctrl + H        Toggle confidence heatmap
-  Ctrl + R        Toggle reading order
+    Controls de visualització:
+      Ctrl + +        Apropa (zoom in)
+      Ctrl + -        Allunya (zoom out)
+      Ctrl + 0        Ajusta a la finestra
+      Ctrl + H        Activa/desactiva mapa de calor de confiança
+      Ctrl + R        Activa/desactiva ordre de lectura
 
-Navigation:
-  Page Up/Down    Navigate pages
-  Home/End        First/Last page
-  Arrow Keys      Pan view
+    Navegació:
+      Re Pàgina/Av Pàgina    Navega entre pàgines
+      Inici/Fi               Primera/Última pàgina
+      Fletxes                Desplaça la vista
 
-Other:
-  F1             Show this help
-  Ctrl + Q        Quit application
-  Escape         Clear selection
+    Altres:
+      F1             Mostra aquesta ajuda
+      Ctrl + Q        Surt de l'aplicació
+      Escape         Neteja la selecció
 
-Mouse Actions:
-  Click          Select text block
-  Drag           Pan PDF view
-  Scroll         Zoom in/out
-  Double-click   Fit block to view
+    Accions amb el ratolí:
+      Clic           Selecciona bloc de text
+      Arrossega      Desplaça la vista PDF
+      Roda           Apropa/allunya
+      Doble clic     Ajusta el bloc a la vista
         """
         
         text_widget = scrolledtext.ScrolledText(shortcuts_window, wrap=tk.WORD, font=('Consolas', 10))
@@ -1752,24 +1747,24 @@ Mouse Actions:
         ttk.Button(shortcuts_window, text="Close", command=shortcuts_window.destroy).pack(pady=10)
     
     def show_about(self):
-        """Show about dialog"""
-        about_text = """Professional OCR Viewer v2.0
+        """Mostra el diàleg Quant a"""
+        about_text = """Visor OCR Professional v2.0
 
-A Windows desktop application for visualizing 
-Google Cloud Document AI results with PDF 
-rendering and interactive text analysis.
+    Una aplicació d'escriptori per a Windows per visualitzar 
+    els resultats de Google Cloud Document AI amb renderització 
+    de PDF i anàlisi interactiva de text.
 
-Features:
-• PDF viewing with zoom and navigation
-• Google Cloud Document AI integration
-• Interactive text block visualization
-• Advanced export capabilities
-• Batch processing support
-• Confidence analysis and statistics
+    Característiques:
+    • Visualització de PDF amb zoom i navegació
+    • Integració amb Google Cloud Document AI
+    • Visualització interactiva de blocs de text
+    • Capacitats avançades d'exportació
+    • Suport per a processament per lots
+    • Anàlisi de confiança i estadístiques
 
-Built with Python, tkinter, and Google Cloud AI
+    Desenvolupat amb Python, tkinter i Google Cloud AI
 
-© 2025 - Open Source Project"""
+    © 2025 - Projecte de codi obert"""
         
         messagebox.showinfo("About", about_text)
     
@@ -1826,18 +1821,20 @@ def main():
             
         root.protocol("WM_DELETE_WINDOW", on_closing)
         
-        # Start the application
-        print("✅ Application window created successfully!")
-        print("📖 You can now open PDF files and process them with Document AI")
-        root.mainloop()
+        # Inicia l'aplicació
+        print("✅ Finestra de l'aplicació creada correctament!")
+        print("📖 Ara pots obrir fitxers PDF i processar-los amb Document AI")
         
+      
+
+        root.mainloop()
     except KeyboardInterrupt:
-        print("\n🛑 Application interrupted by user")
+        print("\n🛑 Aplicació interrompuda per l'usuari")
     except Exception as e:
-        print(f"❌ Error starting application: {e}")
-        messagebox.showerror("Startup Error", f"Failed to start application:\n{str(e)}")
+        print(f"❌ Error en iniciar l'aplicació: {e}")
+        messagebox.showerror("Error d'inici", f"No s'ha pogut iniciar l'aplicació:\n{str(e)}")
     finally:
-        print("👋 Application closed")
+        print("👋 Aplicació tancada")
 
 if __name__ == "__main__":
     main()

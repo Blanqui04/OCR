@@ -1,336 +1,336 @@
-# Professional OCR Viewer
+# Visualitzador OCR Professional
 
 [![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Document%20AI-4285F4.svg)](https://cloud.google.com/document-ai)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Llicència](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A professional Windows desktop application for visualizing Google Cloud Document AI results with PDF rendering and interactive text bounding boxes overlay, similar to the Google Cloud Document AI demo interface.
+Aplicació d'escriptori professional per a Windows per visualitzar els resultats de Google Cloud Document AI amb renderització de PDF i superposició interactiva de caixes de text, similar a la interfície de demostració de Google Cloud Document AI.
 
-![OCR Viewer Screenshot](docs/screenshot.png)
+![Captura de pantalla OCR Viewer](docs/screenshot.png)
 
-## 🚀 Features
+## 🚀 Funcionalitats
 
-### 📄 PDF Visualization
-- High-quality PDF rendering using PyMuPDF
-- Zoom controls (in, out, fit-to-window)
-- Multi-page navigation
-- Interactive canvas with smooth scrolling
+### 📄 Visualització de PDF
+- Renderització de PDF d'alta qualitat amb PyMuPDF
+- Controls de zoom (ampliar, reduir, ajustar a la finestra)
+- Navegació multipàgina
+- Llenç interactiu amb desplaçament suau
 
-### 🤖 Document AI Integration
-- Google Cloud Document AI processing
-- Real-time text extraction
-- Confidence scoring for extracted text
-- Robust error handling and fallback methods
-- **Batch processing** for multiple PDFs
+### 🤖 Integració amb Document AI
+- Processament amb Google Cloud Document AI
+- Extracció de text en temps real
+- Puntuació de confiança pel text extret
+- Gestió robusta d'errors i mètodes alternatius
+- **Processament per lots** de múltiples PDFs
 
-### 🎯 Interactive Text Analysis
-- **Bounding box overlays** on PDF (just like Google's demo!)
-- **Color-coded confidence levels:**
-  - 🟢 Green: High confidence (>90%)
-  - 🟠 Orange: Medium confidence (70-90%)
-  - 🔴 Red: Low confidence (<70%)
-  - 🔵 Blue: Selected text block
-- **Confidence heatmap mode** with transparency overlays
-- **Reading order visualization** with numbered sequence
-- Click-to-select text blocks
-- Hover effects and cursor changes
+### 🎯 Anàlisi de text interactiu
+- **Superposició de caixes** sobre el PDF (igual que la demo de Google!)
+- **Nivells de confiança amb colors:**
+   - 🟢 Verd: Alta confiança (>90%)
+   - 🟠 Taronja: Confiança mitjana (70-90%)
+   - 🔴 Vermell: Baixa confiança (<70%)
+   - 🔵 Blau: Bloc de text seleccionat
+- **Mode mapa de calor de confiança** amb superposicions transparents
+- **Visualització de l'ordre de lectura** amb seqüència numerada
+- Selecció de blocs de text amb clic
+- Efectes de pas del cursor i canvis de cursor
 
-### 📊 Comprehensive Analysis Views
-- **Full Text Tab:** Complete extracted text with search functionality
-- **Text Blocks Tab:** Detailed listing with confidence scores and coordinates
-- **Statistics Tab:** Document metrics and analysis
-- **Language Detection:** Automatic text language identification
-- **Table Extraction:** Smart detection of tabular data structures
-- **Advanced Statistics:** Word frequency, detailed metrics, and analytics
+### 📊 Vistes d'anàlisi completes
+- **Pestanya de text complet:** Text extret amb cerca
+- **Pestanya de blocs de text:** Llista detallada amb puntuacions de confiança i coordenades
+- **Pestanya d'estadístiques:** Mètriques i anàlisi del document
+- **Detecció de llengua:** Identificació automàtica de l'idioma del text
+- **Extracció de taules:** Detecció intel·ligent d'estructures tabulars
+- **Estadístiques avançades:** Freqüència de paraules, mètriques detallades i analítica
 
-### 💾 Export Capabilities
-- Export full text to .txt files
-- Export structured data to JSON with coordinates and confidence scores
-- **Export to CSV** with detailed metrics (coordinates, confidence, dimensions)
-- **Export PDF reports** with professional tables, statistics, and analysis
-- Professional file dialogs
+### 💾 Capacitats d'exportació
+- Exportació de text complet a fitxers .txt
+- Exportació de dades estructurades a JSON amb coordenades i puntuacions de confiança
+- **Exportació a CSV** amb mètriques detallades (coordenades, confiança, dimensions)
+- **Exportació d'informes PDF** amb taules, estadístiques i anàlisi professional
+- Diàlegs de fitxers professionals
 
-### 🎨 Professional Interface
-- Modern Windows tkinter GUI
-- Tabbed content organization
-- Toolbar with intuitive controls
-- **Progress bars** for visual feedback
-- **Recent files menu** (last 10 files)
-- Status bar with progress updates
-- **Comprehensive keyboard shortcuts**
-- Built-in help system
+### 🎨 Interfície professional
+- GUI moderna amb tkinter per a Windows
+- Organització de contingut per pestanyes
+- Barra d'eines amb controls intuïtius
+- **Barres de progrés** per a feedback visual
+- **Menú d'arxius recents** (últims 10 fitxers)
+- Barra d'estat amb actualitzacions de progrés
+- **Dreceres de teclat completes**
+- Sistema d'ajuda integrat
 
-### ⚡ Advanced Features
-- **Batch Processing:** Process multiple PDFs simultaneously
-- **Visual Modes:** Toggle between normal, heatmap, and reading order views
-- **Smart Analysis:** Language detection and table structure recognition
-- **Productivity Tools:** Recent files, keyboard shortcuts, progress tracking
-- **Help System:** Built-in shortcuts guide and comprehensive documentation
+### ⚡ Funcionalitats avançades
+- **Processament per lots:** Processa múltiples PDFs simultàniament
+- **Modes visuals:** Alterna entre normal, mapa de calor i ordre de lectura
+- **Anàlisi intel·ligent:** Detecció de llengua i reconeixement de taules
+- **Eines de productivitat:** Fitxers recents, dreceres de teclat, seguiment de progrés
+- **Sistema d'ajuda:** Guia de dreceres i documentació completa
 
-## ⌨️ Keyboard Shortcuts
+## ⌨️ Dreceres de teclat
 
-### File Operations
-- `Ctrl + O` - Open PDF file
-- `Ctrl + P` - Process document with Document AI  
-- `Ctrl + B` - Batch process multiple files
+### Operacions de fitxer
+- `Ctrl + O` - Obre fitxer PDF
+- `Ctrl + P` - Processa document amb Document AI  
+- `Ctrl + B` - Processa per lots múltiples fitxers
 
-### View Controls
-- `Ctrl + +` - Zoom in
-- `Ctrl + -` - Zoom out
-- `Ctrl + 0` - Fit to window
-- `Ctrl + H` - Toggle confidence heatmap
-- `Ctrl + R` - Toggle reading order display
+### Controls de vista
+- `Ctrl + +` - Ampliar
+- `Ctrl + -` - Reduir
+- `Ctrl + 0` - Ajustar a la finestra
+- `Ctrl + H` - Alterna mapa de calor de confiança
+- `Ctrl + R` - Alterna visualització de l'ordre de lectura
 
-### Navigation
-- `Page Up/Down` - Navigate between pages
-- `Home/End` - Jump to first/last page
-- `Arrow Keys` - Pan PDF view
+### Navegació
+- `Page Up/Down` - Navega entre pàgines
+- `Home/End` - Salta a la primera/última pàgina
+- `Fletxes` - Mou la vista del PDF
 
-### Help & Utilities
-- `F1` - Show keyboard shortcuts help
-- `Escape` - Clear current selection
-- `Ctrl + Q` - Quit application
+### Ajuda i utilitats
+- `F1` - Mostra ajuda de dreceres de teclat
+- `Escape` - Neteja la selecció actual
+- `Ctrl + Q` - Surt de l'aplicació
 
-### Mouse Controls
-- **Click** - Select text block
-- **Drag** - Pan PDF view  
-- **Scroll** - Zoom in/out
-- **Double-click** - Fit selected block to view
+### Controls de ratolí
+- **Clic** - Selecciona bloc de text
+- **Arrossega** - Mou la vista del PDF  
+- **Desplaça** - Ampliar/reduir
+- **Doble clic** - Ajusta el bloc seleccionat a la vista
 
-## 📋 Requirements
+## 📋 Requisits
 
-- **Operating System:** Windows 10/11
-- **Python:** 3.7 or higher
-- **Google Cloud:** Authentication configured
-- **Internet:** Required for Document AI processing
+- **Sistema operatiu:** Windows 10/11
+- **Python:** 3.7 o superior
+- **Google Cloud:** Autenticació configurada
+- **Internet:** Necessari per al processament amb Document AI
 
-## 🛠️ Installation
+## 🛠️ Instal·lació
 
-### Option 1: Quick Setup (Recommended)
+### Opció 1: Instal·lació ràpida (Recomanada)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/professional-ocr-viewer.git
-   cd professional-ocr-viewer
-   ```
+1. **Clona el repositori:**
+    ```bash
+    git clone https://github.com/your-username/professional-ocr-viewer.git
+    cd professional-ocr-viewer
+    ```
 
-2. **Run the setup script:**
-   ```bash
-   setup.bat
-   ```
+2. **Executa l'script d'instal·lació:**
+    ```bash
+    setup.bat
+    ```
 
-3. **Configure Google Cloud:**
-   - Install [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-   - Run: `gcloud auth application-default login`
-   - Set project: `gcloud config set project YOUR_PROJECT_ID`
+3. **Configura Google Cloud:**
+    - Instal·la [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
+    - Executa: `gcloud auth application-default login`
+    - Estableix el projecte: `gcloud config set project YOUR_PROJECT_ID`
 
-4. **Launch the application:**
-   ```bash
-   OCR_Viewer.bat
-   ```
+4. **Llança l'aplicació:**
+    ```bash
+    OCR_Viewer.bat
+    ```
 
-### Option 2: Manual Setup
+### Opció 2: Instal·lació manual
 
-1. **Create virtual environment:**
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate
-   ```
+1. **Crea un entorn virtual:**
+    ```bash
+    python -m venv .venv
+    .venv\Scripts\activate
+    ```
 
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+2. **Instal·la les dependències:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. **Configure your project settings** in `ocr_viewer_app.py`:
-   ```python
-   self.project_id = "your-project-id"
-   self.location = "your-location"  # e.g., "us" or "eu"
-   self.processor_id = "your-processor-id"
-   ```
+3. **Configura els paràmetres del projecte** a `ocr_viewer_app.py`:
+    ```python
+    self.project_id = "your-project-id"
+    self.location = "your-location"  # p. ex., "us" o "eu"
+    self.processor_id = "your-processor-id"
+    ```
 
-4. **Run the application:**
-   ```bash
-   python launch_ocr_viewer.py
-   ```
+4. **Executa l'aplicació:**
+    ```bash
+    python launch_ocr_viewer.py
+    ```
 
-## 🎯 Quick Start
+## 🎯 Inici ràpid
 
-1. **Launch the application** using `OCR_Viewer.bat`
+1. **Llança l'aplicació** amb `OCR_Viewer.bat`
 
-2. **Open a PDF file:**
-   - Click "Open PDF" button or use `Ctrl+O`
-   - Select your PDF file from the dialog
+2. **Obre un fitxer PDF:**
+    - Fes clic al botó "Obre PDF" o usa `Ctrl+O`
+    - Selecciona el fitxer PDF al diàleg
 
-3. **Process with Document AI:**
-   - Click "Process Document" button or use `Ctrl+P`
-   - Wait for Google Cloud processing to complete
+3. **Processa amb Document AI:**
+    - Fes clic al botó "Processa document" o usa `Ctrl+P`
+    - Espera que acabi el processament a Google Cloud
 
-4. **Explore the results:**
-   - View text overlays on the PDF
-   - Click on text blocks to select them
-   - Browse through different analysis tabs
-   - Search within extracted text
-   - Export results as needed
+4. **Explora els resultats:**
+    - Visualitza les superposicions de text al PDF
+    - Selecciona blocs de text amb clic
+    - Navega per les diferents pestanyes d'anàlisi
+    - Cerca dins el text extret
+    - Exporta els resultats segons necessitis
 
-## 🖥️ Interface Overview
+## 🖥️ Vista general de la interfície
 
-### Main Window Layout
+### Disposició de la finestra principal
 
-- **Left Panel**: PDF Viewer with interactive overlay visualization
-- **Right Panel**: Tabbed analysis view
-  - **Full Text**: Complete extracted text with search functionality
-  - **Text Blocks**: Detailed block listing with confidence scores
-  - **Statistics**: Document metrics and analysis
+- **Panell esquerre**: Visualitzador de PDF amb superposició interactiva
+- **Panell dret**: Vista d'anàlisi per pestanyes
+   - **Text complet**: Text extret amb cerca
+   - **Blocs de text**: Llista detallada amb puntuacions de confiança
+   - **Estadístiques**: Mètriques i anàlisi del document
 
-### Toolbar Controls
+### Controls de la barra d'eines
 
-- **Open PDF**: Load PDF file for processing
-- **Process Document**: Send to Google Cloud Document AI
-- **Zoom In/Out**: Adjust PDF display size
-- **Fit Window**: Auto-fit PDF to window size
-- **Page Navigation**: Navigate through multi-page documents
+- **Obre PDF**: Carrega un fitxer PDF per processar
+- **Processa document**: Envia a Google Cloud Document AI
+- **Ampliar/reduir**: Ajusta la mida del PDF
+- **Ajusta a la finestra**: Autoajusta el PDF a la mida de la finestra
+- **Navegació de pàgines**: Navega per documents multipàgina
 
-### Color Coding System
+### Sistema de codificació de colors
 
-- **🟢 Green**: High confidence text (>90%)
-- **🟠 Orange**: Medium confidence text (70-90%)
-- **🔴 Red**: Low confidence text (<70%)
-- **🔵 Blue**: Currently selected text block
+- **🟢 Verd**: Text d'alta confiança (>90%)
+- **🟠 Taronja**: Text de confiança mitjana (70-90%)
+- **🔴 Vermell**: Text de baixa confiança (<70%)
+- **🔵 Blau**: Bloc de text seleccionat
 
-## ⌨️ Keyboard Shortcuts
+## ⌨️ Dreceres de teclat
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+O` | Open PDF file |
-| `Ctrl+P` | Process document |
-| `Ctrl++` | Zoom in |
-| `Ctrl+-` | Zoom out |
-| `Ctrl+0` | Fit to window |
+| Drecera    | Acció                  |
+|------------|------------------------|
+| `Ctrl+O`   | Obre fitxer PDF        |
+| `Ctrl+P`   | Processa document      |
+| `Ctrl++`   | Ampliar                |
+| `Ctrl+-`   | Reduir                 |
+| `Ctrl+0`   | Ajusta a la finestra   |
 
-## 📂 Project Structure
+## 📂 Estructura del projecte
 
 ```
 professional-ocr-viewer/
-├── 📄 OCR_Viewer.bat          # Main application launcher
-├── 📄 launch_ocr_viewer.py    # Application launcher with checks
-├── 📄 ocr_viewer_app.py       # Main application code
-├── 📄 test_ocr.py             # Simple testing script
-├── 📄 requirements.txt        # Python dependencies
-├── 📄 setup.bat               # Automated setup script
-├── 📄 README.md               # This file
-├── 📄 LICENSE                 # MIT License
-├── 📁 docs/                   # Documentation
-│   ├── 📄 setup-guide.md      # Detailed setup instructions
-│   ├── 📄 troubleshooting.md  # Common issues and solutions
-│   └── 🖼️ screenshot.png      # Application screenshot
-└── 📁 examples/               # Example files
-    └── 📄 sample.pdf          # Sample PDF for testing
+├── 📄 OCR_Viewer.bat          # Llançador principal de l'aplicació
+├── 📄 launch_ocr_viewer.py    # Llançador amb comprovacions
+├── 📄 ocr_viewer_app.py       # Codi principal de l'aplicació
+├── 📄 test_ocr.py             # Script de proves
+├── 📄 requirements.txt        # Dependències Python
+├── 📄 setup.bat               # Script d'instal·lació automatitzada
+├── 📄 README.md               # Aquest fitxer
+├── 📄 LICENSE                 # Llicència MIT
+├── 📁 docs/                   # Documentació
+│   ├── 📄 setup-guide.md      # Guia d'instal·lació detallada
+│   ├── 📄 troubleshooting.md  # Problemes comuns i solucions
+│   └── 🖼️ screenshot.png      # Captura de pantalla de l'aplicació
+└── 📁 examples/               # Fitxers d'exemple
+      └── 📄 sample.pdf          # PDF d'exemple per a proves
 ```
 
-## 🔧 Configuration
+## 🔧 Configuració
 
-### Google Cloud Settings
+### Paràmetres de Google Cloud
 
-Edit the configuration in `ocr_viewer_app.py`:
+Edita la configuració a `ocr_viewer_app.py`:
 
 ```python
-# Google Cloud settings
+# Paràmetres de Google Cloud
 self.project_id = "your-project-id"
-self.location = "eu"  # or "us", "asia-northeast1", etc.
+self.location = "eu"  # o "us", "asia-northeast1", etc.
 self.processor_id = "your-processor-id"
 ```
 
-### Supported Document Types
+### Tipus de documents suportats
 
-- PDF files (`.pdf`)
-- Images (`.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`)
-- Other formats supported by Google Cloud Document AI
+- Fitxers PDF (`.pdf`)
+- Imatges (`.png`, `.jpg`, `.jpeg`, `.tiff`, `.bmp`)
+- Altres formats suportats per Google Cloud Document AI
 
-## 💾 Export Options
+## 💾 Opcions d'exportació
 
-### Text Export
-- **Format**: Plain text (`.txt`)
-- **Content**: All extracted text organized by pages
-- **Use case**: Simple text analysis, copy-paste operations
+### Exportació de text
+- **Format**: Text pla (`.txt`)
+- **Contingut**: Tot el text extret organitzat per pàgines
+- **Ús**: Anàlisi simple de text, operacions de copiar i enganxar
 
-### JSON Export
-- **Format**: Structured JSON (`.json`)
-- **Content**: Complete data including:
-  - Text content for each block
-  - Confidence scores
-  - Bounding box coordinates
-  - Page numbers
-- **Use case**: Further processing, integration with other tools
+### Exportació JSON
+- **Format**: JSON estructurat (`.json`)
+- **Contingut**: Dades completes incloent:
+   - Contingut de text per cada bloc
+   - Puntuacions de confiança
+   - Coordenades de les caixes
+   - Número de pàgina
+- **Ús**: Processament addicional, integració amb altres eines
 
-## 🔍 Troubleshooting
+## 🔍 Resolució de problemes
 
-### Common Issues
+### Problemes comuns
 
-1. **Authentication Errors**
-   - Ensure Google Cloud SDK is installed
-   - Run `gcloud auth application-default login`
-   - Verify project ID is correct
+1. **Errors d'autenticació**
+    - Assegura't que Google Cloud SDK està instal·lat
+    - Executa `gcloud auth application-default login`
+    - Verifica que l'ID de projecte sigui correcte
 
-2. **Import Errors**
-   - Check virtual environment is activated
-   - Install missing dependencies: `pip install -r requirements.txt`
+2. **Errors d'importació**
+    - Comprova que l'entorn virtual estigui activat
+    - Instal·la les dependències: `pip install -r requirements.txt`
 
-3. **PDF Loading Issues**
-   - Verify file permissions
-   - Check file format is supported
-   - Ensure file is not corrupted
+3. **Problemes de càrrega de PDF**
+    - Verifica permisos de fitxer
+    - Comprova que el format sigui suportat
+    - Assegura't que el fitxer no estigui corrupte
 
-4. **Processing Failures**
-   - Check internet connection
-   - Verify Google Cloud quotas
-   - Ensure Document AI API is enabled
+4. **Errors de processament**
+    - Comprova la connexió a Internet
+    - Verifica les quotes de Google Cloud
+    - Assegura't que l'API Document AI estigui activada
 
-See [docs/troubleshooting.md](docs/troubleshooting.md) for detailed solutions.
+Consulta [docs/troubleshooting.md](docs/troubleshooting.md) per a solucions detallades.
 
-## 🤝 Contributing
+## 🤝 Contribució
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Les contribucions són benvingudes! Pots enviar un Pull Request. Per a canvis importants, obre primer una issue per discutir la proposta.
 
-### Development Setup
+### Entorn de desenvolupament
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+1. Fes un fork del repositori
+2. Crea una branca de funcionalitat: `git checkout -b feature-name`
+3. Fes els canvis
+4. Prova exhaustivament
+5. Envia un pull request
 
-## 📜 License
+## 📜 Llicència
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Aquest projecte està sota llicència MIT - consulta el fitxer [LICENSE](LICENSE) per a més detalls.
 
-## 🙏 Acknowledgments
+## 🙏 Agraïments
 
-- **Google Cloud Document AI** for the powerful OCR capabilities
-- **PyMuPDF** for excellent PDF rendering
-- **tkinter** for the cross-platform GUI framework
-- **Pillow** for image processing capabilities
+- **Google Cloud Document AI** per les capacitats OCR
+- **PyMuPDF** per la renderització de PDF
+- **tkinter** pel framework GUI multiplataforma
+- **Pillow** per les capacitats de processament d'imatges
 
-## 📞 Support
+## 📞 Suport
 
-If you encounter any issues or have questions:
+Si tens problemes o preguntes:
 
-1. Check the [troubleshooting guide](docs/troubleshooting.md)
-2. Search existing [GitHub issues](https://github.com/your-username/professional-ocr-viewer/issues)
-3. Create a new issue with detailed information
+1. Consulta la [guia de resolució de problemes](docs/troubleshooting.md)
+2. Cerca issues existents a [GitHub](https://github.com/your-username/professional-ocr-viewer/issues)
+3. Crea una nova issue amb informació detallada
 
-## 🔄 Changelog
+## 🔄 Canvis
 
 ### v1.0.0 (2025-01-17)
-- Initial release
-- PDF viewing with zoom and navigation
-- Google Cloud Document AI integration
-- Interactive text block visualization
-- Professional Windows interface
-- Export capabilities (TXT, JSON)
-- Comprehensive error handling
+- Llançament inicial
+- Visualització de PDF amb zoom i navegació
+- Integració amb Google Cloud Document AI
+- Visualització interactiva de blocs de text
+- Interfície professional per a Windows
+- Capacitats d'exportació (TXT, JSON)
+- Gestió d'errors completa
 
 ---
 
 **Professional OCR Viewer v1.0**  
-*Powered by Google Cloud Document AI*
+*Impulsat per Google Cloud Document AI*
