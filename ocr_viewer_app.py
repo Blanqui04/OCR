@@ -19,11 +19,14 @@ from typing import List, Optional
 import json
 import warnings
 import csv
+from datetime import datetime
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
+from drawing_postprocessor import DrawingPostProcessor
+from modern_ui_theme import ModernUITheme
 
 # Suprimeix els avisos d'autenticació de Google Cloud
 warnings.filterwarnings("ignore", message="La vostra aplicació s'ha autenticat utilitzant credencials d'usuari final")
@@ -39,9 +42,12 @@ class TextBlock:
 class OCRViewerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Visor OCR Professional - Google Cloud Document AI")
-        self.root.geometry("1400x900")
-        self.root.configure(bg='#f8fafc')  # Blau gris molt clar
+        self.root.title("📄 Visor OCR Professional - Google Cloud Document AI")
+        self.root.geometry("1600x1000")
+        
+        # Initialize modern UI theme
+        self.theme = ModernUITheme()
+        self.root.configure(bg=self.theme.colors['bg_primary'])
 
         # Estat de l'aplicació
         self.current_pdf_path = None
@@ -54,13 +60,41 @@ class OCRViewerApp:
         self.heatmap_mode = False
         self.show_reading_order_mode = False
         
+        # Post-processor for technical drawings
+        self.post_processor = DrawingPostProcessor()
+        self.structured_data = None
+        
         # Google Cloud configuració
         self.project_id = "natural-bison-465607-b6"
         self.location = "eu"
         self.processor_id = "4369d16f70cb0a26"
         
-        self.setup_ui()
+        # Set up Google Cloud credentials
+        self._setup_google_credentials()
+        
+        self.setup_main_interface()
         self.setup_styles()
+        
+    def _setup_google_credentials(self):
+        """Setup Google Cloud credentials"""
+        # Check if credentials are already set
+        if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+            creds_path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+            if os.path.exists(creds_path):
+                print(f"✅ Utilitzant credencials de: {creds_path}")
+                return
+        
+        # Try to find the expected credentials file
+        keys_dir = r"C:\Users\eceballos\keys"
+        expected_key_file = "natural-bison-465607-b6-a638a05f2638.json"
+        key_path = os.path.join(keys_dir, expected_key_file)
+        
+        if os.path.exists(key_path):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = key_path
+            print(f"✅ Credencials configurades: {key_path}")
+        else:
+            print(f"⚠️ Fitxer de credencials no trobat: {key_path}")
+            print("💡 Utilitza setup_google_auth.py per configurar l'autenticació")
         
     def setup_styles(self):
         """Configurar estil de l'UI"""
@@ -160,26 +194,232 @@ class OCRViewerApp:
                        troughcolor=colors['light_gray'],
                        borderwidth=0)
         
-    def setup_ui(self):
-        """Creació de la interfície d'usuari principal"""
-        # Creació del menú principal
-        self.create_menu()
-
-        # Creació de la barra d'eines
-        self.create_toolbar()
-
-        # Creació de l'àrea de contingut principal amb finestra dividida
-        main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
-        main_paned.pack(fill=tk.BOTH, expand=True, padx=8, pady=4)
+    def setup_main_interface(self):
+        """Configuració de la interfície principal amb modern UI"""
+        # Configure the root window
+        self.root.configure(bg=self.theme.colors['bg_primary'])
         
-        # Panel esquerre - Visualització de PDF
-        self.create_pdf_viewer(main_paned)
-
-        # Panel dret - Anàlisi de text
-        self.create_text_panel(main_paned)
+        # Apply modern styles to ttk widgets
+        self.theme.apply_style()
         
-        # Barra d'estat
-        self.create_status_bar()
+        # Main title frame with modern styling
+        self.setup_title_frame()
+        
+        # File selection frame with modern buttons
+        self.setup_file_frame()
+        
+        # Main content area with cards
+        self.setup_content_area()
+        
+        # Status bar with modern notifications
+        self.setup_status_bar()
+    
+    def setup_title_frame(self):
+        """Configuració del frame del títol amb estil modern"""
+        title_frame = self.theme.create_card_frame(self.root, has_shadow=True)
+        title_frame.pack(fill='x', padx=20, pady=(20, 10))
+        
+        # Title with modern typography
+        title_label = tk.Label(
+            title_frame, 
+            text="📄 Visor OCR Professional",
+            font=self.theme.fonts['heading_large'],
+            fg=self.theme.colors['text_primary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        title_label.pack(pady=20)
+        
+        # Subtitle
+        subtitle_label = tk.Label(
+            title_frame,
+            text="Processament intel·ligent de documents tècnics amb Google Cloud Document AI",
+            font=self.theme.fonts['body_large'],
+            fg=self.theme.colors['text_secondary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        subtitle_label.pack(pady=(0, 10))
+    
+    def setup_file_frame(self):
+        """Configuració del frame de selecció de fitxers amb botons moderns"""
+        file_frame = self.theme.create_card_frame(self.root)
+        file_frame.pack(fill='x', padx=20, pady=10)
+        
+        # File info section
+        info_frame = tk.Frame(file_frame, bg=self.theme.colors['bg_secondary'])
+        info_frame.pack(fill='x', padx=20, pady=20)
+        
+        self.file_label = tk.Label(
+            info_frame, 
+            text="📂 Cap fitxer seleccionat",
+            font=self.theme.fonts['body_medium'],
+            fg=self.theme.colors['text_secondary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        self.file_label.pack(side='left')
+        
+        # Modern button container
+        button_frame = tk.Frame(info_frame, bg=self.theme.colors['bg_secondary'])
+        button_frame.pack(side='right')
+        
+        # Modern styled buttons
+        self.select_button = self.theme.create_modern_button(
+            button_frame, 
+            text="📁 Seleccionar PDF",
+            command=self.open_pdf,
+            style='primary'
+        )
+        self.select_button.pack(side='left', padx=(0, 10))
+        
+        self.process_button = self.theme.create_modern_button(
+            button_frame,
+            text="🚀 Processar Document",
+            command=self.process_document,
+            style='primary',
+            state='disabled'
+        )
+        self.process_button.pack(side='left')
+    
+    def setup_content_area(self):
+        """Configuració de l'àrea de contingut principal amb cards"""
+        # Main content frame with modern styling
+        content_frame = tk.Frame(self.root, bg=self.theme.colors['bg_primary'])
+        content_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        # Create notebook with modern tabs
+        self.notebook = self.theme.create_modern_notebook(content_frame)
+        self.notebook.pack(fill='both', expand=True)
+        
+        # Setup tabs with modern styling
+        self.setup_text_tab()
+        self.setup_structured_tab()
+        self.setup_validation_tab()
+    
+    def setup_text_tab(self):
+        """Tab de text amb scroll i estil modern"""
+        text_frame = self.theme.create_card_frame(self.notebook, padding=0)
+        
+        # Text area with modern styling
+        text_container = tk.Frame(text_frame, bg=self.theme.colors['bg_secondary'])
+        text_container.pack(fill='both', expand=True, padx=20, pady=20)
+        
+        # Text widget with scrollbar
+        self.text_widget = tk.Text(
+            text_container,
+            wrap=tk.WORD,
+            font=self.theme.fonts['code'],
+            bg=self.theme.colors['bg_primary'],
+            fg=self.theme.colors['text_primary'],
+            relief='flat',
+            borderwidth=0,
+            padx=15,
+            pady=15
+        )
+        
+        scrollbar = ttk.Scrollbar(text_container, orient="vertical", command=self.text_widget.yview)
+        self.text_widget.configure(yscrollcommand=scrollbar.set)
+        
+        self.text_widget.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        self.notebook.add(text_frame, text="📝 Text Extret")
+    
+    def setup_structured_tab(self):
+        """Tab de dades estructurades amb treeview modern"""
+        structured_frame = self.theme.create_card_frame(self.notebook, padding=0)
+        
+        # Controls frame
+        controls_frame = tk.Frame(structured_frame, bg=self.theme.colors['bg_secondary'])
+        controls_frame.pack(fill='x', padx=20, pady=(20, 10))
+        
+        # Export button with format selector
+        self.export_button = self.theme.create_modern_button(
+            controls_frame,
+            text="📦 Exportar Dades",
+            command=self.export_structured_data,
+            style='secondary',
+            state='disabled'
+        )
+        self.export_button.pack(side='right')
+        
+        # Treeview container
+        tree_container = tk.Frame(structured_frame, bg=self.theme.colors['bg_secondary'])
+        tree_container.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        
+        # Modern treeview
+        self.tree = self.theme.create_modern_treeview(tree_container)
+        self.tree.pack(fill='both', expand=True)
+        
+        self.notebook.add(structured_frame, text="📋 Dades Estructurades")
+    
+    def setup_validation_tab(self):
+        """Tab de validació amb editor modern"""
+        validation_frame = self.theme.create_card_frame(self.notebook, padding=0)
+        
+        # Header frame
+        header_frame = tk.Frame(validation_frame, bg=self.theme.colors['bg_secondary'])
+        header_frame.pack(fill='x', padx=20, pady=(20, 10))
+        
+        header_label = tk.Label(
+            header_frame,
+            text="✅ Validació i Edició de Dades",
+            font=self.theme.fonts['heading_medium'],
+            fg=self.theme.colors['text_primary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        header_label.pack(side='left')
+        
+        # Validation button
+        self.validate_button = self.theme.create_modern_button(
+            header_frame,
+            text="🔍 Obrir Editor",
+            command=self.validate_structured_data,
+            style='primary',
+            state='disabled'
+        )
+        self.validate_button.pack(side='right')
+        
+        # Validation status
+        self.validation_status_frame = tk.Frame(validation_frame, bg=self.theme.colors['bg_secondary'])
+        self.validation_status_frame.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        
+        self.validation_label = tk.Label(
+            self.validation_status_frame,
+            text="📋 Processa un document primer per accedir a la validació",
+            font=self.theme.fonts['body_medium'],
+            fg=self.theme.colors['text_secondary'],
+            bg=self.theme.colors['bg_secondary'],
+            wraplength=800,
+            justify='center'
+        )
+        self.validation_label.pack(expand=True)
+        
+        self.notebook.add(validation_frame, text="✅ Validació")
+    
+    def setup_status_bar(self):
+        """Barra d'estat amb notificacions modernes"""
+        self.status_frame = tk.Frame(self.root, bg=self.theme.colors['bg_secondary'], height=40)
+        self.status_frame.pack(fill='x', padx=20, pady=(0, 20))
+        self.status_frame.pack_propagate(False)
+        
+        self.status_label = tk.Label(
+            self.status_frame,
+            text="📋 Llest per processar documents",
+            font=self.theme.fonts['body_small'],
+            fg=self.theme.colors['text_secondary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        self.status_label.pack(side='left', padx=20, pady=10)
+        
+        # Progress indicator
+        self.progress_var = tk.StringVar(value="")
+        self.progress_label = tk.Label(
+            self.status_frame,
+            textvariable=self.progress_var,
+            font=self.theme.fonts['body_small'],
+            fg=self.theme.colors['primary_blue'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        self.progress_label.pack(side='right', padx=20, pady=10)
         
     def create_menu(self):
         """Creació del menú de l'aplicació"""
@@ -219,6 +459,12 @@ class OCRViewerApp:
         # Menu d'eines
         tools_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Eines", menu=tools_menu)
+        tools_menu.add_command(label="Verificar Autenticació Google Cloud", command=self.check_google_auth)
+        tools_menu.add_separator()
+        tools_menu.add_command(label="Processar Dades Estructurades", command=self.process_structured_data)
+        tools_menu.add_command(label="Validar i Editar Dades Estructurades", command=self.validate_structured_data)
+        tools_menu.add_command(label="Exportar Dades Estructurades...", command=self.export_structured_data)
+        tools_menu.add_separator()
         tools_menu.add_command(label="Detecció d'idioma", command=self.detect_language)
         tools_menu.add_command(label="Extracció de taules", command=self.extract_tables)
         tools_menu.add_command(label="Estadístiques de Text", command=self.show_detailed_stats)
@@ -254,6 +500,12 @@ class OCRViewerApp:
                   style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
 
         ttk.Button(left_frame, text="🤖 Processar Document", command=self.process_document,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
+        
+        ttk.Button(left_frame, text="🏗️ Dades Estructurades", command=self.process_structured_data,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
+        
+        ttk.Button(left_frame, text="🔍 Validar Dades", command=self.validate_structured_data,
                   style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 8))
         
         separator1 = ttk.Frame(toolbar_frame, width=2)
@@ -364,6 +616,9 @@ class OCRViewerApp:
         # Text blocks tab
         self.create_text_blocks_tab(notebook)
         
+        # Structured data tab for technical drawings
+        self.create_structured_data_tab(notebook)
+        
         # Statistics tab
         self.create_statistics_tab(notebook)
         
@@ -429,6 +684,151 @@ class OCRViewerApp:
         # Bind selection event
         self.blocks_tree.bind('<<TreeviewSelect>>', self.on_block_select)
         
+    def create_structured_data_tab(self, notebook):
+        """Creació de la pestanya de dades estructurades per a plànols tècnics"""
+        structured_tab = ttk.Frame(notebook)
+        notebook.add(structured_tab, text="🏗️ Dades Estructurades")
+        
+        # Top frame for controls
+        control_frame = ttk.Frame(structured_tab)
+        control_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Button to process structured data
+        ttk.Button(control_frame, text="⚙️ Processar Dades Estructurades", 
+                  command=self.process_structured_data,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Button to validate and edit structured data
+        ttk.Button(control_frame, text="🔍 Validar i Editar Dades", 
+                  command=self.validate_structured_data,
+                  style='Modern.TButton').pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Export structured data button
+        ttk.Button(control_frame, text="📤 Exportar Dades", 
+                  command=self.export_structured_data,
+                  style='Export.TButton').pack(side=tk.LEFT)
+        
+        # Sub-notebook for different structured views
+        sub_notebook = ttk.Notebook(structured_tab)
+        sub_notebook.pack(fill=tk.BOTH, expand=True)
+        
+        # Parts list tab
+        self.create_parts_list_tab(sub_notebook)
+        
+        # Dimensions tab
+        self.create_dimensions_tab(sub_notebook)
+        
+        # Annotations tab
+        self.create_annotations_tab(sub_notebook)
+        
+        # Block overview tab
+        self.create_block_overview_tab(sub_notebook)
+        
+    def create_parts_list_tab(self, notebook):
+        """Creació de la pestanya de llista de peces"""
+        parts_tab = ttk.Frame(notebook)
+        notebook.add(parts_tab, text="📋 Llista de Peces")
+        
+        # Treeview for parts list
+        columns = ('Núm. Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança')
+        self.parts_tree = ttk.Treeview(parts_tab, columns=columns, show='headings', height=15)
+        
+        # Configure columns
+        self.parts_tree.heading('Núm. Element', text='Núm. Element')
+        self.parts_tree.heading('Descripció', text='Descripció')
+        self.parts_tree.heading('Valor', text='Valor')
+        self.parts_tree.heading('Tolerància', text='Tolerància')
+        self.parts_tree.heading('Confiança', text='Confiança %')
+        
+        self.parts_tree.column('Núm. Element', width=100, anchor='center')
+        self.parts_tree.column('Descripció', width=250)
+        self.parts_tree.column('Valor', width=100, anchor='center')
+        self.parts_tree.column('Tolerància', width=100, anchor='center')
+        self.parts_tree.column('Confiança', width=100, anchor='center')
+        
+        # Scrollbar for parts treeview
+        parts_scroll = ttk.Scrollbar(parts_tab, orient=tk.VERTICAL, command=self.parts_tree.yview)
+        self.parts_tree.configure(yscrollcommand=parts_scroll.set)
+        
+        self.parts_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        parts_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        
+    def create_dimensions_tab(self, notebook):
+        """Creació de la pestanya de dimensions"""
+        dimensions_tab = ttk.Frame(notebook)
+        notebook.add(dimensions_tab, text="📏 Dimensions")
+        
+        # Treeview for dimensions
+        columns = ('Núm. Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança')
+        self.dimensions_tree = ttk.Treeview(dimensions_tab, columns=columns, show='headings', height=15)
+        
+        # Configure columns
+        self.dimensions_tree.heading('Núm. Element', text='Núm. Element')
+        self.dimensions_tree.heading('Descripció', text='Descripció')
+        self.dimensions_tree.heading('Valor', text='Valor')
+        self.dimensions_tree.heading('Tolerància', text='Tolerància')
+        self.dimensions_tree.heading('Confiança', text='Confiança %')
+        
+        self.dimensions_tree.column('Núm. Element', width=100, anchor='center')
+        self.dimensions_tree.column('Descripció', width=250)
+        self.dimensions_tree.column('Valor', width=100, anchor='center')
+        self.dimensions_tree.column('Tolerància', width=100, anchor='center')
+        self.dimensions_tree.column('Confiança', width=100, anchor='center')
+        
+        # Scrollbar for dimensions treeview
+        dimensions_scroll = ttk.Scrollbar(dimensions_tab, orient=tk.VERTICAL, command=self.dimensions_tree.yview)
+        self.dimensions_tree.configure(yscrollcommand=dimensions_scroll.set)
+        
+        self.dimensions_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        dimensions_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        
+    def create_annotations_tab(self, notebook):
+        """Creació de la pestanya d'anotacions"""
+        annotations_tab = ttk.Frame(notebook)
+        notebook.add(annotations_tab, text="📝 Anotacions")
+        
+        # Treeview for annotations
+        columns = ('Núm. Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança')
+        self.annotations_tree = ttk.Treeview(annotations_tab, columns=columns, show='headings', height=15)
+        
+        # Configure columns
+        self.annotations_tree.heading('Núm. Element', text='Núm. Element')
+        self.annotations_tree.heading('Descripció', text='Descripció')
+        self.annotations_tree.heading('Valor', text='Valor')
+        self.annotations_tree.heading('Tolerància', text='Tolerància')
+        self.annotations_tree.heading('Confiança', text='Confiança %')
+        
+        self.annotations_tree.column('Núm. Element', width=100, anchor='center')
+        self.annotations_tree.column('Descripció', width=250)
+        self.annotations_tree.column('Valor', width=100, anchor='center')
+        self.annotations_tree.column('Tolerància', width=100, anchor='center')
+        self.annotations_tree.column('Confiança', width=100, anchor='center')
+        
+        # Scrollbar for annotations treeview
+        annotations_scroll = ttk.Scrollbar(annotations_tab, orient=tk.VERTICAL, command=self.annotations_tree.yview)
+        self.annotations_tree.configure(yscrollcommand=annotations_scroll.set)
+        
+        self.annotations_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        annotations_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        
+    def create_block_overview_tab(self, notebook):
+        """Creació de la pestanya de resum de blocs"""
+        overview_tab = ttk.Frame(notebook)
+        notebook.add(overview_tab, text="🔍 Resum de Blocs")
+        
+        # Text widget for block overview
+        self.block_overview_text = scrolledtext.ScrolledText(overview_tab,
+                                                            wrap=tk.WORD,
+                                                            font=('Consolas', 9),
+                                                            state=tk.DISABLED,
+                                                            bg='white',
+                                                            fg='#1e293b',
+                                                            selectbackground='#dbeafe',
+                                                            selectforeground='#1e40af',
+                                                            relief='flat',
+                                                            borderwidth=1)
+        self.block_overview_text.pack(fill=tk.BOTH, expand=True)
+        
     def create_statistics_tab(self, notebook):
         """Create statistics view tab"""
         stats_tab = ttk.Frame(notebook)
@@ -468,7 +868,8 @@ class OCRViewerApp:
         else:
             status_message = f"ℹ️ {message}"
             
-        self.status_bar.config(text=status_message)
+        if hasattr(self, 'status_label'):
+            self.status_label.config(text=status_message)
         self.root.update_idletasks()
         
     def open_pdf(self):
@@ -497,18 +898,16 @@ class OCRViewerApp:
             self.add_recent_file(file_path)
             
             page_count = len(self.pdf_document)
-            self.page_var.set("1")
-            self.page_label.config(text=f"of {page_count}")
             
-            # Update spinbox range
-            for widget in self.root.winfo_children():
-                if isinstance(widget, ttk.Frame):
-                    for child in widget.winfo_children():
-                        if isinstance(child, ttk.Spinbox):
-                            child.config(from_=1, to=page_count)
+            # Update file label
+            filename = os.path.basename(file_path)
+            self.file_label.config(text=f"📂 {filename} ({page_count} pàgines)")
             
-            self.display_current_page()
-            self.update_status(f"Carregat: {os.path.basename(file_path)} ({page_count} pàgines)")
+            # Enable process button
+            if hasattr(self, 'process_button'):
+                self.process_button.config(state='normal')
+            
+            self.update_status(f"Carregat: {filename} ({page_count} pàgines)")
             
         except Exception as e:
             messagebox.showerror("Error", f"Carregant PDF: {str(e)}")
@@ -668,6 +1067,10 @@ class OCRViewerApp:
     def _process_document_thread(self):
         """Process document in background thread"""
         try:
+            # Check credentials before starting
+            if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
+                self._setup_google_credentials()
+            
             self.root.after(0, lambda: self.show_progress("Connexió a Google Cloud..."))
             self.root.after(0, lambda: self.update_progress(10))
             
@@ -714,7 +1117,18 @@ class OCRViewerApp:
         except Exception as e:
             error_msg = f"Error en el processat: {str(e)}"
             print(f"Error complert: {e}")
-            self.root.after(0, lambda: messagebox.showerror("Error en el processat", error_msg))
+            
+            # Check if it's an authentication error
+            if "not found" in str(e).lower() and ".json" in str(e):
+                auth_error_msg = ("Error d'autenticació de Google Cloud.\n\n"
+                                "Solucions:\n"
+                                "1. Executa 'python setup_google_auth.py' per configurar l'autenticació\n"
+                                "2. O utilitza: gcloud auth application-default login\n"
+                                "3. Assegura't que tens el fitxer de credencials al directori correcte")
+                self.root.after(0, lambda: messagebox.showerror("Error d'Autenticació", auth_error_msg))
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Error en el processat", error_msg))
+            
             self.root.after(0, lambda: self.update_status("El processament ha fallat"))
             self.root.after(0, self.hide_progress)
     
@@ -925,511 +1339,543 @@ class OCRViewerApp:
                         
     def _update_ui_after_processing(self):
         """Update UI after document processing is complete"""
-        # Update full text
+        # Update text widget
         full_text = "\n".join([block.text for block in self.text_blocks])
-        self.full_text_widget.config(state=tk.NORMAL)
-        self.full_text_widget.delete(1.0, tk.END)
-        self.full_text_widget.insert(1.0, full_text)
-        self.full_text_widget.config(state=tk.DISABLED)
+        self.text_widget.config(state=tk.NORMAL)
+        self.text_widget.delete(1.0, tk.END)
+        self.text_widget.insert(1.0, full_text)
+        self.text_widget.config(state=tk.DISABLED)
         
-        # Update text blocks tree
-        self.blocks_tree.delete(*self.blocks_tree.get_children())
-        for i, block in enumerate(self.text_blocks):
-            preview = block.text[:50] + "..." if len(block.text) > 50 else block.text
-            confidence_str = f"{block.confidence:.2f}" if block.confidence < 1.0 else "N/A"
-            self.blocks_tree.insert('', tk.END, iid=i, values=(
-                block.page_num + 1,
-                preview,
-                confidence_str
-            ))
+        # Enable export and validation buttons
+        if hasattr(self, 'export_button'):
+            self.export_button.config(state='normal')
+        if hasattr(self, 'validate_button'):
+            self.validate_button.config(state='normal')
         
-        # Update statistics
-        self._update_statistics()
+        # Process structured data automatically for technical drawings
+        self.process_structured_data()
         
-        # Refresh PDF display with overlays
-        self.display_current_page()
-        
+        # Update status
         self.update_status(f"Processament complet. S'han trobat {len(self.text_blocks)} blocs de text.")
         
-    def _update_statistics(self):
-        """Update statistics tab"""
+    def process_structured_data(self):
+        """Process text blocks into structured technical drawing data"""
         if not self.text_blocks:
+            self.update_status("No hi ha blocs de text per processar")
             return
-            
-        total_blocks = len(self.text_blocks)
-        total_chars = sum(len(block.text) for block in self.text_blocks)
-        total_words = sum(len(block.text.split()) for block in self.text_blocks)
         
-        avg_confidence = sum(block.confidence for block in self.text_blocks) / total_blocks
-        
-        pages_with_text = len(set(block.page_num for block in self.text_blocks))
-        
-        stats_text = f"""Estadístiques del Document OCR:
-
-    Total de pàgines: {len(self.pdf_document)}
-    Pàgines amb text: {pages_with_text}
-    Total de blocs de text: {total_blocks}
-    Total de caràcters: {total_chars:,}
-    Total de paraules: {total_words:,}
-    Confiança mitjana: {avg_confidence:.2%}
-
-    Distribució de confiança:
-    Alta (>90%): {sum(1 for b in self.text_blocks if b.confidence > 0.9)}
-    Mitjana (70-90%): {sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)}
-    Baixa (<70%): {sum(1 for b in self.text_blocks if b.confidence < 0.7)}
-
-    Fitxer: {os.path.basename(self.current_pdf_path) if self.current_pdf_path else 'N/A'}
-    """
-        
-        self.stats_text.config(state=tk.NORMAL)
-        self.stats_text.delete(1.0, tk.END)
-        self.stats_text.insert(1.0, stats_text)
-        self.stats_text.config(state=tk.DISABLED)
-        
-    def on_block_select(self, event):
-        """Handle text block selection"""
-        selection = self.blocks_tree.selection()
-        if selection:
-            block_id = int(selection[0])
-            self.selected_block = self.text_blocks[block_id]
-            
-            # Navigate to block's page if different
-            if self.selected_block.page_num != self.current_page:
-                self.current_page = self.selected_block.page_num
-                self.page_var.set(str(self.current_page + 1))
-                
-            self.display_current_page()
-            
-    def on_canvas_click(self, event):
-        """Handle canvas click for text block selection"""
-        # Convert canvas coordinates to image coordinates
-        canvas_x = self.pdf_canvas.canvasx(event.x)
-        canvas_y = self.pdf_canvas.canvasy(event.y)
-        
-        # Find clicked text block
-        for i, block in enumerate(self.text_blocks):
-            if block.page_num != self.current_page:
-                continue
-                
-            x1, y1, x2, y2 = block.bbox
-            x1 *= self.zoom_factor
-            y1 *= self.zoom_factor
-            x2 *= self.zoom_factor
-            y2 *= self.zoom_factor
-            
-            # Ensure proper coordinate order
-            x1, x2 = min(x1, x2), max(x1, x2)
-            y1, y2 = min(y1, y2), max(y1, y2)
-            
-            # Check if click is within bounds
-            if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
-                self.selected_block = block
-                self.display_current_page()
-                
-                # Select in tree view
-                try:
-                    for item in self.blocks_tree.get_children():
-                        if int(item) < len(self.text_blocks) and self.text_blocks[int(item)] == block:
-                            self.blocks_tree.selection_set(item)
-                            self.blocks_tree.see(item)
-                            break
-                except Exception as e:
-                    print(f"Avís: No s'ha pogut actualitzar la selecció de l'arbre: {e}")
-                break
-                
-    def on_canvas_motion(self, event):
-        """Handle canvas mouse motion for cursor changes"""
-        canvas_x = self.pdf_canvas.canvasx(event.x)
-        canvas_y = self.pdf_canvas.canvasy(event.y)
-        
-        # Check if mouse is over a text block
-        over_block = False
-        for block in self.text_blocks:
-            if block.page_num != self.current_page:
-                continue
-                
-            x1, y1, x2, y2 = block.bbox
-            x1 *= self.zoom_factor
-            y1 *= self.zoom_factor
-            x2 *= self.zoom_factor
-            y2 *= self.zoom_factor
-            
-            if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
-                over_block = True
-                break
-                
-        # Change cursor
-        cursor = "hand2" if over_block else "arrow"
-        self.pdf_canvas.config(cursor=cursor)
-        
-    def change_page(self):
-        """Handle page change"""
         try:
-            new_page = int(self.page_var.get()) - 1
-            if 0 <= new_page < len(self.pdf_document):
-                self.current_page = new_page
-                self.display_current_page()
-        except ValueError:
-            pass
+            self.update_status("Processant dades estructurades...")
             
-    def zoom_in(self):
-        """Zoom in"""
-        self.zoom_factor *= 1.2
-        self.display_current_page()
-        
-    def zoom_out(self):
-        """Zoom out"""
-        self.zoom_factor /= 1.2
-        self.display_current_page()
-        
-    def fit_to_window(self):
-        """Fit page to window"""
-        if self.pdf_document:
-            page = self.pdf_document[self.current_page]
-            canvas_width = self.pdf_canvas.winfo_width()
-            canvas_height = self.pdf_canvas.winfo_height()
+            # Process with post-processor
+            self.structured_data = self.post_processor.process_drawing(self.text_blocks)
             
-            page_width = page.rect.width
-            page_height = page.rect.height
+            # Update structured data views
+            self._update_structured_data_views()
             
-            scale_x = canvas_width / page_width
-            scale_y = canvas_height / page_height
+            # Show statistics
+            stats = self.structured_data.get('statistics', {})
+            total_elements = stats.get('total_elements', 0)
+            total_blocks = stats.get('total_blocks', 0)
             
-            self.zoom_factor = min(scale_x, scale_y) * 0.9  # 90% of fit
-            self.display_current_page()
+            self.update_status(f"Dades estructurades processades: {total_elements} elements en {total_blocks} blocs lògics")
             
-    def search_text(self, event=None):
-        """Search text in full text widget"""
-        search_term = self.search_var.get().lower()
-        if not search_term:
-            return
-            
-        # Clear previous highlights
-        self.full_text_widget.tag_remove("highlight", "1.0", tk.END)
-        
-        if search_term:
-            # Find all occurrences
-            start = "1.0"
-            while True:
-                pos = self.full_text_widget.search(search_term, start, tk.END, nocase=True)
-                if not pos:
-                    break
-                    
-                end = f"{pos}+{len(search_term)}c"
-                self.full_text_widget.tag_add("highlight", pos, end)
-                start = end
+            # Ask user if they want to validate the data
+            if total_elements > 0:
+                response = messagebox.askyesnocancel(
+                    "Validació de Dades",
+                    f"S'han detectat {total_elements} elements estructurats.\n\n"
+                    "Vols obrir l'editor de validació per revisar i ajustar les dades?\n\n"
+                    "• Sí: Obrir editor de validació\n"
+                    "• No: Continuar sense validar\n"
+                    "• Cancel·lar: No fer res"
+                )
                 
-            # Configure highlight tag
-            self.full_text_widget.tag_config("highlight", background="yellow")
+                if response is True:  # Yes - open validation editor
+                    self.root.after(1000, self.validate_structured_data)  # Delay to let UI update
+                elif response is False:  # No - continue without validation
+                    self.update_status("Processament complet - Dades disponibles per exportar")
+                # None (Cancel) - do nothing
             
-    def export_text(self):
-        """Export extracted text to file"""
-        if not self.text_blocks:
-            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
+        except Exception as e:
+            error_msg = f"Error processant dades estructurades: {str(e)}"
+            print(error_msg)
+            messagebox.showerror("Error", error_msg)
+            self.update_status("Error en el processament de dades estructurades")
+    
+    def _update_structured_data_views(self):
+        """Update structured data view"""
+        if not self.structured_data:
             return
+        
+        structured = self.structured_data.get('structured_data', {})
+        
+        # Update main treeview with all data
+        self._populate_main_treeview(structured)
+    
+    def _populate_main_treeview(self, structured_data):
+        """Populate the main treeview with structured data"""
+        # Clear existing data
+        self.tree.delete(*self.tree.get_children())
+        
+        # Add parts list data
+        parts_list = structured_data.get('parts_list', [])
+        for i, part in enumerate(parts_list):
+            self.tree.insert('', tk.END, iid=f'part_{i}', values=(
+                part.get('element_number', ''),
+                part.get('description', ''),
+                part.get('value', ''),
+                part.get('tolerance', '')
+            ))
+        
+        # Add dimensions data
+        dimensions = structured_data.get('dimensions', [])
+        for i, dimension in enumerate(dimensions):
+            self.tree.insert('', tk.END, iid=f'dim_{i}', values=(
+                dimension.get('element_number', ''),
+                dimension.get('description', ''),
+                dimension.get('value', ''),
+                dimension.get('tolerance', '')
+            ))
+        
+        # Add annotations data
+        annotations = structured_data.get('annotations', [])
+        for i, annotation in enumerate(annotations):
+            self.tree.insert('', tk.END, iid=f'ann_{i}', values=(
+                annotation.get('element_number', ''),
+                annotation.get('description', ''),
+                annotation.get('value', ''),
+                annotation.get('tolerance', '')
+            ))
+    
+    def _update_parts_list_view(self, parts_data):
+        """Update parts list treeview"""
+        # Clear existing data
+        self.parts_tree.delete(*self.parts_tree.get_children())
+        
+        # Add new data
+        for i, part in enumerate(parts_data):
+            self.parts_tree.insert('', tk.END, iid=i, values=(
+                part.get('element_number', ''),
+                part.get('description', ''),
+                part.get('value', ''),
+                part.get('tolerance', ''),
+                f"{part.get('confidence', 0.0):.2f}"
+            ))
+    
+    def _update_dimensions_view(self, dimensions_data):
+        """Update dimensions treeview"""
+        # Clear existing data
+        self.dimensions_tree.delete(*self.dimensions_tree.get_children())
+        
+        # Add new data
+        for i, dimension in enumerate(dimensions_data):
+            self.dimensions_tree.insert('', tk.END, iid=i, values=(
+                dimension.get('element_number', ''),
+                dimension.get('description', ''),
+                dimension.get('value', ''),
+                dimension.get('tolerance', ''),
+                f"{dimension.get('confidence', 0.0):.2f}"
+            ))
+    
+    def _update_annotations_view(self, annotations_data):
+        """Update annotations treeview"""
+        # Clear existing data
+        self.annotations_tree.delete(*self.annotations_tree.get_children())
+        
+        # Add new data
+        for i, annotation in enumerate(annotations_data):
+            self.annotations_tree.insert('', tk.END, iid=i, values=(
+                annotation.get('element_number', ''),
+                annotation.get('description', ''),
+                annotation.get('value', ''),
+                annotation.get('tolerance', ''),
+                f"{annotation.get('confidence', 0.0):.2f}"
+            ))
+    
+    def _update_block_overview(self):
+        """Update block overview text"""
+        if not self.structured_data:
+            return
+        
+        logical_blocks = self.structured_data.get('logical_blocks', [])
+        statistics = self.structured_data.get('statistics', {})
+        
+        overview_text = "RESUM DE BLOCS LÒGICS\n"
+        overview_text += "=" * 50 + "\n\n"
+        
+        # Statistics
+        overview_text += f"Total d'elements detectats: {statistics.get('total_elements', 0)}\n"
+        overview_text += f"Total de blocs lògics: {statistics.get('total_blocks', 0)}\n"
+        overview_text += f"Elements amb números: {statistics.get('elements_with_numbers', 0)}\n"
+        overview_text += f"Elements amb valors: {statistics.get('elements_with_values', 0)}\n"
+        overview_text += f"Elements amb toleràncies: {statistics.get('elements_with_tolerances', 0)}\n"
+        overview_text += f"Confiança mitjana: {statistics.get('average_confidence', 0.0):.2f}\n\n"
+        
+        # Block types
+        block_types = statistics.get('block_types', {})
+        if block_types:
+            overview_text += "TIPUS DE BLOCS:\n"
+            overview_text += "-" * 20 + "\n"
+            for block_type, count in block_types.items():
+                overview_text += f"{block_type.replace('_', ' ').title()}: {count}\n"
+            overview_text += "\n"
+        
+        # Individual blocks
+        overview_text += "DETALLS DELS BLOCS:\n"
+        overview_text += "-" * 20 + "\n\n"
+        
+        for block in logical_blocks:
+            overview_text += f"Bloc ID: {block.block_id}\n"
+            overview_text += f"Tipus: {block.block_type}\n"
+            overview_text += f"Elements: {len(block.elements)}\n"
+            overview_text += f"Confiança: {block.confidence:.2f}\n"
+            overview_text += f"Centroide: ({block.centroid[0]:.1f}, {block.centroid[1]:.1f})\n"
             
+            # Show element details
+            for j, element in enumerate(block.elements):
+                overview_text += f"  {j+1}. "
+                if element.element_number:
+                    overview_text += f"[{element.element_number}] "
+                if element.description:
+                    overview_text += f"{element.description} "
+                if element.value:
+                    overview_text += f"= {element.value} "
+                if element.tolerance:
+                    overview_text += f"± {element.tolerance}"
+                overview_text += f" (conf: {element.confidence:.2f})\n"
+            
+            overview_text += "\n"
+        
+        # Update text widget
+        self.block_overview_text.config(state=tk.NORMAL)
+        self.block_overview_text.delete(1.0, tk.END)
+        self.block_overview_text.insert(1.0, overview_text)
+        self.block_overview_text.config(state=tk.DISABLED)
+    
+    def export_structured_data(self):
+        """Export structured data to various formats"""
+        if not self.structured_data:
+            messagebox.showwarning("Avís", "No hi ha dades estructurades per exportar. Si us plau, processa primer el document.")
+            return
+        
+        # Ask user for format
+        export_window = tk.Toplevel(self.root)
+        export_window.title("📤 Exportar Dades")
+        export_window.geometry("500x400")
+        export_window.configure(bg=self.theme.colors['bg_primary'])
+        export_window.transient(self.root)
+        export_window.grab_set()
+        
+        # Title
+        title_frame = self.theme.create_card_frame(export_window)
+        title_frame.pack(fill='x', padx=20, pady=(20, 10))
+        
+        title_label = tk.Label(
+            title_frame,
+            text="📤 Selecciona el Format d'Exportació",
+            font=self.theme.fonts['heading_medium'],
+            fg=self.theme.colors['text_primary'],
+            bg=self.theme.colors['bg_secondary']
+        )
+        title_label.pack(pady=15)
+        
+        # Format selection frame
+        format_frame = self.theme.create_card_frame(export_window)
+        format_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        # Export options
+        export_var = tk.StringVar(value="csv")
+        
+        formats = [
+            ("csv", "📊 CSV (Comma Separated Values)", "Ideal per a Excel i altres aplicacions de full de càlcul"),
+            ("txt", "📝 TXT (Text Pla)", "Text simple amb totes les dades extretes"),
+            ("pdf", "📄 PDF (Informe)", "Informe professional amb format i estructura"),
+            ("json", "⚙️ JSON (Dades Estructurades)", "Format tècnic per a desenvolupadors")
+        ]
+        
+        for value, title, description in formats:
+            frame = tk.Frame(format_frame, bg=self.theme.colors['bg_secondary'])
+            frame.pack(fill='x', pady=5, padx=10)
+            
+            rb = tk.Radiobutton(
+                frame,
+                text=title,
+                variable=export_var,
+                value=value,
+                font=self.theme.fonts['body_medium'],
+                bg=self.theme.colors['bg_secondary'],
+                fg=self.theme.colors['text_primary'],
+                selectcolor=self.theme.colors['primary_blue']
+            )
+            rb.pack(anchor='w')
+            
+            desc_label = tk.Label(
+                frame,
+                text=description,
+                font=self.theme.fonts['body_small'],
+                fg=self.theme.colors['text_secondary'],
+                bg=self.theme.colors['bg_secondary']
+            )
+            desc_label.pack(anchor='w', padx=20)
+        
+        # Buttons
+        button_frame = tk.Frame(export_window, bg=self.theme.colors['bg_primary'])
+        button_frame.pack(fill='x', padx=20, pady=20)
+        
+        def do_export():
+            format_type = export_var.get()
+            export_window.destroy()
+            self._export_data(format_type)
+        
+        export_btn = self.theme.create_modern_button(
+            button_frame,
+            text="📤 Exportar",
+            command=do_export,
+            style='primary'
+        )
+        export_btn.pack(side='right', padx=(10, 0))
+        
+        cancel_btn = self.theme.create_modern_button(
+            button_frame,
+            text="❌ Cancel·lar",
+            command=export_window.destroy,
+            style='secondary'
+        )
+        cancel_btn.pack(side='right')
+    
+    def _export_data(self, format_type):
+        """Export data in the specified format"""
+        try:
+            if format_type == "csv":
+                self._export_to_csv()
+            elif format_type == "txt":
+                self._export_to_txt()
+            elif format_type == "pdf":
+                self._export_to_pdf()
+            elif format_type == "json":
+                self._export_to_json()
+            
+        except Exception as e:
+            messagebox.showerror("Error d'Exportació", f"Error exportant dades: {str(e)}")
+    
+    def _export_to_csv(self):
+        """Export to CSV format"""
         file_path = filedialog.asksaveasfilename(
-            title="Gurdar com a...",
+            title="Guardar com CSV",
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+        
+        if not file_path:
+            return
+        
+        try:
+            import csv
+            with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                
+                # Write header
+                writer.writerow(['Tipus', 'Núm Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança'])
+                
+                if self.structured_data:
+                    structured = self.structured_data.get('structured_data', {})
+                    
+                    # Write parts list
+                    for part in structured.get('parts_list', []):
+                        writer.writerow([
+                            'Peça',
+                            part.get('element_number', ''),
+                            part.get('description', ''),
+                            part.get('value', ''),
+                            part.get('tolerance', ''),
+                            f"{part.get('confidence', 0.0):.2f}"
+                        ])
+                    
+                    # Write dimensions
+                    for dim in structured.get('dimensions', []):
+                        writer.writerow([
+                            'Dimensió',
+                            dim.get('element_number', ''),
+                            dim.get('description', ''),
+                            dim.get('value', ''),
+                            dim.get('tolerance', ''),
+                            f"{dim.get('confidence', 0.0):.2f}"
+                        ])
+                    
+                    # Write annotations
+                    for ann in structured.get('annotations', []):
+                        writer.writerow([
+                            'Anotació',
+                            ann.get('element_number', ''),
+                            ann.get('description', ''),
+                            ann.get('value', ''),
+                            ann.get('tolerance', ''),
+                            f"{ann.get('confidence', 0.0):.2f}"
+                        ])
+            
+            messagebox.showinfo("Exportació Completada", f"Dades exportades correctament a:\n{file_path}")
+            self.update_status("Dades exportades a CSV correctament")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error exportant a CSV: {str(e)}")
+    
+    def _export_to_txt(self):
+        """Export to plain text format"""
+        file_path = filedialog.asksaveasfilename(
+            title="Guardar com TXT",
             defaultextension=".txt",
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
         )
         
-        if file_path:
-            try:
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    for block in self.text_blocks:
-                        f.write(f"Pagina {block.page_num + 1}: {block.text}\n\n")
-
-                messagebox.showinfo("Èxit", f"Text exportat a {file_path}")
-            except Exception as e:
-                messagebox.showerror("Error", f"Error al exportar text: {str(e)}")
-                
-    def export_json(self):
-        """Export text blocks data as JSON"""
-        if not self.text_blocks:
-            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
+        if not file_path:
             return
-            
-        file_path = filedialog.asksaveasfilename(
-            title="Gurdar com a...",
-            defaultextension=".json",
-            filetypes=[("arxius JSON", "*.json"), ("Tots els fitxers", "*.*")]
-        )
         
-        if file_path:
-            try:
-                data = {
-                    "document": os.path.basename(self.current_pdf_path),
-                    "total_pages": len(self.pdf_document),
-                    "text_blocks": [
-                        {
-                            "page": block.page_num + 1,
-                            "text": block.text,
-                            "confidence": block.confidence,
-                            "bbox": block.bbox
-                        }
-                        for block in self.text_blocks
-                    ]
-                }
+        try:
+            with open(file_path, 'w', encoding='utf-8') as txtfile:
+                txtfile.write("=== DADES EXTRETES DEL DOCUMENT OCR ===\n\n")
                 
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    json.dump(data, f, indent=2, ensure_ascii=False)
+                # Write extracted text
+                if self.text_blocks:
+                    txtfile.write("TEXT EXTRET:\n")
+                    txtfile.write("-" * 50 + "\n")
+                    full_text = "\n".join([block.text for block in self.text_blocks])
+                    txtfile.write(full_text + "\n\n")
+                
+                # Write structured data
+                if self.structured_data:
+                    structured = self.structured_data.get('structured_data', {})
                     
-                messagebox.showinfo("Èxit", f"Dades JSON exportades a {file_path}")
-            except Exception as e:
-                messagebox.showerror("Error", f"No s'ha pogut exportar el JSON: {str(e)}")
-    
-    def export_csv(self):
-        """Export text blocks data as CSV"""
-        if not self.text_blocks:
-            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
-            return
+                    if structured.get('parts_list'):
+                        txtfile.write("LLISTA DE PECES DETECTADES:\n")
+                        txtfile.write("-" * 50 + "\n")
+                        for part in structured['parts_list']:
+                            txtfile.write(f"Element: {part.get('element_number', 'N/A')}\n")
+                            txtfile.write(f"Descripció: {part.get('description', 'N/A')}\n")
+                            txtfile.write(f"Valor: {part.get('value', 'N/A')}\n")
+                            txtfile.write(f"Tolerància: {part.get('tolerance', 'N/A')}\n")
+                            txtfile.write(f"Confiança: {part.get('confidence', 0.0):.2f}\n\n")
             
-        file_path = filedialog.asksaveasfilename(
-            title="Guarda CSV com a...",
-            defaultextension=".csv",
-            filetypes=[("arxius CSV", "*.csv"), ("Tots els fitxers", "*.*")]
-        )
-        
-        if file_path:
-            try:
-                with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
-                    writer = csv.writer(csvfile)
-                    
-                    # Write header
-                    writer.writerow([
-                        'Page', 'Text Content', 'Confidence', 
-                        'X1', 'Y1', 'X2', 'Y2', 
-                        'Width', 'Height', 'Character Count', 'Word Count'
-                    ])
-                    
-                    # Write data rows
-                    for block in self.text_blocks:
-                        x1, y1, x2, y2 = block.bbox
-                        width = abs(x2 - x1)
-                        height = abs(y2 - y1)
-                        char_count = len(block.text)
-                        word_count = len(block.text.split())
-                        
-                        writer.writerow([
-                            block.page_num + 1,
-                            block.text.replace('\n', ' ').replace('\r', ' '),  # Clean newlines for CSV
-                            f"{block.confidence:.3f}",
-                            f"{x1:.2f}",
-                            f"{y1:.2f}",
-                            f"{x2:.2f}",
-                            f"{y2:.2f}",
-                            f"{width:.2f}",
-                            f"{height:.2f}",
-                            char_count,
-                            word_count
-                        ])
-                        
-                messagebox.showinfo("Èxit", f"Dades CSV exportades a {file_path}")
-            except Exception as e:
-                messagebox.showerror("Error", f"No s'ha pogut exportar el CSV: {str(e)}")
-    
-    def export_pdf_report(self):
-        """Export comprehensive PDF report with tables and statistics"""
-        if not self.text_blocks:
-            messagebox.showwarning("Avís", "No hi ha dades de text per exportar")
-            return
+            messagebox.showinfo("Exportació Completada", f"Dades exportades correctament a:\n{file_path}")
+            self.update_status("Dades exportades a TXT correctament")
             
+        except Exception as e:
+            messagebox.showerror("Error", f"Error exportant a TXT: {str(e)}")
+    
+    def _export_to_pdf(self):
+        """Export to PDF report format"""
         file_path = filedialog.asksaveasfilename(
-            title="Guarda el informe PDF com a...",
+            title="Guardar com PDF",
             defaultextension=".pdf",
-            filetypes=[("arxius PDF", "*.pdf"), ("Tots els fitxers", "*.*")]
+            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
         )
         
-        if file_path:
-            try:
-                # Create PDF document
-                doc = SimpleDocTemplate(file_path, pagesize=A4)
-                story = []
-                styles = getSampleStyleSheet()
+        if not file_path:
+            return
+        
+        try:
+            from reportlab.lib.pagesizes import A4
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib import colors
+            from reportlab.lib.units import inch
+            
+            doc = SimpleDocTemplate(file_path, pagesize=A4)
+            styles = getSampleStyleSheet()
+            story = []
+            
+            # Title
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=24,
+                spaceAfter=30,
+                alignment=1  # Center
+            )
+            story.append(Paragraph("Informe OCR - Plànol Tècnic", title_style))
+            story.append(Spacer(1, 20))
+            
+            # Summary
+            if self.structured_data:
+                structured = self.structured_data.get('structured_data', {})
+                parts_count = len(structured.get('parts_list', []))
+                dims_count = len(structured.get('dimensions', []))
+                anns_count = len(structured.get('annotations', []))
                 
-                # Custom styles
-                title_style = ParagraphStyle(
-                    'CustomTitle',
-                    parent=styles['Heading1'],
-                    fontSize=24,
-                    spaceAfter=30,
-                    textColor=colors.darkblue
-                )
-                
-                heading_style = ParagraphStyle(
-                    'CustomHeading',
-                    parent=styles['Heading2'],
-                    fontSize=16,
-                    spaceBefore=20,
-                    spaceAfter=10,
-                    textColor=colors.darkgreen
-                )
-                
-                # Title
-                story.append(Paragraph("OCR Analysis Report", title_style))
-                story.append(Spacer(1, 12))
-                
-                # Document information
-                doc_info = [
-                    ["Document:", os.path.basename(self.current_pdf_path) if self.current_pdf_path else "N/A"],
-                    ["Processing Date:", "2025-01-17"],  # You can make this dynamic
-                    ["Total Pages:", str(len(self.pdf_document)) if self.pdf_document else "N/A"],
-                    ["Total Text Blocks:", str(len(self.text_blocks))],
-                    ["Total Characters:", f"{sum(len(block.text) for block in self.text_blocks):,}"],
-                    ["Total Words:", f"{sum(len(block.text.split()) for block in self.text_blocks):,}"]
-                ]
-                
-                info_table = Table(doc_info, colWidths=[2*inch, 3*inch])
-                info_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-                    ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                    ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-                    ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 10),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ]))
-                
-                story.append(info_table)
+                summary_text = f"""
+                <b>Resum de l'Anàlisi:</b><br/>
+                • Elements de llista de peces: {parts_count}<br/>
+                • Dimensions detectades: {dims_count}<br/>
+                • Anotacions trobades: {anns_count}<br/>
+                """
+                story.append(Paragraph(summary_text, styles['Normal']))
                 story.append(Spacer(1, 20))
                 
-                # Statistics by confidence
-                story.append(Paragraph("Estadístiques de confiança", heading_style))
-
-                high_conf = sum(1 for b in self.text_blocks if b.confidence > 0.9)
-                med_conf = sum(1 for b in self.text_blocks if 0.7 <= b.confidence <= 0.9)
-                low_conf = sum(1 for b in self.text_blocks if b.confidence < 0.7)
-                avg_conf = sum(b.confidence for b in self.text_blocks) / len(self.text_blocks) if self.text_blocks else 0
-                
-                conf_data = [
-                    ["Confidence Level", "Count", "Percentage"],
-                    ["High (>90%)", str(high_conf), f"{(high_conf/len(self.text_blocks)*100):.1f}%"],
-                    ["Medium (70-90%)", str(med_conf), f"{(med_conf/len(self.text_blocks)*100):.1f}%"],
-                    ["Low (<70%)", str(low_conf), f"{(low_conf/len(self.text_blocks)*100):.1f}%"],
-                    ["Average Confidence", f"{avg_conf:.2%}", ""]
-                ]
-                
-                conf_table = Table(conf_data, colWidths=[2*inch, 1*inch, 1*inch])
-                conf_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 10),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                    # Alternate row colors
-                    ('BACKGROUND', (0, 1), (-1, 1), colors.lightgreen),
-                    ('BACKGROUND', (0, 3), (-1, 3), colors.lightgreen),
-                ]))
-                
-                story.append(conf_table)
-                story.append(Spacer(1, 20))
-                
-                # Detailed text blocks table
-                story.append(Paragraph("Blocs de text detallat", heading_style))
-                
-                # Prepare data for text blocks table
-                table_data = [["Page", "Text Preview", "Confidence", "Position (X,Y)", "Size (W×H)"]]
-                
-                for block in self.text_blocks[:50]:  # Limit to first 50 blocks to avoid huge PDFs
-                    x1, y1, x2, y2 = block.bbox
-                    width = abs(x2 - x1)
-                    height = abs(y2 - y1)
+                # Data table
+                if parts_count > 0:
+                    story.append(Paragraph("Llista de Peces Detectades", styles['Heading2']))
                     
-                    # Truncate text for table
-                    text_preview = block.text[:40] + "..." if len(block.text) > 40 else block.text
-                    text_preview = text_preview.replace('\n', ' ')
+                    table_data = [['Núm Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança']]
+                    for part in structured.get('parts_list', []):
+                        table_data.append([
+                            part.get('element_number', ''),
+                            part.get('description', ''),
+                            part.get('value', ''),
+                            part.get('tolerance', ''),
+                            f"{part.get('confidence', 0.0):.2f}"
+                        ])
                     
-                    table_data.append([
-                        str(block.page_num + 1),
-                        text_preview,
-                        f"{block.confidence:.2f}",
-                        f"({x1:.0f},{y1:.0f})",
-                        f"{width:.0f}×{height:.0f}"
-                    ])
-                
-                # Create table with appropriate column widths
-                blocks_table = Table(table_data, colWidths=[0.6*inch, 2.8*inch, 0.8*inch, 1*inch, 0.8*inch])
-                blocks_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                    ('ALIGN', (2, 0), (2, -1), 'CENTER'),  # Confidence column
-                    ('ALIGN', (3, 0), (3, -1), 'CENTER'),  # Position column
-                    ('ALIGN', (4, 0), (4, -1), 'CENTER'),  # Size column
-                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                    ('FONTSIZE', (0, 0), (-1, -1), 8),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                ]))
-                
-                # Add alternating row colors
-                for i in range(1, len(table_data)):
-                    if i % 2 == 0:
-                        blocks_table.setStyle(TableStyle([
-                            ('BACKGROUND', (0, i), (-1, i), colors.lightblue)
-                        ]))
-                
-                story.append(blocks_table)
-                
-                # Add note if there are more blocks
-                if len(self.text_blocks) > 50:
-                    story.append(Spacer(1, 12))
-                    story.append(Paragraph(
-                        f"<i>Nota: Mostrant els primers 50 dels {len(self.text_blocks)} blocs de text totals. "
-                        f"Exporta CSV per a dades completes.</i>",
-                        styles['Normal']
-                    ))
-                
-                # Summary statistics by page
-                if self.pdf_document and len(self.pdf_document) > 1:
-                    story.append(Spacer(1, 20))
-                    story.append(Paragraph("Estadístiques per pàgina", heading_style))
-
-                    page_stats = []
-                    page_stats.append(["Page", "Text Blocks", "Characters", "Words", "Avg Confidence"])
-                    
-                    for page_num in range(len(self.pdf_document)):
-                        page_blocks = [b for b in self.text_blocks if b.page_num == page_num]
-                        if page_blocks:
-                            total_chars = sum(len(b.text) for b in page_blocks)
-                            total_words = sum(len(b.text.split()) for b in page_blocks)
-                            avg_conf = sum(b.confidence for b in page_blocks) / len(page_blocks)
-                            
-                            page_stats.append([
-                                str(page_num + 1),
-                                str(len(page_blocks)),
-                                str(total_chars),
-                                str(total_words),
-                                f"{avg_conf:.2f}"
-                            ])
-                    
-                    page_table = Table(page_stats, colWidths=[1*inch, 1*inch, 1*inch, 1*inch, 1.2*inch])
-                    page_table.setStyle(TableStyle([
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.darkorange),
+                    table = Table(table_data)
+                    table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                        ('FONTSIZE', (0, 0), (-1, -1), 9),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                        ('FONTSIZE', (0, 0), (-1, 0), 14),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black)
                     ]))
-                    
-                    story.append(page_table)
-                
-                # Build PDF
-                doc.build(story)
-                messagebox.showinfo("Èxit", f"Informe PDF exportat a {file_path}")
-
-            except Exception as e:
-                messagebox.showerror("Error", f"No s'ha pogut exportar l'informe PDF: {str(e)}")
-                print(f"Detalls de l'error d'exportació PDF: {e}")  # Per a depuració
+                    story.append(table)
+            
+            doc.build(story)
+            
+            messagebox.showinfo("Exportació Completada", f"Informe PDF creat correctament a:\n{file_path}")
+            self.update_status("Informe PDF generat correctament")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error generant PDF: {str(e)}")
+    
+    def _export_to_json(self):
+        """Export to JSON format"""
+        file_path = filedialog.asksaveasfilename(
+            title="Guardar com JSON",
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
+        )
+        
+        if not file_path:
+            return
+        
+        try:
+            export_data = {
+                "document_info": {
+                    "file_path": self.current_pdf_path,
+                    "processed_at": str(tk.datetime.datetime.now()),
+                    "total_text_blocks": len(self.text_blocks) if self.text_blocks else 0
+                },
+                "extracted_text": [block.text for block in self.text_blocks] if self.text_blocks else [],
+                "structured_data": self.structured_data if self.structured_data else {}
+            }
+            
+            with open(file_path, 'w', encoding='utf-8') as jsonfile:
+                json.dump(export_data, jsonfile, indent=2, ensure_ascii=False)
+            
+            messagebox.showinfo("Exportació Completada", f"Dades JSON exportades correctament a:\n{file_path}")
+            self.update_status("Dades exportades a JSON correctament")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error exportant a JSON: {str(e)}")
     
     def load_recent_files(self):
         """Load recent files from settings"""
@@ -1457,18 +1903,10 @@ class OCRViewerApp:
         self.update_recent_files_menu()
     
     def update_recent_files_menu(self):
-        """Update recent files menu"""
-        self.recent_files_menu.delete(0, tk.END)
-        
-        if not self.recent_files:
-            self.recent_files_menu.add_command(label="(No hi ha fitxers recents)", state=tk.DISABLED)
-        else:
-            for i, file_path in enumerate(self.recent_files):
-                filename = os.path.basename(file_path)
-                self.recent_files_menu.add_command(
-                    label=f"{i+1}. {filename}",
-                    command=lambda fp=file_path: self.load_pdf(fp)
-                )
+        """Update recent files menu - modern UI doesn't use menu"""
+        # In modern UI, we don't have a menu bar, so this is a no-op
+        # Recent files functionality could be implemented differently if needed
+        pass
     
     def batch_process(self):
         """Process multiple PDF files in batch"""
@@ -1769,24 +2207,240 @@ class OCRViewerApp:
         messagebox.showinfo("About", about_text)
     
     def show_progress(self, text="Processing..."):
-        """Show progress bar with text"""
-        self.progress_bar.pack(side=tk.TOP, pady=(4, 0))
-        self.progress_label.config(text=text)
-        self.progress_label.pack(side=tk.TOP, pady=(2, 0))
-        self.progress_var.set(0)
+        """Show progress in modern UI status bar"""
+        if hasattr(self, 'progress_var'):
+            self.progress_var.set(f"⏳ {text}")
+        self.update_status(text)
         self.root.update_idletasks()
     
     def update_progress(self, value, text=None):
-        """Update progress bar value and optionally text"""
-        self.progress_var.set(value)
+        """Update progress in modern UI"""
+        if text and hasattr(self, 'progress_var'):
+            self.progress_var.set(f"⏳ {text}")
         if text:
-            self.progress_label.config(text=text)
+            self.update_status(text)
         self.root.update_idletasks()
     
     def hide_progress(self):
-        """Hide progress bar"""
-        self.progress_bar.pack_forget()
-        self.progress_label.pack_forget()
+        """Hide progress in modern UI"""
+        if hasattr(self, 'progress_var'):
+            self.progress_var.set("")
+        self.update_status("✅ Llest per processar documents")
+
+    def export_text(self):
+        """Export text using structured export system"""
+        if not self.text_blocks:
+            messagebox.showwarning("Avís", "No hi ha text per exportar. Si us plau, processa primer el document.")
+            return
+        
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
+            title="Guardar com a text"
+        )
+        
+        if file_path:
+            try:
+                full_text = "\n".join([block.text for block in self.text_blocks])
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(full_text)
+                messagebox.showinfo("Èxit", f"Text exportat correctament a:\n{file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en exportar el text:\n{str(e)}")
+
+    def export_json(self):
+        """Export JSON using structured export system"""
+        if not self.text_blocks:
+            messagebox.showwarning("Avís", "No hi ha dades per exportar. Si us plau, processa primer el document.")
+            return
+        
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            title="Guardar com a JSON"
+        )
+        
+        if file_path:
+            try:
+                data = {
+                    "document_info": {
+                        "source_file": self.current_pdf_path,
+                        "total_pages": len(set(block.page_num for block in self.text_blocks)) if self.text_blocks else 0,
+                        "total_blocks": len(self.text_blocks),
+                        "extraction_date": str(datetime.now())
+                    },
+                    "text_blocks": [
+                        {
+                            "text": block.text,
+                            "confidence": block.confidence,
+                            "bbox": block.bbox,
+                            "page_num": block.page_num
+                        }
+                        for block in self.text_blocks
+                    ]
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+                
+                messagebox.showinfo("Èxit", f"Dades JSON exportades correctament a:\n{file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en exportar JSON:\n{str(e)}")
+
+    def export_csv(self):
+        """Export CSV using structured export system"""
+        if not self.text_blocks:
+            messagebox.showwarning("Avís", "No hi ha dades per exportar. Si us plau, processa primer el document.")
+            return
+        
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            title="Guardar com a CSV"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(['Pàgina', 'Text', 'Confiança', 'X1', 'Y1', 'X2', 'Y2'])
+                    
+                    for block in self.text_blocks:
+                        writer.writerow([
+                            block.page_num,
+                            block.text.replace('\n', ' '),
+                            f"{block.confidence:.3f}",
+                            block.bbox[0],
+                            block.bbox[1],
+                            block.bbox[2],
+                            block.bbox[3]
+                        ])
+                
+                messagebox.showinfo("Èxit", f"Dades CSV exportades correctament a:\n{file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en exportar CSV:\n{str(e)}")
+
+    def export_pdf_report(self):
+        """Export PDF report using structured export system"""
+        if not self.text_blocks:
+            messagebox.showwarning("Avís", "No hi ha dades per exportar. Si us plau, processa primer el document.")
+            return
+        
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
+            title="Guardar informe PDF"
+        )
+        
+        if file_path:
+            try:
+                # Use the existing PDF export functionality
+                self._export_to_pdf_file(file_path)
+                messagebox.showinfo("Èxit", f"Informe PDF exportat correctament a:\n{file_path}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en exportar informe PDF:\n{str(e)}")
+
+    def _export_to_pdf_file(self, file_path):
+        """Helper method to export PDF report"""
+        doc = SimpleDocTemplate(file_path, pagesize=A4)
+        styles = getSampleStyleSheet()
+        story = []
+        
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            spaceAfter=30,
+        )
+        story.append(Paragraph("📄 Informe d'Anàlisi OCR", title_style))
+        story.append(Spacer(1, 12))
+        
+        # Document info
+        if self.current_pdf_path:
+            story.append(Paragraph(f"<b>Document:</b> {os.path.basename(self.current_pdf_path)}", styles['Normal']))
+            story.append(Spacer(1, 6))
+        
+        # Statistics
+        total_words = sum(len(block.text.split()) for block in self.text_blocks)
+        avg_confidence = sum(block.confidence for block in self.text_blocks) / len(self.text_blocks) if self.text_blocks else 0
+        
+        story.append(Paragraph(f"<b>Total de blocs:</b> {len(self.text_blocks)}", styles['Normal']))
+        story.append(Paragraph(f"<b>Total de paraules:</b> {total_words}", styles['Normal']))
+        story.append(Paragraph(f"<b>Confiança mitjana:</b> {avg_confidence:.1%}", styles['Normal']))
+        story.append(Spacer(1, 20))
+        
+        # Text content
+        story.append(Paragraph("Contingut Extret", styles['Heading2']))
+        story.append(Spacer(1, 12))
+        
+        for i, block in enumerate(self.text_blocks[:20]):  # Limit to first 20 blocks
+            story.append(Paragraph(f"<b>Bloc {i+1}:</b> {block.text[:200]}{'...' if len(block.text) > 200 else ''}", styles['Normal']))
+            story.append(Spacer(1, 6))
+        
+        doc.build(story)
+
+    def validate_structured_data(self):
+        """Open data validation editor"""
+        if not self.structured_data:
+            messagebox.showwarning("Avís", "No hi ha dades estructurades per validar. Si us plau, processa primer el document.")
+            return
+        
+        try:
+            from data_validation_editor import DataValidationEditor
+            editor = DataValidationEditor(self.root, self.structured_data)
+            # Wait for the editor to complete
+            self.root.wait_window(editor.window)
+            # Update our data with the validated results
+            if editor.validated_data:
+                self.structured_data = editor.validated_data
+                self.update_treeview()
+                messagebox.showinfo("Èxit", "Dades validades i actualitzades correctament!")
+        except ImportError:
+            messagebox.showerror("Error", "El mòdul de validació de dades no està disponible.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error en obrir l'editor de validació:\n{str(e)}")
+
+    def check_google_auth(self):
+        """Check Google Cloud authentication status"""
+        try:
+            # Try to initialize the client
+            client_options = ClientOptions(api_endpoint=f"eu-documentai.googleapis.com")
+            client = documentai.DocumentProcessorServiceClient(client_options=client_options)
+            
+            # Try to list processors to verify auth
+            parent = f"projects/{self.project_id}/locations/{self.location}"
+            request = documentai.ListProcessorsRequest(parent=parent)
+            response = client.list_processors(request=request)
+            
+            processor_count = len(list(response))
+            
+            auth_info = f"""✅ Autenticació Google Cloud verificada correctament!
+
+📊 Informació del projecte:
+• Project ID: {self.project_id}
+• Ubicació: {self.location}
+• Processadors disponibles: {processor_count}
+
+🔑 Credencials:
+• Fitxer: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', 'No definit')}
+
+🌐 Endpoint API: eu-documentai.googleapis.com"""
+            
+            messagebox.showinfo("Estat d'Autenticació", auth_info)
+            
+        except Exception as e:
+            error_info = f"""❌ Error d'autenticació Google Cloud:
+
+{str(e)}
+
+💡 Possibles solucions:
+1. Executar setup_google_auth.py
+2. Verificar el fitxer de credencials
+3. Comprovar els permisos del projecte
+4. Verificar la connexió a Internet"""
+            
+            messagebox.showerror("Error d'Autenticació", error_info)
 
 def main():
     """Main application entry point"""
