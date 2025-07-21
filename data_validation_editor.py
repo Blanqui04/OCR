@@ -6,6 +6,20 @@ Provides a user interface for validating and editing extracted OCR data
 import tkinter as tk
 from tkinter import ttk, messagebox
 import json
+from dataclasses import asdict, is_dataclass
+
+class CustomJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder to handle dataclass objects"""
+    def default(self, obj):
+        if is_dataclass(obj):
+            return asdict(obj)
+        elif hasattr(obj, '__dict__'):
+            return obj.__dict__
+        elif isinstance(obj, (list, tuple)):
+            return [self.default(item) for item in obj]
+        elif isinstance(obj, dict):
+            return {key: self.default(value) for key, value in obj.items()}
+        return super().default(obj)
 
 class DataValidationEditor:
     """
@@ -136,17 +150,91 @@ class DataValidationEditor:
         """Load the structured data into the editor"""
         try:
             if self.original_data:
-                # Convert data to JSON format for editing
-                json_data = json.dumps(self.original_data, indent=2, ensure_ascii=False)
+                # Convert data to JSON format for editing using custom encoder
+                json_data = json.dumps(
+                    self.original_data, 
+                    indent=2, 
+                    ensure_ascii=False,
+                    cls=CustomJSONEncoder
+                )
                 self.text_widget.delete(1.0, tk.END)
                 self.text_widget.insert(1.0, json_data)
-                self.status_label.config(text=f"✅ Carregades {len(self.original_data)} entrades de dades")
+                
+                # Count data entries
+                data_count = 0
+                if isinstance(self.original_data, dict):
+                    data_count = sum(len(v) if isinstance(v, list) else 1 for v in self.original_data.values())
+                elif isinstance(self.original_data, list):
+                    data_count = len(self.original_data)
+                else:
+                    data_count = 1
+                    
+                self.status_label.config(text=f"✅ Carregades {data_count} entrades de dades")
             else:
                 self.text_widget.insert(1.0, "# No hi ha dades estructurades per editar\n")
                 self.status_label.config(text="⚠️ No hi ha dades per validar")
         except Exception as e:
-            self.status_label.config(text=f"❌ Error en carregar les dades: {str(e)}")
-            messagebox.showerror("Error", f"No s'han pogut carregar les dades:\n{str(e)}")
+            error_msg = str(e)
+            self.status_label.config(text=f"❌ Error en carregar les dades: {error_msg}")
+            
+            # Try to show a more user-friendly representation
+            try:
+                if self.original_data:
+                    # If JSON fails, create a readable text representation
+                    readable_data = self._create_readable_representation(self.original_data)
+                    self.text_widget.delete(1.0, tk.END)
+                    self.text_widget.insert(1.0, readable_data)
+                    self.status_label.config(text="⚠️ Dades carregades en format text (no JSON)")
+                else:
+                    messagebox.showerror("Error", f"No s'han pogut carregar les dades:\n{error_msg}")
+            except Exception as e2:
+                messagebox.showerror("Error", f"No s'han pogut carregar les dades:\n{error_msg}\n\nError secundari: {str(e2)}")
+    
+    def _create_readable_representation(self, data):
+        """Create a human-readable representation of the data"""
+        try:
+            result = "# DADES ESTRUCTURADES EXTRETES\n"
+            result += "# Format: Text llegible (editar amb cura)\n\n"
+            
+            if isinstance(data, dict):
+                for key, value in data.items():
+                    result += f"=== {key.upper()} ===\n"
+                    if isinstance(value, list):
+                        for i, item in enumerate(value, 1):
+                            result += f"\n{i}. {self._item_to_string(item)}\n"
+                    else:
+                        result += f"{self._item_to_string(value)}\n"
+                    result += "\n"
+            elif isinstance(data, list):
+                result += "=== ELEMENTS ===\n"
+                for i, item in enumerate(data, 1):
+                    result += f"\n{i}. {self._item_to_string(item)}\n"
+            else:
+                result += f"Dada: {self._item_to_string(data)}\n"
+                
+            return result
+        except Exception as e:
+            return f"# Error en crear representació llegible: {str(e)}\n# Dades originals: {str(data)[:500]}..."
+    
+    def _item_to_string(self, item):
+        """Convert an item to a readable string"""
+        try:
+            if hasattr(item, '__dict__'):
+                # For custom objects with attributes
+                attrs = []
+                for key, value in item.__dict__.items():
+                    attrs.append(f"{key}: {value}")
+                return f"({', '.join(attrs)})"
+            elif is_dataclass(item):
+                # For dataclass objects
+                attrs = []
+                for key, value in asdict(item).items():
+                    attrs.append(f"{key}: {value}")
+                return f"({', '.join(attrs)})"
+            else:
+                return str(item)
+        except Exception:
+            return str(item)
     
     def reset_data(self):
         """Reset data to original values"""

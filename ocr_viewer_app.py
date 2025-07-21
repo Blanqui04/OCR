@@ -290,9 +290,185 @@ class OCRViewerApp:
         self.notebook.pack(fill='both', expand=True)
         
         # Setup tabs with modern styling
+        self.setup_pdf_viewer_tab()
         self.setup_text_tab()
         self.setup_structured_tab()
         self.setup_validation_tab()
+    
+    def setup_pdf_viewer_tab(self):
+        """Tab de visualitzador de PDF amb marcatge de text"""
+        pdf_frame = self.theme.create_card_frame(self.notebook, padding=0)
+        
+        # Controls frame for PDF navigation and tools
+        controls_frame = tk.Frame(pdf_frame, bg=self.theme.colors['bg_secondary'])
+        controls_frame.pack(fill='x', padx=20, pady=(20, 10))
+        
+        # Navigation controls
+        nav_frame = tk.Frame(controls_frame, bg=self.theme.colors['bg_secondary'])
+        nav_frame.pack(side='left')
+        
+        # Previous page button
+        self.prev_page_btn = self.theme.create_modern_button(
+            nav_frame,
+            text="◀ Anterior",
+            command=self.prev_page,
+            style='secondary',
+            state='disabled'
+        )
+        self.prev_page_btn.pack(side='left', padx=(0, 5))
+        
+        # Page info
+        self.page_info_label = tk.Label(
+            nav_frame,
+            text="Pàgina: - / -",
+            font=self.theme.fonts['body_medium'],
+            bg=self.theme.colors['bg_secondary'],
+            fg=self.theme.colors['text_primary']
+        )
+        self.page_info_label.pack(side='left', padx=10)
+        
+        # Next page button
+        self.next_page_btn = self.theme.create_modern_button(
+            nav_frame,
+            text="Següent ▶",
+            command=self.next_page,
+            style='secondary',
+            state='disabled'
+        )
+        self.next_page_btn.pack(side='left', padx=(5, 0))
+        
+        # Zoom controls
+        zoom_frame = tk.Frame(controls_frame, bg=self.theme.colors['bg_secondary'])
+        zoom_frame.pack(side='right')
+        
+        # Zoom out button
+        self.zoom_out_btn = self.theme.create_modern_button(
+            zoom_frame,
+            text="🔍-",
+            command=self.zoom_out,
+            style='secondary',
+            state='disabled'
+        )
+        self.zoom_out_btn.pack(side='left', padx=(0, 5))
+        
+        # Zoom level label
+        self.zoom_label = tk.Label(
+            zoom_frame,
+            text="100%",
+            font=self.theme.fonts['body_medium'],
+            bg=self.theme.colors['bg_secondary'],
+            fg=self.theme.colors['text_primary']
+        )
+        self.zoom_label.pack(side='left', padx=5)
+        
+        # Zoom in button
+        self.zoom_in_btn = self.theme.create_modern_button(
+            zoom_frame,
+            text="🔍+",
+            command=self.zoom_in,
+            style='secondary',
+            state='disabled'
+        )
+        self.zoom_in_btn.pack(side='left', padx=(5, 0))
+        
+        # Fit to window button
+        self.fit_window_btn = self.theme.create_modern_button(
+            zoom_frame,
+            text="📐 Ajustar",
+            command=self.fit_to_window,
+            style='secondary',
+            state='disabled'
+        )
+        self.fit_window_btn.pack(side='left', padx=(10, 0))
+        
+        # View options frame
+        options_frame = tk.Frame(controls_frame, bg=self.theme.colors['bg_secondary'])
+        options_frame.pack()
+        
+        # Toggle text overlays button
+        self.toggle_overlays_btn = self.theme.create_modern_button(
+            options_frame,
+            text="👁 Marques ON",
+            command=self.toggle_text_overlays,
+            style='primary',
+            state='disabled'
+        )
+        self.toggle_overlays_btn.pack(side='left', padx=5)
+        
+        # Toggle confidence heatmap
+        self.heatmap_btn = self.theme.create_modern_button(
+            options_frame,
+            text="🌡 Mapa Calor",
+            command=self.toggle_heatmap,
+            style='secondary',
+            state='disabled'
+        )
+        self.heatmap_btn.pack(side='left', padx=5)
+        
+        # Toggle reading order
+        self.reading_order_btn = self.theme.create_modern_button(
+            options_frame,
+            text="🔢 Ordre",
+            command=self.toggle_reading_order,
+            style='secondary',
+            state='disabled'
+        )
+        self.reading_order_btn.pack(side='left', padx=5)
+        
+        # PDF viewer container
+        viewer_container = tk.Frame(pdf_frame, bg=self.theme.colors['bg_secondary'])
+        viewer_container.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        
+        # Create canvas with scrollbars for PDF viewing
+        self.pdf_canvas = tk.Canvas(
+            viewer_container,
+            bg='white',
+            cursor='crosshair',
+            highlightthickness=0,
+            relief='flat'
+        )
+        
+        # Scrollbars
+        v_scrollbar = ttk.Scrollbar(viewer_container, orient=tk.VERTICAL, command=self.pdf_canvas.yview)
+        h_scrollbar = ttk.Scrollbar(viewer_container, orient=tk.HORIZONTAL, command=self.pdf_canvas.xview)
+        
+        self.pdf_canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        
+        # Pack scrollbars and canvas
+        v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.pdf_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Bind mouse events for interaction
+        self.pdf_canvas.bind("<Button-1>", self.on_canvas_click)
+        self.pdf_canvas.bind("<Motion>", self.on_canvas_motion)
+        self.pdf_canvas.bind("<MouseWheel>", self.on_canvas_scroll)
+        self.pdf_canvas.bind("<ButtonPress-1>", self.on_canvas_press)
+        self.pdf_canvas.bind("<B1-Motion>", self.on_canvas_drag)
+        self.pdf_canvas.bind("<ButtonRelease-1>", self.on_canvas_release)
+        
+        # Status info for selected text block
+        self.block_info_frame = tk.Frame(pdf_frame, bg=self.theme.colors['bg_secondary'])
+        self.block_info_frame.pack(fill='x', padx=20, pady=(0, 20))
+        
+        self.block_info_label = tk.Label(
+            self.block_info_frame,
+            text="📝 Fes clic en un bloc de text per veure els detalls",
+            font=self.theme.fonts['body_small'],
+            bg=self.theme.colors['bg_secondary'],
+            fg=self.theme.colors['text_secondary'],
+            anchor='w'
+        )
+        self.block_info_label.pack(fill='x', padx=10, pady=5)
+        
+        # Initialize viewer state
+        self.pdf_image = None
+        self.show_text_overlays = True
+        self.drag_start_x = 0
+        self.drag_start_y = 0
+        self.is_dragging = False
+        
+        self.notebook.add(pdf_frame, text="📄 Visualitzador PDF")
     
     def setup_text_tab(self):
         """Tab de text amb scroll i estil modern"""
@@ -894,6 +1070,8 @@ class OCRViewerApp:
             self.current_pdf_path = file_path
             self.current_page = 0
             self.text_blocks = []
+            self.selected_block = None
+            self.zoom_factor = 1.0
             
             self.add_recent_file(file_path)
             
@@ -906,6 +1084,17 @@ class OCRViewerApp:
             # Enable process button
             if hasattr(self, 'process_button'):
                 self.process_button.config(state='normal')
+            
+            # Update PDF viewer controls
+            if hasattr(self, 'update_pdf_controls'):
+                self.update_pdf_controls()
+            
+            # Switch to PDF viewer tab
+            if hasattr(self, 'notebook'):
+                self.notebook.select(0)  # PDF viewer is the first tab
+            
+            # Display the first page
+            self.display_current_page()
             
             self.update_status(f"Carregat: {filename} ({page_count} pàgines)")
             
@@ -1351,6 +1540,10 @@ class OCRViewerApp:
             self.export_button.config(state='normal')
         if hasattr(self, 'validate_button'):
             self.validate_button.config(state='normal')
+        
+        # Update PDF viewer with text overlays
+        if hasattr(self, 'display_current_page'):
+            self.display_current_page()
         
         # Process structured data automatically for technical drawings
         self.process_structured_data()
@@ -2387,19 +2580,39 @@ class OCRViewerApp:
             return
         
         try:
+            self.update_status("Obrint editor de validació...")
             from data_validation_editor import DataValidationEditor
+            
+            # Create and show the editor
             editor = DataValidationEditor(self.root, self.structured_data)
+            
             # Wait for the editor to complete
             self.root.wait_window(editor.window)
+            
             # Update our data with the validated results
             if editor.validated_data:
                 self.structured_data = editor.validated_data
-                self.update_treeview()
+                # Update the treeview if the method exists
+                if hasattr(self, 'tree') and hasattr(self, '_populate_main_treeview'):
+                    try:
+                        self._populate_main_treeview(self.structured_data.get('structured_data', {}))
+                    except Exception as tree_error:
+                        print(f"Avís: No s'ha pogut actualitzar la vista: {tree_error}")
+                
+                self.update_status("Dades validades correctament")
                 messagebox.showinfo("Èxit", "Dades validades i actualitzades correctament!")
-        except ImportError:
-            messagebox.showerror("Error", "El mòdul de validació de dades no està disponible.")
+            else:
+                self.update_status("Validació cancel·lada")
+                
+        except ImportError as import_error:
+            error_msg = "El mòdul de validació de dades no està disponible."
+            self.update_status("Error: Mòdul de validació no disponible")
+            messagebox.showerror("Error", f"{error_msg}\n\nDetalls: {str(import_error)}")
         except Exception as e:
-            messagebox.showerror("Error", f"Error en obrir l'editor de validació:\n{str(e)}")
+            error_msg = f"Error en obrir l'editor de validació:\n{str(e)}"
+            self.update_status("Error en validació")
+            messagebox.showerror("Error", error_msg)
+            print(f"Error complet en validació: {e}")  # For debugging
 
     def check_google_auth(self):
         """Check Google Cloud authentication status"""
@@ -2441,6 +2654,418 @@ class OCRViewerApp:
 4. Verificar la connexió a Internet"""
             
             messagebox.showerror("Error d'Autenticació", error_info)
+
+    # PDF Viewer Methods
+    def update_pdf_controls(self):
+        """Update PDF viewer controls state"""
+        if self.pdf_document:
+            # Enable navigation buttons
+            self.prev_page_btn.config(state='normal' if self.current_page > 0 else 'disabled')
+            self.next_page_btn.config(state='normal' if self.current_page < len(self.pdf_document) - 1 else 'disabled')
+            
+            # Enable zoom and view controls
+            for btn in [self.zoom_in_btn, self.zoom_out_btn, self.fit_window_btn, 
+                       self.toggle_overlays_btn, self.heatmap_btn, self.reading_order_btn]:
+                btn.config(state='normal')
+            
+            # Update page info
+            total_pages = len(self.pdf_document)
+            self.page_info_label.config(text=f"Pàgina: {self.current_page + 1} / {total_pages}")
+            
+            # Update zoom info
+            self.zoom_label.config(text=f"{int(self.zoom_factor * 100)}%")
+            
+            # Display current page
+            self.display_current_page()
+        else:
+            # Disable all controls
+            for btn in [self.prev_page_btn, self.next_page_btn, self.zoom_in_btn, 
+                       self.zoom_out_btn, self.fit_window_btn, self.toggle_overlays_btn,
+                       self.heatmap_btn, self.reading_order_btn]:
+                btn.config(state='disabled')
+            
+            self.page_info_label.config(text="Pàgina: - / -")
+            self.zoom_label.config(text="-%")
+
+    def prev_page(self):
+        """Go to previous page"""
+        if self.pdf_document and self.current_page > 0:
+            self.current_page -= 1
+            self.update_pdf_controls()
+
+    def next_page(self):
+        """Go to next page"""
+        if self.pdf_document and self.current_page < len(self.pdf_document) - 1:
+            self.current_page += 1
+            self.update_pdf_controls()
+
+    def zoom_in(self):
+        """Zoom in on PDF"""
+        if self.zoom_factor < 3.0:  # Max zoom 300%
+            self.zoom_factor *= 1.25
+            self.update_pdf_controls()
+
+    def zoom_out(self):
+        """Zoom out on PDF"""
+        if self.zoom_factor > 0.25:  # Min zoom 25%
+            self.zoom_factor /= 1.25
+            self.update_pdf_controls()
+
+    def fit_to_window(self):
+        """Fit PDF page to window"""
+        if not self.pdf_document:
+            return
+        
+        try:
+            page = self.pdf_document[self.current_page]
+            page_rect = page.rect
+            
+            # Get canvas size
+            canvas_width = self.pdf_canvas.winfo_width()
+            canvas_height = self.pdf_canvas.winfo_height()
+            
+            if canvas_width > 1 and canvas_height > 1:
+                # Calculate zoom to fit
+                zoom_x = canvas_width / page_rect.width
+                zoom_y = canvas_height / page_rect.height
+                self.zoom_factor = min(zoom_x, zoom_y) * 0.9  # 90% to leave some margin
+                
+                self.update_pdf_controls()
+        except Exception as e:
+            print(f"Error fitting to window: {e}")
+
+    def toggle_text_overlays(self):
+        """Toggle text overlay visibility"""
+        self.show_text_overlays = not self.show_text_overlays
+        
+        # Update button text
+        if self.show_text_overlays:
+            self.toggle_overlays_btn.config(text="👁 Marques ON")
+        else:
+            self.toggle_overlays_btn.config(text="👁 Marques OFF")
+        
+        self.display_current_page()
+
+    def toggle_heatmap(self):
+        """Toggle confidence heatmap view"""
+        self.heatmap_mode = not self.heatmap_mode
+        
+        # Update button style
+        if self.heatmap_mode:
+            self.heatmap_btn.config(text="🌡 Mapa ON")
+        else:
+            self.heatmap_btn.config(text="🌡 Mapa OFF")
+        
+        self.display_current_page()
+        
+        mode_text = "activat" if self.heatmap_mode else "desactivat"
+        self.update_status(f"Mapa de calor de confiança {mode_text}")
+
+    def toggle_reading_order(self):
+        """Show reading order of text blocks"""
+        self.show_reading_order_mode = not self.show_reading_order_mode
+        
+        # Update button style
+        if self.show_reading_order_mode:
+            self.reading_order_btn.config(text="🔢 Ordre ON")
+        else:
+            self.reading_order_btn.config(text="🔢 Ordre OFF")
+        
+        self.display_current_page()
+        
+        mode_text = "activat" if self.show_reading_order_mode else "desactivat"
+        self.update_status(f"Ordre de lectura {mode_text}")
+
+    def display_current_page(self):
+        """Display current PDF page with text overlays"""
+        if not self.pdf_document:
+            return
+            
+        try:
+            page = self.pdf_document[self.current_page]
+            
+            # Render page to image
+            mat = fitz.Matrix(self.zoom_factor, self.zoom_factor)
+            pix = page.get_pixmap(matrix=mat)
+            img_data = pix.tobytes("ppm")
+            
+            # Convert to PIL Image
+            pil_image = Image.open(io.BytesIO(img_data))
+            
+            # Draw text block overlays if available and enabled
+            if self.text_blocks and self.show_text_overlays:
+                self.draw_text_overlays(pil_image)
+            
+            # Convert to PhotoImage for tkinter
+            self.pdf_image = ImageTk.PhotoImage(pil_image)
+            
+            # Update canvas
+            self.pdf_canvas.delete("all")
+            self.pdf_canvas.create_image(0, 0, anchor=tk.NW, image=self.pdf_image)
+            self.pdf_canvas.configure(scrollregion=self.pdf_canvas.bbox("all"))
+            
+        except Exception as e:
+            print(f"Error displaying page: {e}")
+            messagebox.showerror("Error", f"Error mostrant la pàgina: {str(e)}")
+
+    def draw_text_overlays(self, image):
+        """Draw text block bounding boxes on image (improved version)"""
+        draw = ImageDraw.Draw(image)
+        
+        # Get font for reading order numbers
+        try:
+            from PIL import ImageFont
+            try:
+                font = ImageFont.truetype("arial.ttf", 14)
+            except:
+                font = ImageFont.load_default()
+        except:
+            font = None
+        
+        # Colors for different confidence levels (modern blue theme)
+        confidence_colors = {
+            'high': '#2563eb',    # Modern blue for high confidence (>90%)
+            'medium': '#3b82f6',  # Light blue for medium confidence (70-90%)
+            'low': '#93c5fd'      # Very light blue for low confidence (<70%)
+        }
+        
+        for i, block in enumerate(self.text_blocks):
+            if block.page_num != self.current_page:
+                continue
+                
+            x1, y1, x2, y2 = block.bbox
+            
+            # Scale coordinates by zoom factor
+            x1 *= self.zoom_factor
+            y1 *= self.zoom_factor
+            x2 *= self.zoom_factor
+            y2 *= self.zoom_factor
+            
+            # Fix coordinate order to ensure x1 <= x2 and y1 <= y2
+            x1, x2 = min(x1, x2), max(x1, x2)
+            y1, y2 = min(y1, y2), max(y1, y2)
+            
+            # Ensure minimum size for very small boxes
+            if abs(x2 - x1) < 3:
+                x2 = x1 + 3
+            if abs(y2 - y1) < 3:
+                y2 = y1 + 3
+            
+            # Ensure coordinates are within image bounds
+            img_width, img_height = image.size
+            x1 = max(0, min(x1, img_width - 1))
+            y1 = max(0, min(y1, img_height - 1))
+            x2 = max(x1 + 1, min(x2, img_width))
+            y2 = max(y1 + 1, min(y2, img_height))
+            
+            try:
+                # Determine confidence level
+                if block.confidence > 0.9:
+                    confidence_level = 'high'
+                elif block.confidence > 0.7:
+                    confidence_level = 'medium'
+                else:
+                    confidence_level = 'low'
+                
+                if self.heatmap_mode:
+                    # Heatmap mode: fill boxes with confidence-based colors with transparency
+                    if block.confidence > 0.9:
+                        fill_color = (37, 99, 235, 100)  # Modern blue with transparency
+                    elif block.confidence > 0.7:
+                        fill_color = (59, 130, 246, 80)   # Light blue with transparency
+                    else:
+                        fill_color = (147, 197, 253, 60)  # Very light blue with transparency
+                    
+                    # Create a temporary image for transparency
+                    overlay = Image.new('RGBA', image.size, (255, 255, 255, 0))
+                    overlay_draw = ImageDraw.Draw(overlay)
+                    overlay_draw.rectangle([x1, y1, x2, y2], fill=fill_color)
+                    
+                    # Composite with main image
+                    if image.mode != 'RGBA':
+                        image = image.convert('RGBA')
+                    image = Image.alpha_composite(image, overlay).convert('RGB')
+                    draw = ImageDraw.Draw(image)
+                    
+                    # Still draw border
+                    border_color = confidence_colors[confidence_level]
+                    draw.rectangle([x1, y1, x2, y2], outline=border_color, width=2)
+                else:
+                    # Normal mode: modern blue theme outlines
+                    color = confidence_colors[confidence_level]
+                        
+                    # Draw rectangle with different thickness for selection
+                    if block == self.selected_block:
+                        draw.rectangle([x1, y1, x2, y2], outline="#1d4ed8", width=4)  # Accent blue for selection
+                        # Add selection indicator
+                        draw.rectangle([x1-2, y1-2, x2+2, y2+2], outline="#fbbf24", width=2)  # Yellow outer border
+                    else:
+                        draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
+                
+                # Reading order mode: add numbers
+                if self.show_reading_order_mode:
+                    # Calculate reading order based on top-to-bottom, left-to-right
+                    page_blocks = [b for b in self.text_blocks if b.page_num == self.current_page]
+                    page_blocks.sort(key=lambda b: (b.bbox[1], b.bbox[0]))  # Sort by Y then X
+                    
+                    if block in page_blocks:
+                        order_num = page_blocks.index(block) + 1
+                        
+                        # Draw background circle for number (modern blue theme)
+                        center_x = x1 + 20
+                        center_y = y1 + 20
+                        circle_radius = 15
+                        
+                        draw.ellipse([center_x-circle_radius, center_y-circle_radius, 
+                                    center_x+circle_radius, center_y+circle_radius], 
+                                   fill="#ffffff", outline="#2563eb", width=2)
+                        
+                        # Draw number
+                        text = str(order_num)
+                        if font:
+                            bbox = draw.textbbox((0, 0), text, font=font)
+                            text_width = bbox[2] - bbox[0]
+                            text_height = bbox[3] - bbox[1]
+                        else:
+                            text_width, text_height = 8, 12  # Estimate
+                        
+                        text_x = center_x - text_width // 2
+                        text_y = center_y - text_height // 2
+                        
+                        draw.text((text_x, text_y), text, fill="#2563eb", font=font)
+                
+                # Add confidence percentage if in heatmap mode
+                if self.heatmap_mode:
+                    conf_text = f"{block.confidence:.0%}"
+                    if font:
+                        bbox = draw.textbbox((0, 0), conf_text, font=font)
+                        text_width = bbox[2] - bbox[0]
+                        text_height = bbox[3] - bbox[1]
+                    else:
+                        text_width, text_height = len(conf_text) * 6, 12
+                    
+                    # Position confidence text at bottom-right of box
+                    conf_x = x2 - text_width - 5
+                    conf_y = y2 - text_height - 5
+                    
+                    # Background for better readability
+                    draw.rectangle([conf_x-3, conf_y-2, conf_x+text_width+3, conf_y+text_height+2], 
+                                 fill="#ffffff", outline="#2563eb", width=1)
+                    draw.text((conf_x, conf_y), conf_text, fill="#2563eb", font=font)
+                        
+            except Exception as e:
+                print(f"Warning: Could not draw bounding box for block {i}: {e}")
+                continue
+
+    # Mouse event handlers for PDF interaction
+    def on_canvas_click(self, event):
+        """Handle canvas click to select text blocks"""
+        if not self.text_blocks:
+            return
+        
+        # Convert canvas coordinates to image coordinates
+        canvas_x = self.pdf_canvas.canvasx(event.x)
+        canvas_y = self.pdf_canvas.canvasy(event.y)
+        
+        # Find clicked text block
+        clicked_block = None
+        for block in self.text_blocks:
+            if block.page_num != self.current_page:
+                continue
+            
+            # Scale bounding box by zoom factor
+            x1, y1, x2, y2 = block.bbox
+            x1 *= self.zoom_factor
+            y1 *= self.zoom_factor
+            x2 *= self.zoom_factor
+            y2 *= self.zoom_factor
+            
+            # Check if click is within this block
+            if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
+                clicked_block = block
+                break
+        
+        # Update selection
+        if clicked_block != self.selected_block:
+            self.selected_block = clicked_block
+            self.display_current_page()
+            self.update_block_info(clicked_block)
+
+    def on_canvas_motion(self, event):
+        """Handle mouse motion for cursor changes"""
+        if not self.text_blocks:
+            return
+        
+        # Convert canvas coordinates to image coordinates
+        canvas_x = self.pdf_canvas.canvasx(event.x)
+        canvas_y = self.pdf_canvas.canvasy(event.y)
+        
+        # Check if cursor is over a text block
+        over_block = False
+        for block in self.text_blocks:
+            if block.page_num != self.current_page:
+                continue
+            
+            # Scale bounding box by zoom factor
+            x1, y1, x2, y2 = block.bbox
+            x1 *= self.zoom_factor
+            y1 *= self.zoom_factor
+            x2 *= self.zoom_factor
+            y2 *= self.zoom_factor
+            
+            # Check if cursor is within this block
+            if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
+                over_block = True
+                break
+        
+        # Change cursor
+        cursor = 'hand2' if over_block else 'crosshair'
+        if self.pdf_canvas['cursor'] != cursor:
+            self.pdf_canvas.config(cursor=cursor)
+
+    def on_canvas_scroll(self, event):
+        """Handle mouse wheel for zooming"""
+        if event.delta > 0:
+            self.zoom_in()
+        else:
+            self.zoom_out()
+
+    def on_canvas_press(self, event):
+        """Handle mouse press for dragging"""
+        self.drag_start_x = event.x
+        self.drag_start_y = event.y
+        self.is_dragging = False
+
+    def on_canvas_drag(self, event):
+        """Handle mouse drag for panning"""
+        dx = event.x - self.drag_start_x
+        dy = event.y - self.drag_start_y
+        
+        # Only start dragging after minimum movement
+        if not self.is_dragging and (abs(dx) > 3 or abs(dy) > 3):
+            self.is_dragging = True
+            self.pdf_canvas.config(cursor='fleur')
+        
+        if self.is_dragging:
+            # Pan the view
+            self.pdf_canvas.scan_dragto(event.x, event.y, gain=1)
+
+    def on_canvas_release(self, event):
+        """Handle mouse release"""
+        if self.is_dragging:
+            self.pdf_canvas.config(cursor='crosshair')
+        self.is_dragging = False
+
+    def update_block_info(self, block):
+        """Update block information display"""
+        if block:
+            info_text = (f"📝 Text: {block.text[:100]}{'...' if len(block.text) > 100 else ''} | "
+                        f"Confiança: {block.confidence:.1%} | "
+                        f"Posició: ({block.bbox[0]:.0f}, {block.bbox[1]:.0f})")
+            self.block_info_label.config(text=info_text, fg=self.theme.colors['text_primary'])
+        else:
+            self.block_info_label.config(text="📝 Fes clic en un bloc de text per veure els detalls", 
+                                       fg=self.theme.colors['text_secondary'])
 
 def main():
     """Main application entry point"""
