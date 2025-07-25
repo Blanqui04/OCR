@@ -66,7 +66,7 @@ class OCRViewerApp:
         
         # Google Cloud configuració
         self.project_id = "natural-bison-465607-b6"
-        self.location = "eu"
+        self.location = "us"
         self.processor_id = "4369d16f70cb0a26"
         
         # Set up Google Cloud credentials
@@ -95,6 +95,28 @@ class OCRViewerApp:
         else:
             print(f"⚠️ Fitxer de credencials no trobat: {key_path}")
             print("💡 Utilitza setup_google_auth.py per configurar l'autenticació")
+    
+    def _find_credentials_file(self):
+        """Find Google Cloud credentials file"""
+        # Check environment variable first
+        if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+            creds_path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+            if os.path.exists(creds_path):
+                return creds_path
+        
+        # Search in common locations
+        search_paths = [
+            r"C:\Users\eceballos\keys\natural-bison-465607-b6-a638a05f2638.json",
+            "docs/natural-bison-465607-b6-a638a05f2638.json",
+            "prova_local/natural-bison-465607-b6-a638a05f2638.json",
+            "../docs/natural-bison-465607-b6-a638a05f2638.json"
+        ]
+        
+        for path in search_paths:
+            if os.path.exists(path):
+                return path
+        
+        return None
         
     def setup_styles(self):
         """Configurar estil de l'UI"""
@@ -1254,72 +1276,142 @@ class OCRViewerApp:
         threading.Thread(target=self._process_document_thread, daemon=True).start()
         
     def _process_document_thread(self):
-        """Process document in background thread"""
+        """Process document in background thread using Google Document AI OCR"""
         try:
-            # Check credentials before starting
-            if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
-                self._setup_google_credentials()
-            
-            self.root.after(0, lambda: self.show_progress("Connexió a Google Cloud..."))
+            # Update status
+            self.root.after(0, lambda: self.show_progress("🤖 Inicialitzant Google Document AI..."))
             self.root.after(0, lambda: self.update_progress(10))
             
-            # Set up Document AI client
-            opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
-            client = documentai.DocumentProcessorServiceClient(client_options=opts)
-
-            self.root.after(0, lambda: self.update_progress(20, "Llegint fitxer PDF..."))
-
-            # Read file
-            with open(self.current_pdf_path, "rb") as pdf_file:
-                content = pdf_file.read()
-
-            self.root.after(0, lambda: self.update_progress(30, "Preparant sol·licitud..."))
-                
-            # Create request
-            raw_document = documentai.RawDocument(content=content, mime_type="application/pdf")
-            name = f"projects/{self.project_id}/locations/{self.location}/processors/{self.processor_id}"
-            request = documentai.ProcessRequest(name=name, raw_document=raw_document)
-            
-            # Process document
-            self.root.after(0, lambda: self.update_progress(50, "Processant amb Document AI..."))
-            result = client.process_document(request=request)
-            document = result.document
-
-            self.root.after(0, lambda: self.update_progress(80, "Extracció de blocs de text..."))
-
-            # Extract text blocks with error handling
+            # Import the Google Document AI OCR class
             try:
-                self._extract_text_blocks(document)
-                self.root.after(0, lambda: self.update_progress(90, "Finalitzant..."))
-            except Exception as extract_error:
-                print(f"Error extraient blocs de text: {extract_error}")
-                # Fallback: extract basic text
-                self._extract_basic_text(document)
-                self.root.after(0, lambda: self.update_progress(90, "Extracció bàsica completa..."))
-
-            self.root.after(0, lambda: self.update_progress(100, "Completa!"))
-
-            # Update UI on main thread
-            self.root.after(0, self._update_ui_after_processing)
-            self.root.after(2000, self.hide_progress)  # Hide after 2 seconds
+                from prova_local.google_document_ai_ocr import GoogleDocumentAIOCR
+            except ImportError:
+                raise Exception("No es pot importar google_document_ai_ocr. Assegura't que el fitxer està a prova_local/")
             
+            # Find credentials file
+            credentials_path = self._find_credentials_file()
+            if not credentials_path:
+                raise Exception("No es troben les credencials de Google Cloud")
+            
+            self.root.after(0, lambda: self.update_progress(20, "📤 Configurant processador..."))
+            
+            try:
+                # Initialize OCR processor
+                ocr = GoogleDocumentAIOCR(
+                    project_id=self.project_id,
+                    location=self.location,
+                    processor_id=self.processor_id,
+                    credentials_path=credentials_path
+                )
+                
+                self.root.after(0, lambda: self.update_progress(40, "📄 Processant document..."))
+                
+                # Process the document
+                results = ocr.process_document(self.current_pdf_path)
+                
+                if results and results.get('success', False):
+                    self.root.after(0, lambda: self.update_progress(70, "🔍 Extraient dades estructurades..."))
+                    
+                    if results and 'elements' in results:
+                        self.structured_data = results
+                        # Convert results to text blocks for compatibility
+                        self._convert_document_ai_results(results)
+                        
+                        # Update UI with results
+                        self.root.after(0, self._update_ui_after_processing)
+                        self.root.after(0, lambda: self.update_progress(100, "✅ Processament completat amb Document AI"))
+                    else:
+                        self.root.after(0, lambda: self.update_status("⚠️ No s'han trobat elements estructurats"))
+                        self.root.after(0, self._extract_basic_text_fallback)
+                else:
+                    # Document AI failed, use fallback
+                    error_msg = results.get('error', 'Error desconegut') if results else 'No results'
+                    print(f"Document AI failed: {error_msg}")
+                    self.root.after(0, lambda: self.update_status("⚠️ Document AI no disponible, usant extracció bàsica..."))
+                    self.root.after(0, self._extract_basic_text_fallback)
+                    
+            except Exception as doc_ai_error:
+                print(f"Document AI error: {doc_ai_error}")
+                self.root.after(0, lambda: self.update_status("⚠️ Document AI no disponible, usant extracció bàsica..."))
+                self.root.after(0, self._extract_basic_text_fallback)
+            
+            # Hide progress after 2 seconds
+            self.root.after(2000, self.hide_progress)
+            
+        except ImportError as e:
+            error_msg = f"❌ Error d'importació: {str(e)}\nAssegura't que google_document_ai_ocr.py està a prova_local/"
+            self.root.after(0, lambda: messagebox.showerror("Error d'Importació", error_msg))
+            self.root.after(0, lambda: self.update_status("❌ Error d'importació"))
+            self.root.after(0, self.hide_progress)
         except Exception as e:
-            error_msg = f"Error en el processat: {str(e)}"
+            error_msg = f"❌ Error processant document: {str(e)}"
             print(f"Error complert: {e}")
             
             # Check if it's an authentication error
-            if "not found" in str(e).lower() and ".json" in str(e):
+            if "not found" in str(e).lower() and (".json" in str(e) or "credencial" in str(e).lower()):
                 auth_error_msg = ("Error d'autenticació de Google Cloud.\n\n"
                                 "Solucions:\n"
                                 "1. Executa 'python setup_google_auth.py' per configurar l'autenticació\n"
-                                "2. O utilitza: gcloud auth application-default login\n"
-                                "3. Assegura't que tens el fitxer de credencials al directori correcte")
+                                "2. Assegura't que tens el fitxer de credencials correcte\n"
+                                "3. Comprova que el fitxer està a docs/ o prova_local/")
                 self.root.after(0, lambda: messagebox.showerror("Error d'Autenticació", auth_error_msg))
             else:
-                self.root.after(0, lambda: messagebox.showerror("Error en el processat", error_msg))
+                self.root.after(0, lambda: messagebox.showerror("Error", error_msg))
             
-            self.root.after(0, lambda: self.update_status("El processament ha fallat"))
+            self.root.after(0, lambda: self.update_status("❌ Error en el processament"))
             self.root.after(0, self.hide_progress)
+    
+    def _extract_basic_text_fallback(self):
+        """Fallback method when Document AI is not available"""
+        try:
+            self.update_progress(50, "📄 Extraient text bàsic...")
+            
+            # Create basic text blocks from PDF
+            import fitz  # PyMuPDF
+            
+            self.text_blocks = []
+            
+            doc = fitz.open(self.current_pdf_path)
+            
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                blocks = page.get_text("dict")["blocks"]
+                
+                for block in blocks:
+                    if "lines" in block:
+                        for line in block["lines"]:
+                            for span in line["spans"]:
+                                text = span["text"].strip()
+                                if text:
+                                    bbox = span["bbox"]
+                                    
+                                    # Create a simple text block
+                                    text_block = type('TextBlock', (), {
+                                        'text': text,
+                                        'bbox': bbox,
+                                        'page_num': page_num,
+                                        'confidence': 0.8  # Default confidence for fallback
+                                    })
+                                    
+                                    self.text_blocks.append(text_block)
+            
+            doc.close()
+            
+            self.update_progress(90, "🎨 Actualitzant interfície...")
+            
+            # Update UI
+            self._update_ui_after_processing()
+            
+            self.update_progress(100, "✅ Text bàsic extret correctament!")
+            self.update_status(f"✅ Text extret: {len(self.text_blocks)} blocs detectats (mode bàsic)")
+            
+            # Hide progress after 2 seconds
+            self.root.after(2000, self.hide_progress)
+            
+        except Exception as e:
+            print(f"Error en extracció bàsica: {e}")
+            self.update_status("❌ Error en l'extracció de text")
+            self.hide_progress()
     
     def _extract_basic_text(self, document):
         """Fallback method for basic text extraction"""
@@ -1388,6 +1480,64 @@ class OCRViewerApp:
                     page_num=0
                 )
                 self.text_blocks.append(text_block)
+    
+    def _convert_document_ai_results(self, results):
+        """Convert Google Document AI results to text blocks format for the viewer"""
+        self.text_blocks = []
+        
+        if not results or 'elements' not in results:
+            return
+        
+        # Get PDF page dimensions for coordinate conversion
+        pdf_pages = []
+        if self.pdf_document:
+            for page_num in range(len(self.pdf_document)):
+                page = self.pdf_document[page_num]
+                pdf_pages.append({
+                    'width': page.rect.width,
+                    'height': page.rect.height
+                })
+        
+        # Convert each element to a text block
+        for element in results['elements']:
+            try:
+                # Extract basic information from DetectedElement object
+                text = getattr(element, 'value', '') or getattr(element, 'description', '')
+                if not text:
+                    text = str(element)
+                text = text.strip()
+                
+                confidence = getattr(element, 'confidence', 0.0)
+                page_num = getattr(element, 'page_number', 0)
+                
+                # Create bounding box from coordinates
+                coords = getattr(element, 'coordinates', None)
+                if coords and len(coords) >= 4:
+                    # Use provided coordinates
+                    bbox = (
+                        coords[0],  # x1
+                        coords[1],  # y1
+                        coords[2],  # x2
+                        coords[3]   # y2
+                    )
+                else:
+                    # Create default bounding box
+                    bbox = (10, 10 + len(self.text_blocks) * 25, 200, 30 + len(self.text_blocks) * 25)
+                
+                if text:
+                    text_block = TextBlock(
+                        text=text,
+                        confidence=confidence,
+                        bbox=bbox,
+                        page_num=page_num
+                    )
+                    self.text_blocks.append(text_block)
+                    
+            except Exception as e:
+                print(f"Error convertint element: {e}")
+                continue
+        
+        print(f"✅ Convertits {len(self.text_blocks)} blocs de text des dels resultats de Document AI")
             
     def _extract_text_blocks(self, document):
         """Extract text blocks from Document AI response"""
@@ -1528,39 +1678,135 @@ class OCRViewerApp:
                         
     def _update_ui_after_processing(self):
         """Update UI after document processing is complete"""
-        # Update text widget
-        full_text = "\n".join([block.text for block in self.text_blocks])
+        # Update text widget with all extracted text
+        if self.text_blocks:
+            full_text = "\n".join([block.text for block in self.text_blocks])
+        else:
+            full_text = "No s'ha trobat text en el document."
+            
         self.text_widget.config(state=tk.NORMAL)
         self.text_widget.delete(1.0, tk.END)
         self.text_widget.insert(1.0, full_text)
         self.text_widget.config(state=tk.DISABLED)
         
-        # Enable export and validation buttons
+        # Enable buttons
         if hasattr(self, 'export_button'):
             self.export_button.config(state='normal')
         if hasattr(self, 'validate_button'):
             self.validate_button.config(state='normal')
+        if hasattr(self, 'process_button'):
+            self.process_button.config(state='normal')
+            
+        # Enable PDF navigation controls
+        self._enable_pdf_controls()
         
         # Update PDF viewer with text overlays
         if hasattr(self, 'display_current_page'):
             self.display_current_page()
         
-        # Process structured data automatically for technical drawings
-        self.process_structured_data()
+        # Update structured data views if we have Document AI results
+        if self.structured_data:
+            self._update_structured_data_ui()
         
-        # Update status
-        self.update_status(f"Processament complet. S'han trobat {len(self.text_blocks)} blocs de text.")
+        # Update status with detailed information
+        if self.structured_data and 'elements' in self.structured_data:
+            total_elements = len(self.structured_data['elements'])
+            dimensions = len([e for e in self.structured_data['elements'] if getattr(e, 'element_type', '') == 'dimension'])
+            tolerances = len([e for e in self.structured_data['elements'] if getattr(e, 'element_type', '') == 'tolerance'])
+            annotations = len([e for e in self.structured_data['elements'] if getattr(e, 'element_type', '') == 'annotation'])
+            
+            status_msg = f"✅ Processament complet: {total_elements} elements ({dimensions} dimensions, {tolerances} toleràncies, {annotations} anotacions)"
+        else:
+            status_msg = f"✅ Processament complet: {len(self.text_blocks)} blocs de text detectats"
+            
+        self.update_status(status_msg)
+    
+    def _enable_pdf_controls(self):
+        """Enable PDF navigation and viewing controls"""
+        controls = ['prev_page_btn', 'next_page_btn', 'zoom_in_btn', 'zoom_out_btn', 
+                   'fit_window_btn', 'toggle_overlays_btn', 'heatmap_btn', 'reading_order_btn']
+        
+        for control_name in controls:
+            if hasattr(self, control_name):
+                control = getattr(self, control_name)
+                if hasattr(control, 'config'):
+                    control.config(state='normal')
+    
+    def _update_structured_data_ui(self):
+        """Update structured data views with Document AI results"""
+        if not self.structured_data:
+            return
+            
+        try:
+            # Update the main treeview with structured data
+            if hasattr(self, 'tree'):
+                self._populate_structured_treeview()
+            
+            # Update individual type views if they exist
+            if hasattr(self, 'parts_tree'):
+                self._update_parts_tree()
+            if hasattr(self, 'dimensions_tree'):
+                self._update_dimensions_tree()
+            if hasattr(self, 'annotations_tree'):
+                self._update_annotations_tree()
+                
+        except Exception as e:
+            print(f"Error actualitzant vistes de dades estructurades: {e}")
+    
+    def _populate_structured_treeview(self):
+        """Populate the main structured data treeview"""
+        if not hasattr(self, 'tree') or not self.structured_data:
+            return
+            
+        # Clear existing data
+        self.tree.delete(*self.tree.get_children())
+        
+        # Add elements from Document AI results
+        elements = self.structured_data.get('elements', [])
+        for i, element in enumerate(elements):
+            # Access attributes correctly for DetectedElement objects
+            element_type = getattr(element, 'element_type', 'unknown')
+            text = getattr(element, 'value', '') or getattr(element, 'description', '')
+            confidence = getattr(element, 'confidence', 0.0)
+            
+            # Format confidence as percentage
+            confidence_str = f"{confidence * 100:.1f}%" if confidence > 0 else "N/A"
+            
+            # Create identifier
+            type_map = {
+                'dimension': 'DIM',
+                'tolerance': 'TOL', 
+                'annotation': 'ANN',
+                'part_number': 'PART',
+                'material': 'MAT'
+            }
+            prefix = type_map.get(element_type, 'ELEM')
+            identifier = f"{prefix}_{i+1:03d}"
+            
+            self.tree.insert('', 'end', values=(
+                identifier,
+                element_type.title(),
+                text[:50] + "..." if len(text) > 50 else text,
+                confidence_str
+            ))
         
     def process_structured_data(self):
-        """Process text blocks into structured technical drawing data"""
+        """Process structured data - now handled automatically by Document AI"""
+        # With Document AI, structured data is already processed during OCR
+        if self.structured_data:
+            self.update_status("Dades estructurades ja processades per Document AI")
+            self._update_structured_data_views()
+            return
+            
+        # Fallback: use post-processor if no Document AI data available
         if not self.text_blocks:
             self.update_status("No hi ha blocs de text per processar")
             return
         
         try:
-            self.update_status("Processant dades estructurades...")
+            self.update_status("Processant dades estructurades amb post-processor...")
             
-            # Process with post-processor
+            # Process with post-processor as fallback
             self.structured_data = self.post_processor.process_drawing(self.text_blocks)
             
             # Update structured data views
@@ -1747,328 +1993,207 @@ class OCRViewerApp:
         self.block_overview_text.config(state=tk.DISABLED)
     
     def export_structured_data(self):
-        """Export structured data to various formats"""
+        """Export structured data to various formats using Document AI results"""
         if not self.structured_data:
             messagebox.showwarning("Avís", "No hi ha dades estructurades per exportar. Si us plau, processa primer el document.")
             return
         
-        # Ask user for format
+        # Simple format selection dialog
+        formats = {
+            "CSV": "csv",
+            "JSON": "json", 
+            "TXT": "txt"
+        }
+        
+        # Create format selection window
         export_window = tk.Toplevel(self.root)
         export_window.title("📤 Exportar Dades")
-        export_window.geometry("500x400")
+        export_window.geometry("400x300")
         export_window.configure(bg=self.theme.colors['bg_primary'])
         export_window.transient(self.root)
         export_window.grab_set()
         
+        # Center the window
+        export_window.geometry("+%d+%d" % (self.root.winfo_rootx() + 50, self.root.winfo_rooty() + 50))
+        
         # Title
-        title_frame = self.theme.create_card_frame(export_window)
-        title_frame.pack(fill='x', padx=20, pady=(20, 10))
-        
         title_label = tk.Label(
-            title_frame,
-            text="📤 Selecciona el Format d'Exportació",
-            font=self.theme.fonts['heading_medium'],
+            export_window,
+            text="📤 Selecciona Format d'Exportació",
+            font=('Segoe UI', 14, 'bold'),
             fg=self.theme.colors['text_primary'],
-            bg=self.theme.colors['bg_secondary']
+            bg=self.theme.colors['bg_primary']
         )
-        title_label.pack(pady=15)
+        title_label.pack(pady=20)
         
-        # Format selection frame
-        format_frame = self.theme.create_card_frame(export_window)
-        format_frame.pack(fill='both', expand=True, padx=20, pady=10)
-        
-        # Export options
+        # Format selection
         export_var = tk.StringVar(value="csv")
         
-        formats = [
-            ("csv", "📊 CSV (Comma Separated Values)", "Ideal per a Excel i altres aplicacions de full de càlcul"),
-            ("txt", "📝 TXT (Text Pla)", "Text simple amb totes les dades extretes"),
-            ("pdf", "📄 PDF (Informe)", "Informe professional amb format i estructura"),
-            ("json", "⚙️ JSON (Dades Estructurades)", "Format tècnic per a desenvolupadors")
-        ]
-        
-        for value, title, description in formats:
-            frame = tk.Frame(format_frame, bg=self.theme.colors['bg_secondary'])
-            frame.pack(fill='x', pady=5, padx=10)
-            
+        for display_name, format_key in formats.items():
             rb = tk.Radiobutton(
-                frame,
-                text=title,
+                export_window,
+                text=f"📊 {display_name}",
                 variable=export_var,
-                value=value,
-                font=self.theme.fonts['body_medium'],
-                bg=self.theme.colors['bg_secondary'],
+                value=format_key,
+                font=('Segoe UI', 12),
                 fg=self.theme.colors['text_primary'],
-                selectcolor=self.theme.colors['primary_blue']
+                bg=self.theme.colors['bg_primary'],
+                selectcolor=self.theme.colors['bg_secondary']
             )
-            rb.pack(anchor='w')
-            
-            desc_label = tk.Label(
-                frame,
-                text=description,
-                font=self.theme.fonts['body_small'],
-                fg=self.theme.colors['text_secondary'],
-                bg=self.theme.colors['bg_secondary']
-            )
-            desc_label.pack(anchor='w', padx=20)
+            rb.pack(pady=5)
         
         # Buttons
         button_frame = tk.Frame(export_window, bg=self.theme.colors['bg_primary'])
-        button_frame.pack(fill='x', padx=20, pady=20)
+        button_frame.pack(pady=20)
         
         def do_export():
             format_type = export_var.get()
             export_window.destroy()
-            self._export_data(format_type)
+            self._export_document_ai_data(format_type)
         
-        export_btn = self.theme.create_modern_button(
+        def cancel_export():
+            export_window.destroy()
+        
+        export_btn = tk.Button(
             button_frame,
             text="📤 Exportar",
             command=do_export,
-            style='primary'
+            font=('Segoe UI', 10, 'bold'),
+            bg=self.theme.colors['primary_blue'],
+            fg='white',
+            padx=20,
+            pady=5,
+            border=0
         )
-        export_btn.pack(side='right', padx=(10, 0))
+        export_btn.pack(side='left', padx=10)
         
-        cancel_btn = self.theme.create_modern_button(
+        cancel_btn = tk.Button(
             button_frame,
             text="❌ Cancel·lar",
-            command=export_window.destroy,
-            style='secondary'
+            command=cancel_export,
+            font=('Segoe UI', 10),
+            bg=self.theme.colors['bg_secondary'],
+            fg=self.theme.colors['text_primary'],
+            padx=20,
+            pady=5,
+            border=0
         )
-        cancel_btn.pack(side='right')
+        cancel_btn.pack(side='left', padx=10)
     
-    def _export_data(self, format_type):
-        """Export data in the specified format"""
-        try:
-            if format_type == "csv":
-                self._export_to_csv()
-            elif format_type == "txt":
-                self._export_to_txt()
-            elif format_type == "pdf":
-                self._export_to_pdf()
-            elif format_type == "json":
-                self._export_to_json()
-            
-        except Exception as e:
-            messagebox.showerror("Error d'Exportació", f"Error exportant dades: {str(e)}")
-    
-    def _export_to_csv(self):
-        """Export to CSV format"""
+    def _export_document_ai_data(self, format_type):
+        """Export Document AI data in the specified format"""
+        if not self.structured_data or 'elements' not in self.structured_data:
+            messagebox.showerror("Error", "No hi ha dades per exportar")
+            return
+        
+        # Ask for file location
+        file_extensions = {
+            'csv': [('CSV files', '*.csv')],
+            'json': [('JSON files', '*.json')],
+            'txt': [('Text files', '*.txt')]
+        }
+        
         file_path = filedialog.asksaveasfilename(
-            title="Guardar com CSV",
-            defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+            title=f"Desa fitxer {format_type.upper()}",
+            filetypes=file_extensions.get(format_type, [('All files', '*.*')]),
+            defaultextension=f'.{format_type}'
         )
         
         if not file_path:
             return
         
         try:
-            import csv
-            with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
-                writer = csv.writer(csvfile)
-                
-                # Write header
-                writer.writerow(['Tipus', 'Núm Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança'])
-                
-                if self.structured_data:
-                    structured = self.structured_data.get('structured_data', {})
-                    
-                    # Write parts list
-                    for part in structured.get('parts_list', []):
-                        writer.writerow([
-                            'Peça',
-                            part.get('element_number', ''),
-                            part.get('description', ''),
-                            part.get('value', ''),
-                            part.get('tolerance', ''),
-                            f"{part.get('confidence', 0.0):.2f}"
-                        ])
-                    
-                    # Write dimensions
-                    for dim in structured.get('dimensions', []):
-                        writer.writerow([
-                            'Dimensió',
-                            dim.get('element_number', ''),
-                            dim.get('description', ''),
-                            dim.get('value', ''),
-                            dim.get('tolerance', ''),
-                            f"{dim.get('confidence', 0.0):.2f}"
-                        ])
-                    
-                    # Write annotations
-                    for ann in structured.get('annotations', []):
-                        writer.writerow([
-                            'Anotació',
-                            ann.get('element_number', ''),
-                            ann.get('description', ''),
-                            ann.get('value', ''),
-                            ann.get('tolerance', ''),
-                            f"{ann.get('confidence', 0.0):.2f}"
-                        ])
+            if format_type == 'csv':
+                self._export_to_csv_file(file_path)
+            elif format_type == 'json':
+                self._export_to_json_file(file_path)
+            elif format_type == 'txt':
+                self._export_to_txt_file(file_path)
             
-            messagebox.showinfo("Exportació Completada", f"Dades exportades correctament a:\n{file_path}")
-            self.update_status("Dades exportades a CSV correctament")
+            messagebox.showinfo("Èxit", f"Dades exportades correctament a:\n{file_path}")
             
         except Exception as e:
-            messagebox.showerror("Error", f"Error exportant a CSV: {str(e)}")
+            messagebox.showerror("Error", f"Error exportant dades:\n{str(e)}")
     
-    def _export_to_txt(self):
-        """Export to plain text format"""
-        file_path = filedialog.asksaveasfilename(
-            title="Guardar com TXT",
-            defaultextension=".txt",
-            filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
-        )
+    def _export_to_csv_file(self, file_path):
+        """Export Document AI data to CSV"""
+        elements = self.structured_data.get('elements', [])
         
-        if not file_path:
-            return
-        
-        try:
-            with open(file_path, 'w', encoding='utf-8') as txtfile:
-                txtfile.write("=== DADES EXTRETES DEL DOCUMENT OCR ===\n\n")
-                
-                # Write extracted text
-                if self.text_blocks:
-                    txtfile.write("TEXT EXTRET:\n")
-                    txtfile.write("-" * 50 + "\n")
-                    full_text = "\n".join([block.text for block in self.text_blocks])
-                    txtfile.write(full_text + "\n\n")
-                
-                # Write structured data
-                if self.structured_data:
-                    structured = self.structured_data.get('structured_data', {})
-                    
-                    if structured.get('parts_list'):
-                        txtfile.write("LLISTA DE PECES DETECTADES:\n")
-                        txtfile.write("-" * 50 + "\n")
-                        for part in structured['parts_list']:
-                            txtfile.write(f"Element: {part.get('element_number', 'N/A')}\n")
-                            txtfile.write(f"Descripció: {part.get('description', 'N/A')}\n")
-                            txtfile.write(f"Valor: {part.get('value', 'N/A')}\n")
-                            txtfile.write(f"Tolerància: {part.get('tolerance', 'N/A')}\n")
-                            txtfile.write(f"Confiança: {part.get('confidence', 0.0):.2f}\n\n")
+        with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['identifier', 'type', 'text', 'confidence', 'page', 'coordinates']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
-            messagebox.showinfo("Exportació Completada", f"Dades exportades correctament a:\n{file_path}")
-            self.update_status("Dades exportades a TXT correctament")
+            writer.writeheader()
             
-        except Exception as e:
-            messagebox.showerror("Error", f"Error exportant a TXT: {str(e)}")
+            type_counts = {}
+            for element in elements:
+                # Access attributes correctly for DetectedElement objects
+                element_type = getattr(element, 'element_type', 'unknown')
+                type_counts[element_type] = type_counts.get(element_type, 0) + 1
+                
+                # Create identifier
+                type_map = {
+                    'dimension': 'DIMENSION',
+                    'tolerance': 'TOLERANCE', 
+                    'annotation': 'ANNOTATION',
+                    'part_number': 'PART_NUMBER',
+                    'material': 'MATERIAL'
+                }
+                prefix = type_map.get(element_type, 'ELEMENT')
+                identifier = f"{prefix}_{type_counts[element_type]:03d}"
+                
+                # Get coordinates
+                coords = getattr(element, 'coordinates', None)
+                if coords and len(coords) >= 4:
+                    coords_str = f"({coords[0]}, {coords[1]}, {coords[2]}, {coords[3]})"
+                else:
+                    coords_str = "(0, 0, 0, 0)"
+                
+                # Get text content
+                text = getattr(element, 'value', '') or getattr(element, 'description', '')
+                
+                writer.writerow({
+                    'identifier': identifier,
+                    'type': element_type,
+                    'text': text,
+                    'confidence': f"{getattr(element, 'confidence', 0.0) * 100:.1f}%",
+                    'page': getattr(element, 'page_number', 0),
+                    'coordinates': coords_str
+                })
     
-    def _export_to_pdf(self):
-        """Export to PDF report format"""
-        file_path = filedialog.asksaveasfilename(
-            title="Guardar com PDF",
-            defaultextension=".pdf",
-            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
-        )
-        
-        if not file_path:
-            return
-        
-        try:
-            from reportlab.lib.pagesizes import A4
-            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-            from reportlab.lib import colors
-            from reportlab.lib.units import inch
-            
-            doc = SimpleDocTemplate(file_path, pagesize=A4)
-            styles = getSampleStyleSheet()
-            story = []
-            
-            # Title
-            title_style = ParagraphStyle(
-                'CustomTitle',
-                parent=styles['Heading1'],
-                fontSize=24,
-                spaceAfter=30,
-                alignment=1  # Center
-            )
-            story.append(Paragraph("Informe OCR - Plànol Tècnic", title_style))
-            story.append(Spacer(1, 20))
-            
-            # Summary
-            if self.structured_data:
-                structured = self.structured_data.get('structured_data', {})
-                parts_count = len(structured.get('parts_list', []))
-                dims_count = len(structured.get('dimensions', []))
-                anns_count = len(structured.get('annotations', []))
-                
-                summary_text = f"""
-                <b>Resum de l'Anàlisi:</b><br/>
-                • Elements de llista de peces: {parts_count}<br/>
-                • Dimensions detectades: {dims_count}<br/>
-                • Anotacions trobades: {anns_count}<br/>
-                """
-                story.append(Paragraph(summary_text, styles['Normal']))
-                story.append(Spacer(1, 20))
-                
-                # Data table
-                if parts_count > 0:
-                    story.append(Paragraph("Llista de Peces Detectades", styles['Heading2']))
-                    
-                    table_data = [['Núm Element', 'Descripció', 'Valor', 'Tolerància', 'Confiança']]
-                    for part in structured.get('parts_list', []):
-                        table_data.append([
-                            part.get('element_number', ''),
-                            part.get('description', ''),
-                            part.get('value', ''),
-                            part.get('tolerance', ''),
-                            f"{part.get('confidence', 0.0):.2f}"
-                        ])
-                    
-                    table = Table(table_data)
-                    table.setStyle(TableStyle([
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, 0), 14),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.black)
-                    ]))
-                    story.append(table)
-            
-            doc.build(story)
-            
-            messagebox.showinfo("Exportació Completada", f"Informe PDF creat correctament a:\n{file_path}")
-            self.update_status("Informe PDF generat correctament")
-            
-        except Exception as e:
-            messagebox.showerror("Error", f"Error generant PDF: {str(e)}")
+    def _export_to_json_file(self, file_path):
+        """Export Document AI data to JSON"""
+        with open(file_path, 'w', encoding='utf-8') as jsonfile:
+            json.dump(self.structured_data, jsonfile, indent=2, ensure_ascii=False)
     
-    def _export_to_json(self):
-        """Export to JSON format"""
-        file_path = filedialog.asksaveasfilename(
-            title="Guardar com JSON",
-            defaultextension=".json",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
-        )
+    def _export_to_txt_file(self, file_path):
+        """Export Document AI data to TXT"""
+        elements = self.structured_data.get('elements', [])
         
-        if not file_path:
-            return
-        
-        try:
-            export_data = {
-                "document_info": {
-                    "file_path": self.current_pdf_path,
-                    "processed_at": str(tk.datetime.datetime.now()),
-                    "total_text_blocks": len(self.text_blocks) if self.text_blocks else 0
-                },
-                "extracted_text": [block.text for block in self.text_blocks] if self.text_blocks else [],
-                "structured_data": self.structured_data if self.structured_data else {}
-            }
+        with open(file_path, 'w', encoding='utf-8') as txtfile:
+            txtfile.write("RESULTATS DE GOOGLE DOCUMENT AI\n")
+            txtfile.write("="*50 + "\n\n")
             
-            with open(file_path, 'w', encoding='utf-8') as jsonfile:
-                json.dump(export_data, jsonfile, indent=2, ensure_ascii=False)
+            # Group by type
+            by_type = {}
+            for element in elements:
+                # Access attributes correctly for DetectedElement objects
+                element_type = getattr(element, 'element_type', 'unknown')
+                if element_type not in by_type:
+                    by_type[element_type] = []
+                by_type[element_type].append(element)
             
-            messagebox.showinfo("Exportació Completada", f"Dades JSON exportades correctament a:\n{file_path}")
-            self.update_status("Dades exportades a JSON correctament")
-            
-        except Exception as e:
-            messagebox.showerror("Error", f"Error exportant a JSON: {str(e)}")
+            # Write each type
+            for element_type, type_elements in by_type.items():
+                txtfile.write(f"\n{element_type.upper()}S ({len(type_elements)}):\n")
+                txtfile.write("-" * 30 + "\n")
+                
+                for i, element in enumerate(type_elements, 1):
+                    text = getattr(element, 'value', '') or getattr(element, 'description', '')
+                    txtfile.write(f"{i:2d}. {text}\n")
+                    txtfile.write(f"    Confiança: {getattr(element, 'confidence', 0.0) * 100:.1f}%\n")
+                    txtfile.write(f"    Pàgina: {getattr(element, 'page_number', 0)}\n")
+                    txtfile.write("\n")
     
     def load_recent_files(self):
         """Load recent files from settings"""
