@@ -15,39 +15,43 @@ class ModernTheme:
     
     def __init__(self):
         self.colors = {
-            # Main colors
-            'primary': '#2563eb',      # Blue
-            'primary_dark': '#1e40af',
-            'primary_light': '#3b82f6',
+            # Main colors - Light blue theme
+            'primary': '#3b82f6',      # Light blue
+            'primary_dark': '#2563eb', # Medium blue
+            'primary_light': '#93c5fd', # Very light blue
             
             # Background colors
-            'bg_primary': '#ffffff',    # White
-            'bg_secondary': '#f8fafc',  # Light gray
-            'bg_dark': '#1e293b',      # Dark gray
+            'bg_primary': '#ffffff',    # Pure white
+            'bg_secondary': '#f0f9ff',  # Very light blue
+            'bg_tertiary': '#e0f2fe',   # Light blue
+            'bg_accent': '#bfdbfe',     # Soft blue
             
             # Text colors
-            'text_primary': '#1e293b',  # Dark gray
-            'text_secondary': '#64748b', # Medium gray
-            'text_light': '#94a3b8',   # Light gray
+            'text_primary': '#1e3a8a',  # Dark blue
+            'text_secondary': '#1e40af', # Medium blue
+            'text_light': '#64748b',    # Gray
+            'text_white': '#ffffff',    # White
             
-            # Accent colors
-            'success': '#10b981',      # Green
-            'warning': '#f59e0b',      # Orange
-            'error': '#ef4444',        # Red
-            'info': '#06b6d4',         # Cyan
+            # Accent colors - Friendly palette
+            'success': '#22c55e',       # Friendly green
+            'warning': '#f59e0b',       # Warm orange
+            'error': '#ef4444',         # Soft red
+            'info': '#06b6d4',          # Cyan
             
             # Confidence level colors
-            'confidence_high': '#10b981',    # Green
+            'confidence_high': '#22c55e',    # Green
             'confidence_medium': '#f59e0b',  # Orange
             'confidence_low': '#ef4444',     # Red
-            'confidence_selected': '#3b82f6' # Blue
+            'confidence_selected': '#93c5fd' # Light blue
         }
         
         self.fonts = {
-            'default': ('Segoe UI', 9),
-            'heading': ('Segoe UI', 12, 'bold'),
-            'small': ('Segoe UI', 8),
-            'monospace': ('Consolas', 9)
+            'default': ('Segoe UI', 10),      # Slightly larger for friendliness
+            'heading': ('Segoe UI', 14, 'bold'),
+            'subheading': ('Segoe UI', 12, 'bold'),
+            'small': ('Segoe UI', 9),
+            'monospace': ('Consolas', 10),
+            'button': ('Segoe UI', 10)
         }
         
     def apply_theme(self, root):
@@ -82,21 +86,46 @@ class ModernTheme:
             
     def configure_button_style(self, style):
         """Configure button styles"""
+        # Primary button style - Light blue
         style.configure(
             'Modern.TButton',
             background=self.colors['primary'],
-            foreground='white',
-            borderwidth=0,
+            foreground=self.colors['text_white'],
+            borderwidth=1,
             focuscolor=self.colors['primary_dark'],
-            relief='flat',
-            font=self.fonts['default']
+            relief='solid',
+            font=self.fonts['button'],
+            padding=(12, 8)
         )
         
         style.map(
             'Modern.TButton',
             background=[
                 ('active', self.colors['primary_light']),
-                ('pressed', self.colors['primary_dark'])
+                ('pressed', self.colors['primary_dark']),
+                ('disabled', self.colors['bg_accent'])
+            ],
+            foreground=[
+                ('disabled', self.colors['text_light'])
+            ]
+        )
+        
+        # Accent button style - for special actions
+        style.configure(
+            'Accent.TButton',
+            background=self.colors['bg_tertiary'],
+            foreground=self.colors['text_primary'],
+            borderwidth=1,
+            relief='solid',
+            font=self.fonts['button'],
+            padding=(12, 8)
+        )
+        
+        style.map(
+            'Accent.TButton',
+            background=[
+                ('active', self.colors['bg_accent']),
+                ('pressed', self.colors['primary_light'])
             ]
         )
         
@@ -109,17 +138,37 @@ class ModernTheme:
             borderwidth=0
         )
         
+        # Card style frames with light blue theme
         style.configure(
             'Card.TLabelframe',
             background=self.colors['bg_secondary'],
             relief='solid',
             borderwidth=1,
-            labelmargins=(10, 5)
+            bordercolor=self.colors['bg_accent'],
+            labelmargins=(15, 8)
         )
         
         style.configure(
             'Card.TLabelframe.Label',
             background=self.colors['bg_secondary'],
+            foreground=self.colors['text_primary'],
+            font=self.fonts['subheading'],
+            padding=(5, 5)
+        )
+        
+        # Panel style for main sections
+        style.configure(
+            'Panel.TLabelframe',
+            background=self.colors['bg_tertiary'],
+            relief='solid',
+            borderwidth=2,
+            bordercolor=self.colors['primary_light'],
+            labelmargins=(20, 10)
+        )
+        
+        style.configure(
+            'Panel.TLabelframe.Label',
+            background=self.colors['bg_tertiary'],
             foreground=self.colors['text_primary'],
             font=self.fonts['heading']
         )

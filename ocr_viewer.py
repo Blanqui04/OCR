@@ -39,6 +39,12 @@ try:
 except ImportError:
     ModernTheme = None
 
+# Import data labeling editor
+try:
+    from data_labeling_editor import DataLabelingEditor
+except ImportError:
+    DataLabelingEditor = None
+
 # Import custom modules
 try:
     from pdf_handler import PDFHandler
@@ -133,6 +139,8 @@ class OCRViewerApp:
         ocr_menu.add_command(label="Process Current Page", command=self.process_current_page)
         ocr_menu.add_command(label="Process All Pages", command=self.process_all_pages)
         ocr_menu.add_separator()
+        ocr_menu.add_command(label="Data Labeling Editor", command=self.open_data_labeling_editor)
+        ocr_menu.add_separator()
         ocr_menu.add_command(label="Setup Google Cloud", command=self.setup_google_cloud)
         
         # View menu
@@ -162,6 +170,7 @@ class OCRViewerApp:
         # OCR operations
         ttk.Button(self.toolbar, text="Process Page", command=self.process_current_page).pack(side=tk.LEFT, padx=2)
         ttk.Button(self.toolbar, text="Process All", command=self.process_all_pages).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.toolbar, text="Edit Data", command=self.open_data_labeling_editor).pack(side=tk.LEFT, padx=2)
         ttk.Separator(self.toolbar, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=5, fill=tk.Y)
         
         # Navigation
@@ -892,3 +901,28 @@ Features:
 © 2025 - Professional OCR Solutions"""
         
         messagebox.showinfo("About OCR Viewer", about_text)
+    
+    def open_data_labeling_editor(self):
+        """Open the data labeling editor"""
+        try:
+            if not self.ocr_results:
+                messagebox.showwarning(
+                    "No OCR Results", 
+                    "Please process a PDF with OCR first before opening the data labeling editor."
+                )
+                return
+                
+            if not DataLabelingEditor:
+                messagebox.showerror(
+                    "Feature Not Available", 
+                    "Data labeling editor is not available. Please check the installation."
+                )
+                return
+                
+            # Open the data labeling editor
+            editor = DataLabelingEditor(self.root, self.ocr_results)
+            editor.open_editor()
+            
+        except Exception as e:
+            logger.error(f"Error opening data labeling editor: {str(e)}")
+            messagebox.showerror("Error", f"Failed to open data labeling editor:\n{str(e)}")
