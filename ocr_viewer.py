@@ -96,6 +96,17 @@ class OCRViewerApp:
         self.text_blocks = []
         self.selected_block = None
         
+        # Structured data storage for element-value relations
+        self.structured_data = {
+            'relations': [],  # List of {element: str, value: str, confidence: float}
+            'metadata': {
+                'created': None,
+                'last_modified': None,
+                'pdf_file': None,
+                'total_relations': 0
+            }
+        }
+        
         # Initialize handlers
         self.pdf_handler = PDFHandler() if PDFHandler else None
         self.google_ocr = GoogleCloudOCR() if GoogleCloudOCR else None
@@ -130,6 +141,15 @@ class OCRViewerApp:
         file_menu.add_command(label="Export Text...", command=self.export_text)
         file_menu.add_command(label="Export JSON...", command=self.export_json)
         file_menu.add_command(label="Export CSV...", command=self.export_csv)
+        file_menu.add_separator()
+        
+        # Structured Data submenu
+        structured_menu = tk.Menu(file_menu, tearoff=0)
+        file_menu.add_cascade(label="Structured Data", menu=structured_menu)
+        structured_menu.add_command(label="Export JSON...", command=self.export_structured_json)
+        structured_menu.add_command(label="Export CSV...", command=self.export_structured_csv)
+        structured_menu.add_command(label="Export Excel...", command=self.export_structured_excel)
+        
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         
@@ -257,6 +277,9 @@ class OCRViewerApp:
         # Blocks tab
         self.create_blocks_tab()
         
+        # Structured Data tab
+        self.create_structured_data_tab()
+        
         # Statistics tab
         self.create_statistics_tab()
         
@@ -315,6 +338,131 @@ class OCRViewerApp:
         # Bind selection event
         self.blocks_tree.bind('<<TreeviewSelect>>', self.on_block_select)
         
+    def create_structured_data_tab(self):
+        """Create the structured data tab for element-value relations"""
+        structured_frame = ttk.Frame(self.notebook, style='Modern.TFrame')
+        self.notebook.add(structured_frame, text="Structured Data")
+        
+        # Top controls frame
+        controls_frame = ttk.Frame(structured_frame, style='Modern.TFrame')
+        controls_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        # Load relations from data labeling editor
+        ttk.Button(
+            controls_frame, 
+            text="Refresh Relations", 
+            command=self.load_relations_from_editor,
+            style='Secondary.TButton'
+        ).pack(side=tk.LEFT, padx=2)
+        
+        ttk.Separator(controls_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        
+        # Export buttons
+        ttk.Button(
+            controls_frame, 
+            text="Export JSON", 
+            command=self.export_structured_json,
+            style='Secondary.TButton'
+        ).pack(side=tk.LEFT, padx=2)
+        
+        ttk.Button(
+            controls_frame, 
+            text="Export CSV", 
+            command=self.export_structured_csv,
+            style='Secondary.TButton'
+        ).pack(side=tk.LEFT, padx=2)
+        
+        ttk.Button(
+            controls_frame, 
+            text="Export Excel", 
+            command=self.export_structured_excel,
+            style='Secondary.TButton'
+        ).pack(side=tk.LEFT, padx=2)
+        
+        ttk.Separator(controls_frame, orient=tk.VERTICAL).pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        
+        # Clear button
+        ttk.Button(
+            controls_frame, 
+            text="Clear All", 
+            command=self.clear_structured_data,
+            style='Secondary.TButton'
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Relations count label and auto-sync info
+        info_frame = ttk.Frame(controls_frame, style='Modern.TFrame')
+        info_frame.pack(side=tk.RIGHT, padx=10)
+        
+        self.relations_count_label = ttk.Label(
+            info_frame, 
+            text="Relations: 0",
+            style='Info.TLabel'
+        )
+        self.relations_count_label.pack(side=tk.TOP)
+        
+        auto_sync_label = ttk.Label(
+            info_frame,
+            text="⚡ Auto-synced with Data Editor",
+            style='Modern.TLabel',
+            font=('Segoe UI', 8, 'italic')
+        )
+        auto_sync_label.pack(side=tk.TOP)
+        
+        # Relations treeview
+        tree_frame = ttk.Frame(structured_frame, style='Modern.TFrame')
+        tree_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        
+        # Create treeview for structured data
+        columns = ('Element', 'Value', 'Confidence', 'Source')
+        self.structured_tree = ttk.Treeview(
+            tree_frame, 
+            columns=columns, 
+            show='headings',
+            style='Modern.Treeview'
+        )
+        
+        # Configure columns
+        self.structured_tree.heading('Element', text='Element')
+        self.structured_tree.heading('Value', text='Value')
+        self.structured_tree.heading('Confidence', text='Confidence')
+        self.structured_tree.heading('Source', text='Source')
+        
+        # Set column widths
+        self.structured_tree.column('Element', width=150, minwidth=100)
+        self.structured_tree.column('Value', width=200, minwidth=150)
+        self.structured_tree.column('Confidence', width=100, minwidth=80)
+        self.structured_tree.column('Source', width=120, minwidth=100)
+        
+        # Scrollbars for structured data treeview
+        structured_v_scrollbar = ttk.Scrollbar(
+            tree_frame, 
+            orient=tk.VERTICAL, 
+            command=self.structured_tree.yview
+        )
+        structured_h_scrollbar = ttk.Scrollbar(
+            tree_frame, 
+            orient=tk.HORIZONTAL, 
+            command=self.structured_tree.xview
+        )
+        
+        self.structured_tree.configure(
+            yscrollcommand=structured_v_scrollbar.set,
+            xscrollcommand=structured_h_scrollbar.set
+        )
+        
+        # Pack treeview and scrollbars
+        self.structured_tree.grid(row=0, column=0, sticky='nsew')
+        structured_v_scrollbar.grid(row=0, column=1, sticky='ns')
+        structured_h_scrollbar.grid(row=1, column=0, sticky='ew')
+        
+        # Configure grid weights
+        tree_frame.grid_rowconfigure(0, weight=1)
+        tree_frame.grid_columnconfigure(0, weight=1)
+        
+        # Bind events
+        self.structured_tree.bind('<Double-1>', self.on_structured_data_double_click)
+        self.structured_tree.bind('<Delete>', self.delete_selected_relation)
+
     def create_statistics_tab(self):
         """Create the statistics tab"""
         stats_frame = ttk.Frame(self.notebook)
@@ -903,7 +1051,7 @@ Features:
         messagebox.showinfo("About OCR Viewer", about_text)
     
     def open_data_labeling_editor(self):
-        """Open the data labeling editor"""
+        """Open the data labeling editor with automatic data transfer"""
         try:
             if not self.ocr_results:
                 messagebox.showwarning(
@@ -919,10 +1067,244 @@ Features:
                 )
                 return
                 
-            # Open the data labeling editor
-            editor = DataLabelingEditor(self.root, self.ocr_results)
+            # Create callback function to automatically update structured data
+            def on_data_changed(relations):
+                """Callback function to update structured data automatically"""
+                try:
+                    # Update structured data
+                    self.structured_data['relations'] = relations
+                    self.structured_data['metadata']['last_modified'] = datetime.now().isoformat()
+                    self.structured_data['metadata']['pdf_file'] = self.current_pdf_path
+                    self.structured_data['metadata']['total_relations'] = len(relations)
+                    
+                    if not self.structured_data['metadata']['created']:
+                        self.structured_data['metadata']['created'] = datetime.now().isoformat()
+                    
+                    # Update display immediately
+                    self.update_structured_data_display()
+                    
+                    logger.info(f"Automatically updated structured data with {len(relations)} relations")
+                    
+                except Exception as e:
+                    logger.error(f"Error in data change callback: {str(e)}")
+                
+            # Open the data labeling editor with callback
+            editor = DataLabelingEditor(self.root, self.ocr_results, callback=on_data_changed)
             editor.open_editor()
             
         except Exception as e:
             logger.error(f"Error opening data labeling editor: {str(e)}")
             messagebox.showerror("Error", f"Failed to open data labeling editor:\n{str(e)}")
+
+    # Structured Data Methods
+    def load_relations_from_editor(self):
+        """Load relations from the data labeling editor (now mostly automatic)"""
+        try:
+            if not self.structured_data['relations']:
+                messagebox.showinfo(
+                    "No Relations", 
+                    "No relations found. Use the Data Labeling Editor to create element-value connections.\n\nRelations are automatically transferred when you create connections in the editor."
+                )
+                return
+                
+            # Refresh the display in case of any sync issues
+            self.update_structured_data_display()
+            
+            messagebox.showinfo(
+                "Current Relations", 
+                f"Currently showing {len(self.structured_data['relations'])} relations.\n\nNote: Relations are automatically updated when you use the Data Labeling Editor."
+            )
+                
+        except Exception as e:
+            logger.error(f"Error refreshing relations: {str(e)}")
+            messagebox.showerror("Error", f"Failed to refresh relations:\n{str(e)}")
+    
+    def update_structured_data_display(self):
+        """Update the structured data treeview display"""
+        try:
+            # Clear existing items
+            for item in self.structured_tree.get_children():
+                self.structured_tree.delete(item)
+            
+            # Add relations to treeview
+            for i, relation in enumerate(self.structured_data['relations']):
+                confidence = relation.get('confidence', 0.0)
+                confidence_str = f"{confidence:.2%}" if confidence > 0 else "N/A"
+                
+                # Determine source
+                source = relation.get('source', 'Manual')
+                
+                self.structured_tree.insert(
+                    '',
+                    'end',
+                    values=(
+                        relation.get('element', ''),
+                        relation.get('value', ''),
+                        confidence_str,
+                        source
+                    )
+                )
+            
+            # Update count label
+            count = len(self.structured_data['relations'])
+            self.relations_count_label.config(text=f"Relations: {count}")
+            
+        except Exception as e:
+            logger.error(f"Error updating structured data display: {str(e)}")
+    
+    def export_structured_json(self):
+        """Export structured data to JSON"""
+        try:
+            if not self.structured_data['relations']:
+                messagebox.showwarning("No Data", "No structured data to export.")
+                return
+                
+            file_path = filedialog.asksaveasfilename(
+                title="Export Structured Data as JSON",
+                defaultextension=".json",
+                filetypes=[("JSON files", "*.json"), ("All files", "*.*")]
+            )
+            
+            if file_path:
+                export_data = {
+                    'metadata': self.structured_data['metadata'],
+                    'relations': self.structured_data['relations'],
+                    'export_timestamp': datetime.now().isoformat()
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(export_data, f, indent=2, ensure_ascii=False)
+                
+                messagebox.showinfo("Success", f"Structured data exported to:\n{file_path}")
+                
+        except Exception as e:
+            logger.error(f"Error exporting structured JSON: {str(e)}")
+            messagebox.showerror("Error", f"Failed to export JSON:\n{str(e)}")
+    
+    def export_structured_csv(self):
+        """Export structured data to CSV"""
+        try:
+            if not self.structured_data['relations']:
+                messagebox.showwarning("No Data", "No structured data to export.")
+                return
+                
+            file_path = filedialog.asksaveasfilename(
+                title="Export Structured Data as CSV",
+                defaultextension=".csv",
+                filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+            )
+            
+            if file_path and self.data_exporter:
+                success = self.data_exporter.export_structured_csv(
+                    self.structured_data['relations'], 
+                    file_path
+                )
+                
+                if success:
+                    messagebox.showinfo("Success", f"Structured data exported to:\n{file_path}")
+                else:
+                    messagebox.showerror("Error", "Failed to export CSV file.")
+                    
+        except Exception as e:
+            logger.error(f"Error exporting structured CSV: {str(e)}")
+            messagebox.showerror("Error", f"Failed to export CSV:\n{str(e)}")
+    
+    def export_structured_excel(self):
+        """Export structured data to Excel"""
+        try:
+            if not self.structured_data['relations']:
+                messagebox.showwarning("No Data", "No structured data to export.")
+                return
+                
+            file_path = filedialog.asksaveasfilename(
+                title="Export Structured Data as Excel",
+                defaultextension=".xlsx",
+                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
+            )
+            
+            if file_path and self.data_exporter:
+                success = self.data_exporter.export_structured_excel(
+                    self.structured_data['relations'], 
+                    file_path,
+                    self.structured_data['metadata']
+                )
+                
+                if success:
+                    messagebox.showinfo("Success", f"Structured data exported to:\n{file_path}")
+                else:
+                    messagebox.showerror("Error", "Failed to export Excel file.")
+                    
+        except Exception as e:
+            logger.error(f"Error exporting structured Excel: {str(e)}")
+            messagebox.showerror("Error", f"Failed to export Excel:\n{str(e)}")
+    
+    def clear_structured_data(self):
+        """Clear all structured data"""
+        try:
+            if not self.structured_data['relations']:
+                messagebox.showinfo("No Data", "No structured data to clear.")
+                return
+                
+            result = messagebox.askyesno(
+                "Confirm Clear", 
+                f"Are you sure you want to clear all {len(self.structured_data['relations'])} relations?\n\nThis action cannot be undone."
+            )
+            
+            if result:
+                self.structured_data['relations'] = []
+                self.structured_data['metadata']['total_relations'] = 0
+                self.structured_data['metadata']['last_modified'] = datetime.now().isoformat()
+                self.update_structured_data_display()
+                messagebox.showinfo("Success", "All structured data cleared.")
+                
+        except Exception as e:
+            logger.error(f"Error clearing structured data: {str(e)}")
+            messagebox.showerror("Error", f"Failed to clear data:\n{str(e)}")
+    
+    def on_structured_data_double_click(self, event):
+        """Handle double-click on structured data item"""
+        try:
+            selection = self.structured_tree.selection()
+            if selection:
+                item = self.structured_tree.item(selection[0])
+                values = item['values']
+                
+                # Show detailed information about the relation
+                info_text = f"""Element: {values[0]}
+Value: {values[1]}
+Confidence: {values[2]}
+Source: {values[3]}"""
+                
+                messagebox.showinfo("Relation Details", info_text)
+                
+        except Exception as e:
+            logger.error(f"Error handling structured data double-click: {str(e)}")
+    
+    def delete_selected_relation(self, event):
+        """Delete selected relation from structured data"""
+        try:
+            selection = self.structured_tree.selection()
+            if not selection:
+                return
+                
+            result = messagebox.askyesno(
+                "Confirm Delete", 
+                "Are you sure you want to delete the selected relation?"
+            )
+            
+            if result:
+                # Get the index of the selected item
+                item_index = self.structured_tree.index(selection[0])
+                
+                # Remove from data
+                if 0 <= item_index < len(self.structured_data['relations']):
+                    del self.structured_data['relations'][item_index]
+                    self.structured_data['metadata']['total_relations'] = len(self.structured_data['relations'])
+                    self.structured_data['metadata']['last_modified'] = datetime.now().isoformat()
+                    
+                    # Update display
+                    self.update_structured_data_display()
+                    
+        except Exception as e:
+            logger.error(f"Error deleting relation: {str(e)}")
+            messagebox.showerror("Error", f"Failed to delete relation:\n{str(e)}")

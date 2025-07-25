@@ -370,3 +370,167 @@ class DataExporter:
         except Exception as e:
             logger.error(f"Error generating statistics: {str(e)}")
             return {}
+    
+    def export_structured_csv(self, relations: List[Dict], file_path: str) -> bool:
+        """
+        Export structured element-value relations to CSV format
+        
+        Args:
+            relations: List of element-value relation dictionaries
+            file_path: Output file path
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                
+                # Write header
+                writer.writerow(['Element', 'Value', 'Confidence', 'Source', 'Created'])
+                
+                # Write data rows
+                for relation in relations:
+                    confidence = relation.get('confidence', 0.0)
+                    confidence_str = f"{confidence:.4f}" if confidence > 0 else "N/A"
+                    
+                    writer.writerow([
+                        relation.get('element', ''),
+                        relation.get('value', ''),
+                        confidence_str,
+                        relation.get('source', 'Manual'),
+                        relation.get('created', datetime.now().isoformat())
+                    ])
+            
+            logger.info(f"Structured CSV exported successfully to: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error exporting structured CSV: {str(e)}")
+            return False
+    
+    def export_structured_excel(self, relations: List[Dict], file_path: str, metadata: Dict = None) -> bool:
+        """
+        Export structured element-value relations to Excel format
+        
+        Args:
+            relations: List of element-value relation dictionaries
+            file_path: Output file path
+            metadata: Optional metadata dictionary
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Try to import openpyxl for Excel export
+            try:
+                from openpyxl import Workbook
+                from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+                from openpyxl.utils import get_column_letter
+            except ImportError:
+                logger.error("openpyxl not available for Excel export")
+                return False
+            
+            wb = Workbook()
+            
+            # Main relations sheet
+            ws_relations = wb.active
+            ws_relations.title = "Element_Value_Relations"
+            
+            # Headers
+            headers = ['Element', 'Value', 'Confidence', 'Source', 'Created']
+            for col, header in enumerate(headers, 1):
+                cell = ws_relations.cell(row=1, column=col, value=header)
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="4A90E2", end_color="4A90E2", fill_type="solid")
+                cell.font = Font(color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center")
+            
+            # Data rows
+            for row, relation in enumerate(relations, 2):
+                confidence = relation.get('confidence', 0.0)
+                confidence_str = f"{confidence:.4f}" if confidence > 0 else "N/A"
+                
+                ws_relations.cell(row=row, column=1, value=relation.get('element', ''))
+                ws_relations.cell(row=row, column=2, value=relation.get('value', ''))
+                ws_relations.cell(row=row, column=3, value=confidence_str)
+                ws_relations.cell(row=row, column=4, value=relation.get('source', 'Manual'))
+                ws_relations.cell(row=row, column=5, value=relation.get('created', datetime.now().isoformat()))
+                
+                # Color coding based on confidence
+                if confidence >= 0.8:
+                    fill_color = "E8F5E8"  # Light green
+                elif confidence >= 0.6:
+                    fill_color = "FFF4E6"  # Light orange
+                else:
+                    fill_color = "FFE6E6"  # Light red
+                
+                for col in range(1, 6):
+                    ws_relations.cell(row=row, column=col).fill = PatternFill(
+                        start_color=fill_color, end_color=fill_color, fill_type="solid"
+                    )
+            
+            # Auto-adjust column widths
+            for col in range(1, 6):
+                max_length = 0
+                column_letter = get_column_letter(col)
+                for row in ws_relations[column_letter]:
+                    try:
+                        if len(str(row.value)) > max_length:
+                            max_length = len(str(row.value))
+                    except:
+                        pass
+                adjusted_width = min(max_length + 2, 50)
+                ws_relations.column_dimensions[column_letter].width = adjusted_width
+            
+            # Metadata sheet
+            if metadata:
+                ws_metadata = wb.create_sheet("Metadata")
+                
+                # Metadata headers
+                ws_metadata.cell(row=1, column=1, value="Property").font = Font(bold=True)
+                ws_metadata.cell(row=1, column=2, value="Value").font = Font(bold=True)
+                
+                # Metadata rows
+                row = 2
+                for key, value in metadata.items():
+                    ws_metadata.cell(row=row, column=1, value=str(key))
+                    ws_metadata.cell(row=row, column=2, value=str(value))
+                    row += 1
+                
+                # Auto-adjust metadata columns
+                for col in [1, 2]:
+                    column_letter = get_column_letter(col)
+                    ws_metadata.column_dimensions[column_letter].width = 20
+            
+            # Summary sheet
+            ws_summary = wb.create_sheet("Summary")
+            ws_summary.cell(row=1, column=1, value="Structured Data Export Summary").font = Font(size=16, bold=True)
+            ws_summary.cell(row=3, column=1, value="Total Relations:").font = Font(bold=True)
+            ws_summary.cell(row=3, column=2, value=len(relations))
+            
+            # Confidence distribution
+            high_conf = sum(1 for r in relations if r.get('confidence', 0) >= 0.8)
+            med_conf = sum(1 for r in relations if 0.6 <= r.get('confidence', 0) < 0.8)
+            low_conf = sum(1 for r in relations if r.get('confidence', 0) < 0.6)
+            
+            ws_summary.cell(row=5, column=1, value="Confidence Distribution:").font = Font(bold=True)
+            ws_summary.cell(row=6, column=1, value="High (≥80%):")
+            ws_summary.cell(row=6, column=2, value=high_conf)
+            ws_summary.cell(row=7, column=1, value="Medium (60-79%):")
+            ws_summary.cell(row=7, column=2, value=med_conf)
+            ws_summary.cell(row=8, column=1, value="Low (<60%):")
+            ws_summary.cell(row=8, column=2, value=low_conf)
+            
+            ws_summary.cell(row=10, column=1, value="Export Date:").font = Font(bold=True)
+            ws_summary.cell(row=10, column=2, value=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            
+            # Save the workbook
+            wb.save(file_path)
+            
+            logger.info(f"Structured Excel exported successfully to: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error exporting structured Excel: {str(e)}")
+            return False

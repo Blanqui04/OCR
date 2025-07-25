@@ -405,6 +405,10 @@ class ModernTheme:
         else:
             return self.colors['confidence_low']
     
+    def get_confidence_color(self, confidence):
+        """Backward compatibility method for get_text_color_for_confidence"""
+        return self.get_text_color_for_confidence(confidence)
+    
     def get_background_color_for_confidence(self, confidence, selected=False):
         """Get appropriate background color based on confidence level"""
         if selected:

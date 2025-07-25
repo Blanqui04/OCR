@@ -17,17 +17,19 @@ logger = logging.getLogger(__name__)
 class DataLabelingEditor:
     """Interactive data labeling editor for OCR results"""
     
-    def __init__(self, parent_window, ocr_results: Dict):
+    def __init__(self, parent_window, ocr_results: Dict, callback=None):
         """
         Initialize the data labeling editor
         
         Args:
             parent_window: Parent tkinter window
             ocr_results: OCR results dictionary
+            callback: Optional callback function to call when data changes
         """
         self.parent = parent_window
         self.ocr_results = ocr_results
         self.window = None
+        self.callback = callback  # Callback function for data changes
         
         # Data structures
         self.element_numbers = []  # List of detected element numbers
@@ -621,6 +623,9 @@ class DataLabelingEditor:
             self.update_connections_list()
             self.update_status()
             
+            # Notify parent about data change
+            self.notify_data_changed()
+            
             # Clear selections
             self.elements_tree.selection_remove(self.elements_tree.selection())
             self.values_tree.selection_remove(self.values_tree.selection())
@@ -649,6 +654,10 @@ class DataLabelingEditor:
                 del self.connections[element_text]
                 self.update_connections_list()
                 self.update_status()
+                
+                # Notify parent about data change
+                self.notify_data_changed()
+                
                 logger.info(f"Disconnected element '{element_text}'")
             
         except Exception as e:
@@ -666,6 +675,10 @@ class DataLabelingEditor:
                     self.connections.clear()
                     self.update_connections_list()
                     self.update_status()
+                    
+                    # Notify parent about data change
+                    self.notify_data_changed()
+                    
                     logger.info("Cleared all connections")
             
         except Exception as e:
@@ -874,6 +887,9 @@ class DataLabelingEditor:
             self.update_connections_list()
             self.update_status()
             
+            # Notify parent about data change
+            self.notify_data_changed()
+            
             messagebox.showinfo("Success", f"Loaded {len(self.connections)} connections from dataset")
             logger.info(f"Dataset loaded from {file_path}")
             
@@ -1029,3 +1045,66 @@ class DataLabelingEditor:
         except Exception as e:
             logger.error(f"Error deleting value: {str(e)}")
             messagebox.showerror("Error", f"Failed to delete value: {str(e)}")
+    
+    def get_relations(self) -> List[Dict]:
+        """
+        Get all element-value relations in structured format
+        
+        Returns:
+            List of relation dictionaries with element, value, confidence, and source
+        """
+        relations = []
+        
+        try:
+            for element_text, connection in self.connections.items():
+                element = connection['element']
+                value = connection['value']
+                
+                # Calculate confidence based on OCR confidence
+                element_confidence = element.get('confidence', 0.0)
+                value_confidence = value.get('confidence', 0.0)
+                
+                # Use average confidence, or 0.5 for manual entries
+                if element_confidence > 0 and value_confidence > 0:
+                    avg_confidence = (element_confidence + value_confidence) / 2
+                elif element_confidence > 0:
+                    avg_confidence = element_confidence
+                elif value_confidence > 0:
+                    avg_confidence = value_confidence
+                else:
+                    avg_confidence = 0.5  # Default for manual entries
+                
+                # Determine source
+                source = "OCR"
+                if element.get('manual', False) or value.get('manual', False):
+                    source = "Manual"
+                elif element.get('manual', False) and value.get('manual', False):
+                    source = "Manual"
+                
+                relation = {
+                    'element': element['text'],
+                    'value': value['text'],
+                    'confidence': avg_confidence,
+                    'source': source,
+                    'created': datetime.now().isoformat(),
+                    'element_bbox': element.get('bbox', []),
+                    'value_bbox': value.get('bbox', [])
+                }
+                
+                relations.append(relation)
+                
+            logger.info(f"Retrieved {len(relations)} relations from data labeling editor")
+            return relations
+            
+        except Exception as e:
+            logger.error(f"Error getting relations: {str(e)}")
+            return []
+    
+    def notify_data_changed(self):
+        """Notify the parent application that data has changed"""
+        try:
+            if self.callback:
+                relations = self.get_relations()
+                self.callback(relations)
+        except Exception as e:
+            logger.error(f"Error in data change callback: {str(e)}")
