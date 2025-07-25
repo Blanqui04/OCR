@@ -8,12 +8,12 @@ if exist "venv\Scripts\activate.bat" (
     python main.py
 ) else (
     echo Virtual environment not found. Running setup first...
-    call setup_new.bat
+    call setup.bat
     if exist "venv\Scripts\activate.bat" (
         call venv\Scripts\activate.bat
         python main.py
     ) else (
-        echo Setup failed. Please run setup_new.bat manually.
+        echo Setup failed. Please run setup.bat manually.
         pause
     )
 )

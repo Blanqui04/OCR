@@ -1,13 +1,22 @@
-# Requisits de l'aplicació professional de visualització OCR
-# Integració de Google Cloud Document AI amb visualització de PDF
+# OCR Viewer Application - Requirements
+# Professional OCR visualization tool with Google Cloud Document AI integration
 
-# Dependències principals
-google-cloud-documentai>=2.20.0
-Pillow>=10.0.0
+# Core dependencies for PDF handling
 PyMuPDF>=1.23.0
+Pillow>=10.0.0
 
-# Funcionalitat d'exportació
+# Google Cloud Document AI
+google-cloud-documentai>=2.20.0
+google-api-core>=2.11.0
+
+# Export functionality
 reportlab>=4.0.0
 
-# Interfície d'usuari i utilitats (tkinter està inclòs amb Python)
-# Ja estan instal·lades o incloses amb Python
+# Additional utilities
+python-dateutil>=2.8.0
+requests>=2.31.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# black>=23.0.0
+# flake8>=6.0.0
