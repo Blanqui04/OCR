@@ -1,15 +1,5 @@
 [
   {
-    "text": "DEL_No.",
-    "bbox": [
-      778,
-      467,
-      245,
-      44
-    ],
-    "confidence": 58
-  },
-  {
     "text": "&%",
     "bbox": [
       5054,
@@ -17,17 +7,9 @@
       141,
       77
     ],
-    "confidence": 48
-  },
-  {
-    "text": ">",
-    "bbox": [
-      5670,
-      647,
-      27,
-      35
-    ],
-    "confidence": 44
+    "line_index": 2517,
+    "distance": 80.95060222135473,
+    "orientation": "vertical"
   },
   {
     "text": "Wo:",
@@ -37,7 +19,9 @@
       72,
       36
     ],
-    "confidence": 85
+    "line_index": 568,
+    "distance": 51.034302189801714,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -47,7 +31,9 @@
       77,
       37
     ],
-    "confidence": 59
+    "line_index": 2562,
+    "distance": 4.716990566028302,
+    "orientation": "vertical"
   },
   {
     "text": "eee",
@@ -57,7 +43,9 @@
       2098,
       103
     ],
-    "confidence": 31
+    "line_index": 41,
+    "distance": 50.5618433208284,
+    "orientation": "vertical"
   },
   {
     "text": "[LR",
@@ -67,7 +55,9 @@
       270,
       119
     ],
-    "confidence": 34
+    "line_index": 2686,
+    "distance": 17.356554957709783,
+    "orientation": "vertical"
   },
   {
     "text": "ASK",
@@ -77,7 +67,9 @@
       107,
       73
     ],
-    "confidence": 65
+    "line_index": 2486,
+    "distance": 40.512343797909296,
+    "orientation": "vertical"
   },
   {
     "text": "y,",
@@ -87,7 +79,9 @@
       42,
       109
     ],
-    "confidence": 51
+    "line_index": 2292,
+    "distance": 52.11765535785354,
+    "orientation": "vertical"
   },
   {
     "text": "7/",
@@ -97,7 +91,9 @@
       148,
       222
     ],
-    "confidence": 74
+    "line_index": 2413,
+    "distance": 39.654760117796705,
+    "orientation": "vertical"
   },
   {
     "text": "SS",
@@ -107,7 +103,9 @@
       96,
       46
     ],
-    "confidence": 78
+    "line_index": 1221,
+    "distance": 11.180339887498949,
+    "orientation": "vertical"
   },
   {
     "text": "~",
@@ -117,7 +115,9 @@
       42,
       51
     ],
-    "confidence": 40
+    "line_index": 294,
+    "distance": 129.81236458827794,
+    "orientation": "vertical"
   },
   {
     "text": "SS",
@@ -127,7 +127,9 @@
       118,
       57
     ],
-    "confidence": 77
+    "line_index": 868,
+    "distance": 58.412327466040935,
+    "orientation": "vertical"
   },
   {
     "text": "SS",
@@ -137,17 +139,9 @@
       80,
       109
     ],
-    "confidence": 92
-  },
-  {
-    "text": "5.5791",
-    "bbox": [
-      650,
-      1319,
-      265,
-      77
-    ],
-    "confidence": 31
+    "line_index": 2113,
+    "distance": 5.522680508593631,
+    "orientation": "vertical"
   },
   {
     "text": ")",
@@ -157,17 +151,9 @@
       26,
       39
     ],
-    "confidence": 89
-  },
-  {
-    "text": "(",
-    "bbox": [
-      199,
-      1434,
-      18,
-      31
-    ],
-    "confidence": 37
+    "line_index": 2419,
+    "distance": 89.09826036461094,
+    "orientation": "vertical"
   },
   {
     "text": "S>",
@@ -177,7 +163,9 @@
       155,
       99
     ],
-    "confidence": 39
+    "line_index": 1227,
+    "distance": 42.10997506529777,
+    "orientation": "vertical"
   },
   {
     "text": "|",
@@ -187,7 +175,9 @@
       3,
       83
     ],
-    "confidence": 94
+    "line_index": 2502,
+    "distance": 121.00103305344132,
+    "orientation": "vertical"
   },
   {
     "text": "B",
@@ -197,7 +187,9 @@
       54,
       73
     ],
-    "confidence": 79
+    "line_index": 2571,
+    "distance": 142.22517358048822,
+    "orientation": "vertical"
   },
   {
     "text": "Y",
@@ -207,7 +199,9 @@
       46,
       83
     ],
-    "confidence": 41
+    "line_index": 1958,
+    "distance": 37.963798545456434,
+    "orientation": "vertical"
   },
   {
     "text": "Le",
@@ -217,7 +211,9 @@
       78,
       94
     ],
-    "confidence": 40
+    "line_index": 2599,
+    "distance": 48.104053883222775,
+    "orientation": "vertical"
   },
   {
     "text": "Se)",
@@ -227,7 +223,9 @@
       185,
       119
     ],
-    "confidence": 36
+    "line_index": 2507,
+    "distance": 43.982951242498494,
+    "orientation": "vertical"
   },
   {
     "text": "|",
@@ -237,7 +235,9 @@
       19,
       57
     ],
-    "confidence": 74
+    "line_index": 2425,
+    "distance": 37.16517186829626,
+    "orientation": "vertical"
   },
   {
     "text": "A",
@@ -247,7 +247,9 @@
       72,
       72
     ],
-    "confidence": 77
+    "line_index": 2507,
+    "distance": 37.656340767525464,
+    "orientation": "vertical"
   },
   {
     "text": "[0.2",
@@ -257,7 +259,9 @@
       223,
       160
     ],
-    "confidence": 37
+    "line_index": 1534,
+    "distance": 43.072613108563544,
+    "orientation": "vertical"
   },
   {
     "text": "Z",
@@ -267,7 +271,9 @@
       41,
       69
     ],
-    "confidence": 83
+    "line_index": 787,
+    "distance": 36.09016486523718,
+    "orientation": "vertical"
   },
   {
     "text": "4",
@@ -277,7 +283,9 @@
       53,
       70
     ],
-    "confidence": 59
+    "line_index": 2740,
+    "distance": 11.10180165558726,
+    "orientation": "vertical"
   },
   {
     "text": "03",
@@ -287,7 +295,9 @@
       51,
       43
     ],
-    "confidence": 53
+    "line_index": 2369,
+    "distance": 114.08878121883852,
+    "orientation": "vertical"
   },
   {
     "text": "4",
@@ -297,7 +307,9 @@
       19,
       84
     ],
-    "confidence": 41
+    "line_index": 529,
+    "distance": 14.577379737113251,
+    "orientation": "vertical"
   },
   {
     "text": "woe",
@@ -307,7 +319,9 @@
       107,
       62
     ],
-    "confidence": 44
+    "line_index": 1928,
+    "distance": 30.20761493398643,
+    "orientation": "vertical"
   },
   {
     "text": "oT",
@@ -317,7 +331,9 @@
       303,
       47
     ],
-    "confidence": 32
+    "line_index": 409,
+    "distance": 22.522211259110417,
+    "orientation": "vertical"
   },
   {
     "text": "FRAME",
@@ -327,7 +343,9 @@
       185,
       43
     ],
-    "confidence": 85
+    "line_index": 85,
+    "distance": 46.502688094345686,
+    "orientation": "vertical"
   },
   {
     "text": "}",
@@ -337,7 +355,9 @@
       16,
       36
     ],
-    "confidence": 48
+    "line_index": 2612,
+    "distance": 95.60334722173695,
+    "orientation": "vertical"
   },
   {
     "text": "re",
@@ -347,7 +367,9 @@
       319,
       103
     ],
-    "confidence": 51
+    "line_index": 2247,
+    "distance": 40.893153461184674,
+    "orientation": "vertical"
   },
   {
     "text": "aS",
@@ -357,7 +379,9 @@
       571,
       148
     ],
-    "confidence": 34
+    "line_index": 266,
+    "distance": 39.293765408777,
+    "orientation": "vertical"
   },
   {
     "text": "i",
@@ -367,7 +391,9 @@
       48,
       77
     ],
-    "confidence": 70
+    "line_index": 2409,
+    "distance": 57.55866572463264,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -377,7 +403,9 @@
       32,
       41
     ],
-    "confidence": 59
+    "line_index": 324,
+    "distance": 66.7026985960838,
+    "orientation": "vertical"
   },
   {
     "text": ")",
@@ -387,7 +415,9 @@
       20,
       78
     ],
-    "confidence": 48
+    "line_index": 2565,
+    "distance": 44.82186966202994,
+    "orientation": "vertical"
   },
   {
     "text": "\\\\",
@@ -397,17 +427,9 @@
       56,
       102
     ],
-    "confidence": 90
-  },
-  {
-    "text": "-",
-    "bbox": [
-      196,
-      3202,
-      15,
-      31
-    ],
-    "confidence": 38
+    "line_index": 2640,
+    "distance": 50.15974481593781,
+    "orientation": "vertical"
   },
   {
     "text": "a",
@@ -417,7 +439,9 @@
       101,
       111
     ],
-    "confidence": 39
+    "line_index": 2604,
+    "distance": 33.53356527421443,
+    "orientation": "vertical"
   },
   {
     "text": "x",
@@ -427,7 +451,9 @@
       31,
       42
     ],
-    "confidence": 31
+    "line_index": 423,
+    "distance": 123.82750098423209,
+    "orientation": "vertical"
   },
   {
     "text": "5",
@@ -437,7 +463,9 @@
       68,
       93
     ],
-    "confidence": 49
+    "line_index": 2329,
+    "distance": 89.15295844782717,
+    "orientation": "vertical"
   },
   {
     "text": "si,",
@@ -447,17 +475,9 @@
       239,
       70
     ],
-    "confidence": 37
-  },
-  {
-    "text": "F",
-    "bbox": [
-      9838,
-      3189,
-      16,
-      30
-    ],
-    "confidence": 91
+    "line_index": 2549,
+    "distance": 102.55973868921468,
+    "orientation": "vertical"
   },
   {
     "text": "9",
@@ -467,7 +487,9 @@
       32,
       65
     ],
-    "confidence": 83
+    "line_index": 1439,
+    "distance": 61.80008090609591,
+    "orientation": "vertical"
   },
   {
     "text": "Hf",
@@ -477,7 +499,9 @@
       46,
       85
     ],
-    "confidence": 58
+    "line_index": 1952,
+    "distance": 21.783020910791965,
+    "orientation": "vertical"
   },
   {
     "text": "2",
@@ -487,7 +511,9 @@
       31,
       51
     ],
-    "confidence": 83
+    "line_index": 423,
+    "distance": 132.31968863324914,
+    "orientation": "vertical"
   },
   {
     "text": "RE",
@@ -497,7 +523,9 @@
       132,
       146
     ],
-    "confidence": 49
+    "line_index": 324,
+    "distance": 69.2314957226839,
+    "orientation": "vertical"
   },
   {
     "text": "U",
@@ -507,7 +535,9 @@
       39,
       18
     ],
-    "confidence": 54
+    "line_index": 1667,
+    "distance": 76.72190039356428,
+    "orientation": "vertical"
   },
   {
     "text": "/f",
@@ -517,7 +547,9 @@
       72,
       144
     ],
-    "confidence": 56
+    "line_index": 2160,
+    "distance": 36.6742416417845,
+    "orientation": "vertical"
   },
   {
     "text": "\\",
@@ -527,7 +559,9 @@
       21,
       80
     ],
-    "confidence": 31
+    "line_index": 495,
+    "distance": 102.55851988011527,
+    "orientation": "vertical"
   },
   {
     "text": "0",
@@ -537,7 +571,9 @@
       43,
       9
     ],
-    "confidence": 34
+    "line_index": 1762,
+    "distance": 118.55167649594839,
+    "orientation": "vertical"
   },
   {
     "text": "y",
@@ -547,7 +583,9 @@
       55,
       119
     ],
-    "confidence": 88
+    "line_index": 2229,
+    "distance": 25.700194551792794,
+    "orientation": "vertical"
   },
   {
     "text": ".",
@@ -557,7 +595,9 @@
       5,
       5
     ],
-    "confidence": 51
+    "line_index": 132,
+    "distance": 53.011791141216875,
+    "orientation": "vertical"
   },
   {
     "text": "VA",
@@ -567,7 +607,9 @@
       46,
       14
     ],
-    "confidence": 77
+    "line_index": 2458,
+    "distance": 7.5,
+    "orientation": "vertical"
   },
   {
     "text": "G",
@@ -577,7 +619,9 @@
       24,
       38
     ],
-    "confidence": 63
+    "line_index": 1765,
+    "distance": 55.154328932550705,
+    "orientation": "vertical"
   },
   {
     "text": "O",
@@ -587,7 +631,9 @@
       44,
       65
     ],
-    "confidence": 31
+    "line_index": 1765,
+    "distance": 50.36119537898202,
+    "orientation": "vertical"
   },
   {
     "text": "\\",
@@ -597,7 +643,9 @@
       17,
       46
     ],
-    "confidence": 93
+    "line_index": 2348,
+    "distance": 22.327113561766108,
+    "orientation": "vertical"
   },
   {
     "text": "A",
@@ -607,7 +655,9 @@
       54,
       72
     ],
-    "confidence": 80
+    "line_index": 2700,
+    "distance": 19.026297590440446,
+    "orientation": "vertical"
   },
   {
     "text": "//",
@@ -617,7 +667,9 @@
       40,
       85
     ],
-    "confidence": 77
+    "line_index": 248,
+    "distance": 45.62071897723665,
+    "orientation": "vertical"
   },
   {
     "text": "alu",
@@ -627,17 +679,9 @@
       130,
       28
     ],
-    "confidence": 35
-  },
-  {
-    "text": "Cw",
-    "bbox": [
-      4311,
-      3352,
-      216,
-      136
-    ],
-    "confidence": 59
+    "line_index": 2097,
+    "distance": 57.28001396647874,
+    "orientation": "vertical"
   },
   {
     "text": "i",
@@ -647,7 +691,9 @@
       48,
       77
     ],
-    "confidence": 81
+    "line_index": 2474,
+    "distance": 49.60090724976712,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -657,7 +703,9 @@
       164,
       81
     ],
-    "confidence": 78
+    "line_index": 1580,
+    "distance": 39.50316443020736,
+    "orientation": "vertical"
   },
   {
     "text": "A\\",
@@ -667,7 +715,9 @@
       62,
       110
     ],
-    "confidence": 31
+    "line_index": 2416,
+    "distance": 26.1725046566048,
+    "orientation": "vertical"
   },
   {
     "text": "a",
@@ -677,7 +727,9 @@
       137,
       69
     ],
-    "confidence": 44
+    "line_index": 2084,
+    "distance": 2.23606797749979,
+    "orientation": "vertical"
   },
   {
     "text": "VY",
@@ -687,7 +739,9 @@
       106,
       156
     ],
-    "confidence": 39
+    "line_index": 1742,
+    "distance": 24.351591323771842,
+    "orientation": "vertical"
   },
   {
     "text": "KAT)",
@@ -697,7 +751,9 @@
       168,
       112
     ],
-    "confidence": 36
+    "line_index": 1580,
+    "distance": 32.035136959282696,
+    "orientation": "vertical"
   },
   {
     "text": "acl",
@@ -707,7 +763,9 @@
       164,
       134
     ],
-    "confidence": 34
+    "line_index": 2610,
+    "distance": 67.09135562797938,
+    "orientation": "vertical"
   },
   {
     "text": "4",
@@ -717,7 +775,9 @@
       42,
       28
     ],
-    "confidence": 64
+    "line_index": 2457,
+    "distance": 10.793516572461451,
+    "orientation": "vertical"
   },
   {
     "text": "L",
@@ -727,17 +787,9 @@
       41,
       67
     ],
-    "confidence": 83
-  },
-  {
-    "text": "BI",
-    "bbox": [
-      1928,
-      3644,
-      86,
-      107
-    ],
-    "confidence": 69
+    "line_index": 2103,
+    "distance": 97.12878049270464,
+    "orientation": "vertical"
   },
   {
     "text": "5",
@@ -747,7 +799,9 @@
       31,
       48
     ],
-    "confidence": 87
+    "line_index": 1827,
+    "distance": 65.74382100243338,
+    "orientation": "vertical"
   },
   {
     "text": ">",
@@ -757,7 +811,9 @@
       51,
       23
     ],
-    "confidence": 75
+    "line_index": 2469,
+    "distance": 7.905694150420948,
+    "orientation": "vertical"
   },
   {
     "text": "Ks",
@@ -767,7 +823,9 @@
       140,
       43
     ],
-    "confidence": 89
+    "line_index": 2301,
+    "distance": 50.81830378908765,
+    "orientation": "vertical"
   },
   {
     "text": "i=",
@@ -777,7 +835,9 @@
       114,
       120
     ],
-    "confidence": 61
+    "line_index": 906,
+    "distance": 25.298221281347036,
+    "orientation": "vertical"
   },
   {
     "text": "\\\\",
@@ -787,7 +847,9 @@
       54,
       134
     ],
-    "confidence": 76
+    "line_index": 335,
+    "distance": 38.48376280978771,
+    "orientation": "vertical"
   },
   {
     "text": "AS",
@@ -797,17 +859,9 @@
       145,
       143
     ],
-    "confidence": 56
-  },
-  {
-    "text": "|",
-    "bbox": [
-      5852,
-      3669,
-      2,
-      37
-    ],
-    "confidence": 80
+    "line_index": 1356,
+    "distance": 61.74544517614235,
+    "orientation": "vertical"
   },
   {
     "text": "2",
@@ -817,7 +871,9 @@
       31,
       52
     ],
-    "confidence": 83
+    "line_index": 1827,
+    "distance": 67.39621651101788,
+    "orientation": "vertical"
   },
   {
     "text": "9",
@@ -827,7 +883,9 @@
       31,
       65
     ],
-    "confidence": 75
+    "line_index": 1495,
+    "distance": 77.47580267412529,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -837,7 +895,9 @@
       41,
       26
     ],
-    "confidence": 56
+    "line_index": 751,
+    "distance": 37.003378224156776,
+    "orientation": "vertical"
   },
   {
     "text": "+h",
@@ -847,27 +907,9 @@
       74,
       109
     ],
-    "confidence": 76
-  },
-  {
-    "text": ">.",
-    "bbox": [
-      6407,
-      3767,
-      38,
-      37
-    ],
-    "confidence": 38
-  },
-  {
-    "text": "G",
-    "bbox": [
-      9836,
-      3762,
-      18,
-      31
-    ],
-    "confidence": 35
+    "line_index": 1791,
+    "distance": 10.688779163215974,
+    "orientation": "vertical"
   },
   {
     "text": "N",
@@ -877,7 +919,9 @@
       23,
       31
     ],
-    "confidence": 69
+    "line_index": 2429,
+    "distance": 13.285330255586423,
+    "orientation": "vertical"
   },
   {
     "text": "e+",
@@ -887,7 +931,9 @@
       218,
       137
     ],
-    "confidence": 43
+    "line_index": 2391,
+    "distance": 23.005434140654682,
+    "orientation": "vertical"
   },
   {
     "text": "an",
@@ -897,7 +943,9 @@
       54,
       56
     ],
-    "confidence": 56
+    "line_index": 2417,
+    "distance": 126.78525150820974,
+    "orientation": "vertical"
   },
   {
     "text": "AK",
@@ -907,7 +955,9 @@
       190,
       65
     ],
-    "confidence": 39
+    "line_index": 924,
+    "distance": 36.44859393721519,
+    "orientation": "vertical"
   },
   {
     "text": "0",
@@ -917,7 +967,9 @@
       26,
       43
     ],
-    "confidence": 75
+    "line_index": 2749,
+    "distance": 112.33098414952127,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -927,7 +979,9 @@
       106,
       69
     ],
-    "confidence": 67
+    "line_index": 2585,
+    "distance": 39.68941924493227,
+    "orientation": "vertical"
   },
   {
     "text": "ae",
@@ -937,7 +991,9 @@
       563,
       140
     ],
-    "confidence": 37
+    "line_index": 2756,
+    "distance": 69.02897942168927,
+    "orientation": "vertical"
   },
   {
     "text": "Ks",
@@ -947,7 +1003,9 @@
       45,
       73
     ],
-    "confidence": 53
+    "line_index": 2343,
+    "distance": 121.00413216084813,
+    "orientation": "vertical"
   },
   {
     "text": "SoS",
@@ -957,7 +1015,9 @@
       164,
       50
     ],
-    "confidence": 39
+    "line_index": 210,
+    "distance": 116.60295879607858,
+    "orientation": "vertical"
   },
   {
     "text": "Ou",
@@ -967,7 +1027,9 @@
       36,
       73
     ],
-    "confidence": 50
+    "line_index": 2447,
+    "distance": 81.00617260431454,
+    "orientation": "vertical"
   },
   {
     "text": "[25\"]",
@@ -977,7 +1039,9 @@
       159,
       119
     ],
-    "confidence": 68
+    "line_index": 1784,
+    "distance": 45.48626166217664,
+    "orientation": "vertical"
   },
   {
     "text": "\\",
@@ -987,7 +1051,9 @@
       15,
       72
     ],
-    "confidence": 53
+    "line_index": 2400,
+    "distance": 66.42665127793211,
+    "orientation": "vertical"
   },
   {
     "text": "|",
@@ -997,7 +1063,9 @@
       94,
       49
     ],
-    "confidence": 39
+    "line_index": 2447,
+    "distance": 35.805027579936315,
+    "orientation": "vertical"
   },
   {
     "text": "8",
@@ -1007,17 +1075,9 @@
       44,
       72
     ],
-    "confidence": 49
-  },
-  {
-    "text": "C",
-    "bbox": [
-      2680,
-      4263,
-      24,
-      38
-    ],
-    "confidence": 33
+    "line_index": 210,
+    "distance": 146.2027701515946,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -1027,7 +1087,9 @@
       53,
       73
     ],
-    "confidence": 60
+    "line_index": 935,
+    "distance": 66.96454285664915,
+    "orientation": "vertical"
   },
   {
     "text": "2",
@@ -1037,47 +1099,9 @@
       32,
       51
     ],
-    "confidence": 93
-  },
-  {
-    "text": "Zz",
-    "bbox": [
-      2673,
-      4305,
-      31,
-      24
-    ],
-    "confidence": 48
-  },
-  {
-    "text": "H",
-    "bbox": [
-      195,
-      4363,
-      17,
-      30
-    ],
-    "confidence": 84
-  },
-  {
-    "text": "H",
-    "bbox": [
-      9832,
-      4362,
-      17,
-      29
-    ],
-    "confidence": 88
-  },
-  {
-    "text": "Alas",
-    "bbox": [
-      1763,
-      4391,
-      221,
-      100
-    ],
-    "confidence": 41
+    "line_index": 2447,
+    "distance": 67.95586803212802,
+    "orientation": "vertical"
   },
   {
     "text": "a",
@@ -1087,7 +1111,9 @@
       163,
       80
     ],
-    "confidence": 72
+    "line_index": 698,
+    "distance": 64.30007776045065,
+    "orientation": "vertical"
   },
   {
     "text": "BS)",
@@ -1097,7 +1123,9 @@
       161,
       104
     ],
-    "confidence": 40
+    "line_index": 1175,
+    "distance": 63.79067329947224,
+    "orientation": "vertical"
   },
   {
     "text": "AGREEMENT.",
@@ -1107,7 +1135,9 @@
       193,
       31
     ],
-    "confidence": 80
+    "line_index": 1818,
+    "distance": 33.0037876614185,
+    "orientation": "vertical"
   },
   {
     "text": "DEL_No.",
@@ -1117,7 +1147,9 @@
       245,
       43
     ],
-    "confidence": 63
+    "line_index": 729,
+    "distance": 53.781967238099426,
+    "orientation": "vertical"
   },
   {
     "text": "K",
@@ -1127,17 +1159,9 @@
       54,
       73
     ],
-    "confidence": 79
-  },
-  {
-    "text": "J",
-    "bbox": [
-      198,
-      4939,
-      13,
-      30
-    ],
-    "confidence": 96
+    "line_index": 1427,
+    "distance": 64.5077514722068,
+    "orientation": "vertical"
   },
   {
     "text": "908",
@@ -1147,17 +1171,9 @@
       77,
       51
     ],
-    "confidence": 78
-  },
-  {
-    "text": "J",
-    "bbox": [
-      9837,
-      4929,
-      13,
-      31
-    ],
-    "confidence": 94
+    "line_index": 2192,
+    "distance": 85.6650453802483,
+    "orientation": "vertical"
   },
   {
     "text": "ro)",
@@ -1167,7 +1183,9 @@
       101,
       60
     ],
-    "confidence": 39
+    "line_index": 2184,
+    "distance": 44.51123453691214,
+    "orientation": "vertical"
   },
   {
     "text": ">",
@@ -1177,7 +1195,9 @@
       64,
       60
     ],
-    "confidence": 86
+    "line_index": 124,
+    "distance": 140.36114134617173,
+    "orientation": "vertical"
   },
   {
     "text": "1.9)",
@@ -1187,17 +1207,9 @@
       175,
       140
     ],
-    "confidence": 46
-  },
-  {
-    "text": "Lh",
-    "bbox": [
-      6874,
-      5019,
-      124,
-      124
-    ],
-    "confidence": 33
+    "line_index": 2069,
+    "distance": 46.15463140357639,
+    "orientation": "vertical"
   },
   {
     "text": "\\",
@@ -1207,7 +1219,9 @@
       81,
       162
     ],
-    "confidence": 87
+    "line_index": 1965,
+    "distance": 147.18186029535025,
+    "orientation": "vertical"
   },
   {
     "text": "7",
@@ -1217,7 +1231,9 @@
       32,
       42
     ],
-    "confidence": 48
+    "line_index": 246,
+    "distance": 38.46101922726437,
+    "orientation": "vertical"
   },
   {
     "text": "DELNo",
@@ -1227,7 +1243,9 @@
       225,
       44
     ],
-    "confidence": 40
+    "line_index": 1969,
+    "distance": 43.83206588788623,
+    "orientation": "vertical"
   },
   {
     "text": "AaB",
@@ -1237,7 +1255,9 @@
       203,
       43
     ],
-    "confidence": 50
+    "line_index": 479,
+    "distance": 1.118033988749895,
+    "orientation": "vertical"
   },
   {
     "text": "5",
@@ -1247,17 +1267,9 @@
       25,
       33
     ],
-    "confidence": 50
-  },
-  {
-    "text": "an",
-    "bbox": [
-      197,
-      5492,
-      106,
-      76
-    ],
-    "confidence": 34
+    "line_index": 1098,
+    "distance": 82.62263612352247,
+    "orientation": "vertical"
   },
   {
     "text": "F",
@@ -1267,7 +1279,9 @@
       31,
       42
     ],
-    "confidence": 70
+    "line_index": 443,
+    "distance": 61.71912183432295,
+    "orientation": "vertical"
   },
   {
     "text": "4",
@@ -1277,7 +1291,9 @@
       33,
       42
     ],
-    "confidence": 45
+    "line_index": 2031,
+    "distance": 110.46379497373789,
+    "orientation": "vertical"
   },
   {
     "text": "fee",
@@ -1287,7 +1303,9 @@
       233,
       132
     ],
-    "confidence": 48
+    "line_index": 1129,
+    "distance": 17.95132307101624,
+    "orientation": "vertical"
   },
   {
     "text": "0",
@@ -1297,7 +1315,9 @@
       63,
       44
     ],
-    "confidence": 60
+    "line_index": 381,
+    "distance": 53.19069467491471,
+    "orientation": "vertical"
   },
   {
     "text": "7",
@@ -1307,17 +1327,9 @@
       3,
       18
     ],
-    "confidence": 32
-  },
-  {
-    "text": "\\",
-    "bbox": [
-      6977,
-      5535,
-      103,
-      162
-    ],
-    "confidence": 79
+    "line_index": 1555,
+    "distance": 47.71268175233918,
+    "orientation": "vertical"
   },
   {
     "text": "THIS",
@@ -1327,7 +1339,9 @@
       56,
       22
     ],
-    "confidence": 96
+    "line_index": 1707,
+    "distance": 1.0,
+    "orientation": "vertical"
   },
   {
     "text": "3.9",
@@ -1337,7 +1351,9 @@
       106,
       72
     ],
-    "confidence": 73
+    "line_index": 104,
+    "distance": 109.38464243210744,
+    "orientation": "vertical"
   },
   {
     "text": "Wk",
@@ -1347,7 +1363,9 @@
       172,
       124
     ],
-    "confidence": 37
+    "line_index": 2745,
+    "distance": 69.26940161427699,
+    "orientation": "vertical"
   },
   {
     "text": "VA",
@@ -1357,7 +1375,9 @@
       89,
       107
     ],
-    "confidence": 41
+    "line_index": 534,
+    "distance": 143.62799170078233,
+    "orientation": "vertical"
   },
   {
     "text": "SF",
@@ -1367,7 +1387,9 @@
       791,
       125
     ],
-    "confidence": 34
+    "line_index": 151,
+    "distance": 36.74914965002592,
+    "orientation": "vertical"
   },
   {
     "text": "Oy",
@@ -1377,7 +1399,9 @@
       165,
       78
     ],
-    "confidence": 59
+    "line_index": 534,
+    "distance": 26.462237244798484,
+    "orientation": "vertical"
   },
   {
     "text": "\\),",
@@ -1387,7 +1411,9 @@
       64,
       136
     ],
-    "confidence": 51
+    "line_index": 2159,
+    "distance": 118.7655253009054,
+    "orientation": "vertical"
   },
   {
     "text": "=",
@@ -1397,7 +1423,9 @@
       113,
       25
     ],
-    "confidence": 74
+    "line_index": 870,
+    "distance": 3.0413812651491097,
+    "orientation": "vertical"
   },
   {
     "text": "<<",
@@ -1407,7 +1435,9 @@
       197,
       90
     ],
-    "confidence": 42
+    "line_index": 1385,
+    "distance": 37.606515392947536,
+    "orientation": "vertical"
   },
   {
     "text": "(",
@@ -1417,7 +1447,9 @@
       26,
       109
     ],
-    "confidence": 89
+    "line_index": 534,
+    "distance": 101.26327073524733,
+    "orientation": "vertical"
   },
   {
     "text": "Ww",
@@ -1427,7 +1459,9 @@
       242,
       155
     ],
-    "confidence": 65
+    "line_index": 1279,
+    "distance": 10.04987562112089,
+    "orientation": "vertical"
   },
   {
     "text": "an",
@@ -1437,7 +1471,9 @@
       190,
       171
     ],
-    "confidence": 49
+    "line_index": 1644,
+    "distance": 72.9965752621313,
+    "orientation": "vertical"
   },
   {
     "text": "US",
@@ -1447,17 +1483,9 @@
       290,
       134
     ],
-    "confidence": 39
-  },
-  {
-    "text": "1004",
-    "bbox": [
-      2384,
-      5971,
-      96,
-      31
-    ],
-    "confidence": 95
+    "line_index": 2557,
+    "distance": 18.788294228055936,
+    "orientation": "vertical"
   },
   {
     "text": "No",
@@ -1467,7 +1495,9 @@
       53,
       48
     ],
-    "confidence": 77
+    "line_index": 143,
+    "distance": 42.01190307520001,
+    "orientation": "vertical"
   },
   {
     "text": "[]",
@@ -1477,7 +1507,9 @@
       39,
       60
     ],
-    "confidence": 77
+    "line_index": 2658,
+    "distance": 19.924858845171276,
+    "orientation": "vertical"
   },
   {
     "text": "Autol",
@@ -1487,7 +1519,9 @@
       425,
       129
     ],
-    "confidence": 88
+    "line_index": 168,
+    "distance": 104.67330127592231,
+    "orientation": "vertical"
   },
   {
     "text": "iV",
@@ -1497,7 +1531,9 @@
       131,
       78
     ],
-    "confidence": 89
+    "line_index": 511,
+    "distance": 123.53643187335467,
+    "orientation": "vertical"
   },
   {
     "text": "Wie",
@@ -1507,7 +1543,9 @@
       173,
       144
     ],
-    "confidence": 63
+    "line_index": 2188,
+    "distance": 70.08031107236896,
+    "orientation": "vertical"
   },
   {
     "text": "Qo",
@@ -1517,7 +1555,9 @@
       80,
       71
     ],
-    "confidence": 50
+    "line_index": 1084,
+    "distance": 43.01162633521314,
+    "orientation": "vertical"
   },
   {
     "text": "A",
@@ -1527,7 +1567,9 @@
       43,
       27
     ],
-    "confidence": 59
+    "line_index": 281,
+    "distance": 112.81179016397178,
+    "orientation": "vertical"
   },
   {
     "text": "Germany",
@@ -1537,7 +1579,9 @@
       148,
       39
     ],
-    "confidence": 91
+    "line_index": 1874,
+    "distance": 9.5524865872714,
+    "orientation": "vertical"
   },
   {
     "text": "\\",
@@ -1547,7 +1591,9 @@
       27,
       49
     ],
-    "confidence": 83
+    "line_index": 2733,
+    "distance": 89.27485648266257,
+    "orientation": "vertical"
   },
   {
     "text": "SCALE",
@@ -1557,7 +1603,9 @@
       105,
       31
     ],
-    "confidence": 95
+    "line_index": 775,
+    "distance": 86.59243615928588,
+    "orientation": "vertical"
   },
   {
     "text": "H",
@@ -1567,7 +1615,9 @@
       30,
       41
     ],
-    "confidence": 84
+    "line_index": 449,
+    "distance": 49.882361612096915,
+    "orientation": "vertical"
   },
   {
     "text": "5",
@@ -1577,7 +1627,9 @@
       65,
       81
     ],
-    "confidence": 91
+    "line_index": 2545,
+    "distance": 35.5,
+    "orientation": "vertical"
   },
   {
     "text": "eS",
@@ -1587,7 +1639,9 @@
       403,
       375
     ],
-    "confidence": 40
+    "line_index": 1125,
+    "distance": 58.02154772151464,
+    "orientation": "vertical"
   },
   {
     "text": "a",
@@ -1597,7 +1651,9 @@
       97,
       108
     ],
-    "confidence": 44
+    "line_index": 281,
+    "distance": 124.25477858014153,
+    "orientation": "vertical"
   },
   {
     "text": "CUSTOMER",
@@ -1607,7 +1663,9 @@
       172,
       32
     ],
-    "confidence": 96
+    "line_index": 1839,
+    "distance": 22.80350850198276,
+    "orientation": "vertical"
   },
   {
     "text": "2",
@@ -1617,7 +1675,9 @@
       229,
       85
     ],
-    "confidence": 69
+    "line_index": 2682,
+    "distance": 38.99358921669048,
+    "orientation": "vertical"
   },
   {
     "text": "aah",
@@ -1627,7 +1687,9 @@
       128,
       32
     ],
-    "confidence": 32
+    "line_index": 153,
+    "distance": 99.76472322419383,
+    "orientation": "vertical"
   },
   {
     "text": "5",
@@ -1637,7 +1699,9 @@
       30,
       44
     ],
-    "confidence": 87
+    "line_index": 2568,
+    "distance": 43.83206588788623,
+    "orientation": "vertical"
   },
   {
     "text": "3",
@@ -1647,7 +1711,9 @@
       30,
       16
     ],
-    "confidence": 68
+    "line_index": 1349,
+    "distance": 138.9361364080634,
+    "orientation": "vertical"
   },
   {
     "text": "0",
@@ -1657,7 +1723,9 @@
       23,
       33
     ],
-    "confidence": 67
+    "line_index": 2490,
+    "distance": 75.44700126578923,
+    "orientation": "vertical"
   },
   {
     "text": "TRACEABILITY",
@@ -1667,7 +1735,9 @@
       260,
       32
     ],
-    "confidence": 78
+    "line_index": 950,
+    "distance": 64.53293732660865,
+    "orientation": "vertical"
   },
   {
     "text": "REVISTON",
@@ -1677,37 +1747,9 @@
       172,
       32
     ],
-    "confidence": 86
-  },
-  {
-    "text": "/|",
-    "bbox": [
-      9158,
-      6750,
-      39,
-      92
-    ],
-    "confidence": 63
-  },
-  {
-    "text": "()",
-    "bbox": [
-      9653,
-      6765,
-      35,
-      93
-    ],
-    "confidence": 76
-  },
-  {
-    "text": "4",
-    "bbox": [
-      9715,
-      6769,
-      35,
-      85
-    ],
-    "confidence": 63
+    "line_index": 2350,
+    "distance": 59.179810746571334,
+    "orientation": "vertical"
   },
   {
     "text": "pt",
@@ -1717,6 +1759,8 @@
       8263,
       56
     ],
-    "confidence": 33
+    "line_index": 2724,
+    "distance": 31.196954979612993,
+    "orientation": "vertical"
   }
 ]

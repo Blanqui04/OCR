@@ -1,0 +1,2910 @@
+{
+  "part_info": {
+    "part_number": "N/A",
+    "material": "N/A",
+    "revision": "N/A",
+    "drawing_title": "Plànol Tècnic"
+  },
+  "dimensions": [
+    {
+      "type": "nominal",
+      "value": "&%",
+      "description": "&%",
+      "orientation": "vertical",
+      "bbox": [
+        5054,
+        509,
+        141,
+        77
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Wo:",
+      "description": "Wo:",
+      "orientation": "vertical",
+      "bbox": [
+        5094,
+        732,
+        72,
+        36
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        4323,
+        778,
+        77,
+        37
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "eee",
+      "description": "eee",
+      "orientation": "vertical",
+      "bbox": [
+        7714,
+        729,
+        2098,
+        103
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "[LR",
+      "description": "[LR",
+      "orientation": "vertical",
+      "bbox": [
+        4718,
+        883,
+        270,
+        119
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "ASK",
+      "description": "ASK",
+      "orientation": "vertical",
+      "bbox": [
+        4881,
+        935,
+        107,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "y,",
+      "description": "y,",
+      "orientation": "vertical",
+      "bbox": [
+        1298,
+        1011,
+        42,
+        109
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "7/",
+      "description": "7/",
+      "orientation": "vertical",
+      "bbox": [
+        4549,
+        1024,
+        148,
+        222
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SS",
+      "description": "SS",
+      "orientation": "vertical",
+      "bbox": [
+        4102,
+        1120,
+        96,
+        46
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "~",
+      "description": "~",
+      "orientation": "vertical",
+      "bbox": [
+        1615,
+        1169,
+        42,
+        51
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SS",
+      "description": "SS",
+      "orientation": "vertical",
+      "bbox": [
+        4210,
+        1169,
+        118,
+        57
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SS",
+      "description": "SS",
+      "orientation": "vertical",
+      "bbox": [
+        4334,
+        1188,
+        80,
+        109
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": ")",
+      "description": ")",
+      "orientation": "vertical",
+      "bbox": [
+        4446,
+        1300,
+        26,
+        39
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "S>",
+      "description": "S>",
+      "orientation": "vertical",
+      "bbox": [
+        4207,
+        1515,
+        155,
+        99
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "|",
+      "description": "|",
+      "orientation": "vertical",
+      "bbox": [
+        3369,
+        2175,
+        3,
+        83
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "B",
+      "description": "B",
+      "orientation": "vertical",
+      "bbox": [
+        1701,
+        2354,
+        54,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Y",
+      "description": "Y",
+      "orientation": "vertical",
+      "bbox": [
+        1375,
+        2526,
+        46,
+        83
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Le",
+      "description": "Le",
+      "orientation": "vertical",
+      "bbox": [
+        4959,
+        2515,
+        78,
+        94
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Se)",
+      "description": "Se)",
+      "orientation": "vertical",
+      "bbox": [
+        3246,
+        2573,
+        185,
+        119
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "|",
+      "description": "|",
+      "orientation": "vertical",
+      "bbox": [
+        1402,
+        2668,
+        19,
+        57
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "A",
+      "description": "A",
+      "orientation": "vertical",
+      "bbox": [
+        3267,
+        2667,
+        72,
+        72
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "[0.2",
+      "description": "[0.2",
+      "orientation": "vertical",
+      "bbox": [
+        783,
+        2643,
+        223,
+        160
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Z",
+      "description": "Z",
+      "orientation": "vertical",
+      "bbox": [
+        3267,
+        2736,
+        41,
+        69
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "4",
+      "description": "4",
+      "orientation": "vertical",
+      "bbox": [
+        3421,
+        2771,
+        53,
+        70
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "03",
+      "description": "03",
+      "orientation": "vertical",
+      "bbox": [
+        4445,
+        2810,
+        51,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "4",
+      "description": "4",
+      "orientation": "vertical",
+      "bbox": [
+        1402,
+        2826,
+        19,
+        84
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "woe",
+      "description": "woe",
+      "orientation": "vertical",
+      "bbox": [
+        4337,
+        2828,
+        107,
+        62
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "oT",
+      "description": "oT",
+      "orientation": "vertical",
+      "bbox": [
+        3219,
+        2924,
+        303,
+        47
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "FRAME",
+      "description": "FRAME",
+      "orientation": "vertical",
+      "bbox": [
+        8583,
+        2896,
+        185,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "}",
+      "description": "}",
+      "orientation": "vertical",
+      "bbox": [
+        1513,
+        3023,
+        16,
+        36
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "re",
+      "description": "re",
+      "orientation": "vertical",
+      "bbox": [
+        4850,
+        2995,
+        319,
+        103
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "aS",
+      "description": "aS",
+      "orientation": "vertical",
+      "bbox": [
+        5872,
+        2954,
+        571,
+        148
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "i",
+      "description": "i",
+      "orientation": "vertical",
+      "bbox": [
+        1480,
+        3122,
+        48,
+        77
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        2509,
+        3124,
+        32,
+        41
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": ")",
+      "description": ")",
+      "orientation": "vertical",
+      "bbox": [
+        4850,
+        3098,
+        20,
+        78
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\\\",
+      "description": "\\\\",
+      "orientation": "vertical",
+      "bbox": [
+        6458,
+        3096,
+        56,
+        102
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "a",
+      "description": "a",
+      "orientation": "vertical",
+      "bbox": [
+        1541,
+        3152,
+        101,
+        111
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "x",
+      "description": "x",
+      "orientation": "vertical",
+      "bbox": [
+        2267,
+        3171,
+        31,
+        42
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "5",
+      "description": "5",
+      "orientation": "vertical",
+      "bbox": [
+        2934,
+        3163,
+        68,
+        93
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "si,",
+      "description": "si,",
+      "orientation": "vertical",
+      "bbox": [
+        6494,
+        3183,
+        239,
+        70
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "9",
+      "description": "9",
+      "orientation": "vertical",
+      "bbox": [
+        572,
+        3252,
+        32,
+        65
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Hf",
+      "description": "Hf",
+      "orientation": "vertical",
+      "bbox": [
+        1442,
+        3224,
+        46,
+        85
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "2",
+      "description": "2",
+      "orientation": "vertical",
+      "bbox": [
+        2267,
+        3223,
+        31,
+        51
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "RE",
+      "description": "RE",
+      "orientation": "vertical",
+      "bbox": [
+        2409,
+        3195,
+        132,
+        146
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "U",
+      "description": "U",
+      "orientation": "vertical",
+      "bbox": [
+        5765,
+        3286,
+        39,
+        18
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "/f",
+      "description": "/f",
+      "orientation": "vertical",
+      "bbox": [
+        1397,
+        3268,
+        72,
+        144
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\",
+      "description": "\\",
+      "orientation": "vertical",
+      "bbox": [
+        1591,
+        3340,
+        21,
+        80
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "0",
+      "description": "0",
+      "orientation": "vertical",
+      "bbox": [
+        2321,
+        3332,
+        43,
+        9
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "y",
+      "description": "y",
+      "orientation": "vertical",
+      "bbox": [
+        6458,
+        3299,
+        55,
+        119
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": ".",
+      "description": ".",
+      "orientation": "vertical",
+      "bbox": [
+        1223,
+        3377,
+        5,
+        5
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "VA",
+      "description": "VA",
+      "orientation": "vertical",
+      "bbox": [
+        1388,
+        3389,
+        46,
+        14
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "G",
+      "description": "G",
+      "orientation": "vertical",
+      "bbox": [
+        1109,
+        3431,
+        24,
+        38
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "O",
+      "description": "O",
+      "orientation": "vertical",
+      "bbox": [
+        1184,
+        3399,
+        44,
+        65
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\",
+      "description": "\\",
+      "orientation": "vertical",
+      "bbox": [
+        1421,
+        3395,
+        17,
+        46
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "A",
+      "description": "A",
+      "orientation": "vertical",
+      "bbox": [
+        1975,
+        3425,
+        54,
+        72
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "//",
+      "description": "//",
+      "orientation": "vertical",
+      "bbox": [
+        3002,
+        3388,
+        40,
+        85
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "alu",
+      "description": "alu",
+      "orientation": "vertical",
+      "bbox": [
+        3693,
+        3444,
+        130,
+        28
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "i",
+      "description": "i",
+      "orientation": "vertical",
+      "bbox": [
+        1549,
+        3454,
+        48,
+        77
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        3966,
+        3478,
+        164,
+        81
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "A\\",
+      "description": "A\\",
+      "orientation": "vertical",
+      "bbox": [
+        4915,
+        3463,
+        62,
+        110
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "a",
+      "description": "a",
+      "orientation": "vertical",
+      "bbox": [
+        5908,
+        3449,
+        137,
+        69
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "VY",
+      "description": "VY",
+      "orientation": "vertical",
+      "bbox": [
+        1469,
+        3480,
+        106,
+        156
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "KAT)",
+      "description": "KAT)",
+      "orientation": "vertical",
+      "bbox": [
+        3962,
+        3534,
+        168,
+        112
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "acl",
+      "description": "acl",
+      "orientation": "vertical",
+      "bbox": [
+        5169,
+        3508,
+        164,
+        134
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "4",
+      "description": "4",
+      "orientation": "vertical",
+      "bbox": [
+        5877,
+        3519,
+        42,
+        28
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "L",
+      "description": "L",
+      "orientation": "vertical",
+      "bbox": [
+        1208,
+        3651,
+        41,
+        67
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "5",
+      "description": "5",
+      "orientation": "vertical",
+      "bbox": [
+        2673,
+        3654,
+        31,
+        48
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": ">",
+      "description": ">",
+      "orientation": "vertical",
+      "bbox": [
+        3064,
+        3629,
+        51,
+        23
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Ks",
+      "description": "Ks",
+      "orientation": "vertical",
+      "bbox": [
+        3796,
+        3682,
+        140,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "i=",
+      "description": "i=",
+      "orientation": "vertical",
+      "bbox": [
+        4582,
+        3612,
+        114,
+        120
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\\\",
+      "description": "\\\\",
+      "orientation": "vertical",
+      "bbox": [
+        4849,
+        3626,
+        54,
+        134
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "AS",
+      "description": "AS",
+      "orientation": "vertical",
+      "bbox": [
+        4983,
+        3577,
+        145,
+        143
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "2",
+      "description": "2",
+      "orientation": "vertical",
+      "bbox": [
+        2673,
+        3762,
+        31,
+        52
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "9",
+      "description": "9",
+      "orientation": "vertical",
+      "bbox": [
+        3905,
+        3770,
+        31,
+        65
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        3982,
+        3741,
+        41,
+        26
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "+h",
+      "description": "+h",
+      "orientation": "vertical",
+      "bbox": [
+        4858,
+        3758,
+        74,
+        109
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "N",
+      "description": "N",
+      "orientation": "vertical",
+      "bbox": [
+        399,
+        3902,
+        23,
+        31
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "e+",
+      "description": "e+",
+      "orientation": "vertical",
+      "bbox": [
+        4685,
+        3805,
+        218,
+        137
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "an",
+      "description": "an",
+      "orientation": "vertical",
+      "bbox": [
+        3213,
+        3909,
+        54,
+        56
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "AK",
+      "description": "AK",
+      "orientation": "vertical",
+      "bbox": [
+        3496,
+        3908,
+        190,
+        65
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "0",
+      "description": "0",
+      "orientation": "vertical",
+      "bbox": [
+        9259,
+        3925,
+        26,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        1292,
+        3938,
+        106,
+        69
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "ae",
+      "description": "ae",
+      "orientation": "vertical",
+      "bbox": [
+        3089,
+        3938,
+        563,
+        140
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Ks",
+      "description": "Ks",
+      "orientation": "vertical",
+      "bbox": [
+        1481,
+        4051,
+        45,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SoS",
+      "description": "SoS",
+      "orientation": "vertical",
+      "bbox": [
+        1782,
+        4080,
+        164,
+        50
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Ou",
+      "description": "Ou",
+      "orientation": "vertical",
+      "bbox": [
+        4080,
+        4072,
+        36,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "[25\"]",
+      "description": "[25\"]",
+      "orientation": "vertical",
+      "bbox": [
+        4561,
+        4114,
+        159,
+        119
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\",
+      "description": "\\",
+      "orientation": "vertical",
+      "bbox": [
+        3624,
+        4184,
+        15,
+        72
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "|",
+      "description": "|",
+      "orientation": "vertical",
+      "bbox": [
+        4111,
+        4184,
+        94,
+        49
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "8",
+      "description": "8",
+      "orientation": "vertical",
+      "bbox": [
+        1869,
+        4251,
+        44,
+        72
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        3712,
+        4273,
+        53,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "2",
+      "description": "2",
+      "orientation": "vertical",
+      "bbox": [
+        4084,
+        4211,
+        32,
+        51
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "a",
+      "description": "a",
+      "orientation": "vertical",
+      "bbox": [
+        2672,
+        4408,
+        163,
+        80
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "BS)",
+      "description": "BS)",
+      "orientation": "vertical",
+      "bbox": [
+        2672,
+        4471,
+        161,
+        104
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "AGREEMENT.",
+      "description": "AGREEMENT.",
+      "orientation": "vertical",
+      "bbox": [
+        8027,
+        4484,
+        193,
+        31
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "DEL_No.",
+      "description": "DEL_No.",
+      "orientation": "vertical",
+      "bbox": [
+        698,
+        4868,
+        245,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "K",
+      "description": "K",
+      "orientation": "vertical",
+      "bbox": [
+        3365,
+        4872,
+        54,
+        73
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "908",
+      "description": "908",
+      "orientation": "vertical",
+      "bbox": [
+        1076,
+        4939,
+        77,
+        51
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "ro)",
+      "description": "ro)",
+      "orientation": "vertical",
+      "bbox": [
+        969,
+        4969,
+        101,
+        60
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": ">",
+      "description": ">",
+      "orientation": "vertical",
+      "bbox": [
+        6954,
+        4984,
+        64,
+        60
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "1.9)",
+      "description": "1.9)",
+      "orientation": "vertical",
+      "bbox": [
+        1001,
+        4992,
+        175,
+        140
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\",
+      "description": "\\",
+      "orientation": "vertical",
+      "bbox": [
+        6971,
+        5138,
+        81,
+        162
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "7",
+      "description": "7",
+      "orientation": "vertical",
+      "bbox": [
+        621,
+        5317,
+        32,
+        42
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "DELNo",
+      "description": "DELNo",
+      "orientation": "vertical",
+      "bbox": [
+        2787,
+        5446,
+        225,
+        44
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "AaB",
+      "description": "AaB",
+      "orientation": "vertical",
+      "bbox": [
+        5685,
+        5409,
+        203,
+        43
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "5",
+      "description": "5",
+      "orientation": "vertical",
+      "bbox": [
+        854,
+        5482,
+        25,
+        33
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "F",
+      "description": "F",
+      "orientation": "vertical",
+      "bbox": [
+        1180,
+        5533,
+        31,
+        42
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "4",
+      "description": "4",
+      "orientation": "vertical",
+      "bbox": [
+        5004,
+        5553,
+        33,
+        42
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "fee",
+      "description": "fee",
+      "orientation": "vertical",
+      "bbox": [
+        5179,
+        5512,
+        233,
+        132
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "0",
+      "description": "0",
+      "orientation": "vertical",
+      "bbox": [
+        830,
+        5607,
+        63,
+        44
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "7",
+      "description": "7",
+      "orientation": "vertical",
+      "bbox": [
+        2962,
+        5642,
+        3,
+        18
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "THIS",
+      "description": "THIS",
+      "orientation": "vertical",
+      "bbox": [
+        7867,
+        5591,
+        56,
+        22
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "3.9",
+      "description": "3.9",
+      "orientation": "vertical",
+      "bbox": [
+        688,
+        5607,
+        106,
+        72
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Wk",
+      "description": "Wk",
+      "orientation": "vertical",
+      "bbox": [
+        1034,
+        5599,
+        172,
+        124
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "VA",
+      "description": "VA",
+      "orientation": "vertical",
+      "bbox": [
+        4866,
+        5624,
+        89,
+        107
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SF",
+      "description": "SF",
+      "orientation": "vertical",
+      "bbox": [
+        3005,
+        5718,
+        791,
+        125
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Oy",
+      "description": "Oy",
+      "orientation": "vertical",
+      "bbox": [
+        4720,
+        5719,
+        165,
+        78
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\),",
+      "description": "\\),",
+      "orientation": "vertical",
+      "bbox": [
+        7066,
+        5685,
+        64,
+        136
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "=",
+      "description": "=",
+      "orientation": "vertical",
+      "bbox": [
+        6651,
+        5825,
+        113,
+        25
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "<<",
+      "description": "<<",
+      "orientation": "vertical",
+      "bbox": [
+        1272,
+        5876,
+        197,
+        90
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "(",
+      "description": "(",
+      "orientation": "vertical",
+      "bbox": [
+        4825,
+        5826,
+        26,
+        109
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Ww",
+      "description": "Ww",
+      "orientation": "vertical",
+      "bbox": [
+        6755,
+        5835,
+        242,
+        155
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "an",
+      "description": "an",
+      "orientation": "vertical",
+      "bbox": [
+        701,
+        5862,
+        190,
+        171
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "US",
+      "description": "US",
+      "orientation": "vertical",
+      "bbox": [
+        1152,
+        5861,
+        290,
+        134
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "No",
+      "description": "No",
+      "orientation": "vertical",
+      "bbox": [
+        3702,
+        5967,
+        53,
+        48
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "[]",
+      "description": "[]",
+      "orientation": "vertical",
+      "bbox": [
+        5249,
+        5946,
+        39,
+        60
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Autol",
+      "description": "Autol",
+      "orientation": "vertical",
+      "bbox": [
+        7786,
+        5881,
+        425,
+        129
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "iV",
+      "description": "iV",
+      "orientation": "vertical",
+      "bbox": [
+        8232,
+        5926,
+        131,
+        78
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Wie",
+      "description": "Wie",
+      "orientation": "vertical",
+      "bbox": [
+        515,
+        5990,
+        173,
+        144
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Qo",
+      "description": "Qo",
+      "orientation": "vertical",
+      "bbox": [
+        3634,
+        5994,
+        80,
+        71
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "A",
+      "description": "A",
+      "orientation": "vertical",
+      "bbox": [
+        3950,
+        6035,
+        43,
+        27
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "Germany",
+      "description": "Germany",
+      "orientation": "vertical",
+      "bbox": [
+        8737,
+        6009,
+        148,
+        39
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "\\",
+      "description": "\\",
+      "orientation": "vertical",
+      "bbox": [
+        1393,
+        6181,
+        27,
+        49
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "SCALE",
+      "description": "SCALE",
+      "orientation": "vertical",
+      "bbox": [
+        9542,
+        6194,
+        105,
+        31
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "H",
+      "description": "H",
+      "orientation": "vertical",
+      "bbox": [
+        944,
+        6211,
+        30,
+        41
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "5",
+      "description": "5",
+      "orientation": "vertical",
+      "bbox": [
+        1007,
+        6271,
+        65,
+        81
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "eS",
+      "description": "eS",
+      "orientation": "vertical",
+      "bbox": [
+        1412,
+        6170,
+        403,
+        375
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "a",
+      "description": "a",
+      "orientation": "vertical",
+      "bbox": [
+        3896,
+        6202,
+        97,
+        108
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "CUSTOMER",
+      "description": "CUSTOMER",
+      "orientation": "vertical",
+      "bbox": [
+        7723,
+        6312,
+        172,
+        32
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "2",
+      "description": "2",
+      "orientation": "vertical",
+      "bbox": [
+        1836,
+        6352,
+        229,
+        85
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "aah",
+      "description": "aah",
+      "orientation": "vertical",
+      "bbox": [
+        9542,
+        6430,
+        128,
+        32
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "5",
+      "description": "5",
+      "orientation": "vertical",
+      "bbox": [
+        1272,
+        6508,
+        30,
+        44
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "3",
+      "description": "3",
+      "orientation": "vertical",
+      "bbox": [
+        7045,
+        6493,
+        30,
+        16
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "0",
+      "description": "0",
+      "orientation": "vertical",
+      "bbox": [
+        9647,
+        6615,
+        23,
+        33
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "TRACEABILITY",
+      "description": "TRACEABILITY",
+      "orientation": "vertical",
+      "bbox": [
+        7724,
+        6666,
+        260,
+        32
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "REVISTON",
+      "description": "REVISTON",
+      "orientation": "vertical",
+      "bbox": [
+        9542,
+        6666,
+        172,
+        32
+      ]
+    },
+    {
+      "type": "nominal",
+      "value": "pt",
+      "description": "pt",
+      "orientation": "vertical",
+      "bbox": [
+        835,
+        6900,
+        8263,
+        56
+      ]
+    }
+  ],
+  "geometric_tolerances": [],
+  "raw_tables": [
+    {
+      "table_id": 1,
+      "name": "lattice_table_1",
+      "shape": [
+        47,
+        21
+      ],
+      "data": [
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "PLM: Drawing Print 6555945 003\n Released on 2023-03-22",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "columns": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "table_id": 2,
+      "name": "stream_table_1",
+      "shape": [
+        2,
+        1
+      ],
+      "data": [
+        [
+          "PLM: Drawing Print 6555945 003"
+        ],
+        [
+          "Released on 2023-03-22"
+        ]
+      ],
+      "columns": [
+        0
+      ]
+    }
+  ]
+}

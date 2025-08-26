@@ -4,3 +4,7 @@ numpy
 pandas
 pytesseract
 streamlit
+requests
+Pillow
+camelot-py[cv]
+openpyxl

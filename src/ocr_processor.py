@@ -31,15 +31,54 @@ if platform.system() == "Windows":
             print(f"  - {path}")
         print("\nSi Tesseract està instal·lat en un altre lloc, actualitza el path a aquest fitxer.")
 
-def ocr_with_boxes(image_path):
+def get_tesseract_languages():
+    """Detecta quins llenguatges té disponibles Tesseract"""
+    try:
+        langs = pytesseract.get_languages()
+        return langs
+    except:
+        return ['eng']  # fallback
+
+def ocr_with_boxes(image_path, use_technical_mode=True):
     img = cv2.imread(image_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Millora d'imatge
     gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-    # Configuració per a text tècnic (sense diccionari)
-    custom_config = r'--oem 3 --psm 6'
-    data = pytesseract.image_to_data(gray, config=custom_config, output_type=pytesseract.Output.DICT)
+    if use_technical_mode:
+        # Detectar llenguatges disponibles
+        available_langs = get_tesseract_languages()
+        
+        # Configurar llenguatge per símbols tècnics
+        lang_config = 'eng'  # llenguatge base
+        
+        if 'equ' in available_langs:
+            lang_config = 'eng+equ'  # Inclou símbols matemàtics/tècnics
+            print("✅ Utilitzant mode tècnic amb 'equ' per a símbols")
+        elif 'osd' in available_langs:
+            lang_config = 'eng+osd'  # Script detection
+            print("⚠️ Mode 'equ' no disponible, utilitzant 'osd'")
+        else:
+            print("⚠️ Només mode bàsic 'eng' disponible")
+        
+        # Configuració optimitzada per a símbols tècnics
+        # --oem 3: neural net LSTM engine
+        # --psm 6: uniform block of text
+        # -c tessedit_char_whitelist: permet símbols específics
+        allowed_chars = ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+                        '±Øø∅⌖◊□△▽○●■◆※→←↑↓∈∋∞∝∴∵∇∂∆Σπθφψωαβγδελμνρστυχ'
+                        '.,;:!?()[]{}+-*/=<>%‰°′″#@&_|\\~`^\'"')
+        custom_config = f'--oem 3 --psm 6 -l {lang_config} -c tessedit_char_whitelist={allowed_chars}'
+    else:
+        # Configuració estàndard
+        custom_config = r'--oem 3 --psm 6'
+    
+    try:
+        data = pytesseract.image_to_data(gray, config=custom_config, output_type=pytesseract.Output.DICT)
+    except Exception as e:
+        print(f"Error amb configuració tècnica, utilitzant configuració bàsica: {e}")
+        custom_config = r'--oem 3 --psm 6'
+        data = pytesseract.image_to_data(gray, config=custom_config, output_type=pytesseract.Output.DICT)
 
     results = []
     for i in range(len(data['text'])):
