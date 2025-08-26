@@ -1,18 +1,28 @@
-# src/ui/app.py (actualitzat)
+# src/ui/app.py (actualitzat amb IA)
 import streamlit as st
 import json
 import pandas as pd
 import os
 import tempfile
 import sys
+import traceback
 from pathlib import Path
 from io import BytesIO
+from datetime import datetime
 
 # Afegir el directori src al path per importar els mòduls
 sys.path.append(str(Path(__file__).parent.parent))
 
 try:
     from pipeline import OCRPipeline
+    
+    # Intentar importar components d'IA
+    try:
+        from ai_enhanced_pipeline import AIEnhancedPipeline, DEFAULT_AI_CONFIG
+        AI_ENHANCED_AVAILABLE = True
+    except ImportError:
+        AI_ENHANCED_AVAILABLE = False
+        
 except ImportError as e:
     st.error(f"Error important OCRPipeline: {e}")
     # Fallback a importacions individuals
@@ -22,12 +32,416 @@ except ImportError as e:
         from data_extractor import extract_technical_data
         from dimension_linker import detect_lines, link_text_to_lines
         OCRPipeline = None
+        AI_ENHANCED_AVAILABLE = False
     except ImportError as e2:
         st.error(f"Error important mòduls individuals: {e2}")
         OCRPipeline = None
+        AI_ENHANCED_AVAILABLE = False
 
-st.set_page_config(page_title="Validador de Plànols Tècnics", layout="wide")
-st.title("📐 Validador de Plànols Tècnics")
+st.set_page_config(page_title="Validador de Plànols Tècnics amb IA", layout="wide")
+
+# Configurar l'estat de la sessió per IA
+if 'ai_enabled' not in st.session_state:
+    st.session_state.ai_enabled = AI_ENHANCED_AVAILABLE
+if 'ai_pipeline' not in st.session_state:
+    st.session_state.ai_pipeline = None
+if 'processing_results' not in st.session_state:
+    st.session_state.processing_results = None
+
+st.title("🤖📐 Validador de Plànols Tècnics amb IA")
+
+# Sidebar per configuració d'IA
+with st.sidebar:
+    st.header("⚙️ Configuració")
+    
+    # Configuració d'IA
+    st.subheader("🤖 Intel·ligència Artificial")
+    
+    if AI_ENHANCED_AVAILABLE:
+        st.success("✅ Components d'IA disponibles")
+        
+        # Toggle per activar/desactivar IA
+        ai_enabled = st.checkbox(
+            "Utilitzar IA híbrida", 
+            value=st.session_state.ai_enabled,
+            help="Combina detecció amb IA i regles tradicionals per màxima precisió"
+        )
+        st.session_state.ai_enabled = ai_enabled
+        
+        if ai_enabled:
+            # Inicialitzar pipeline d'IA si cal
+            if st.session_state.ai_pipeline is None:
+                with st.spinner("Inicialitzant pipeline d'IA..."):
+                    try:
+                        # Crear configuració d'IA si no existeix
+                        project_root = Path(__file__).parent.parent.parent
+                        config_path = project_root / "config_ai.json"
+                        
+                        if not config_path.exists():
+                            with open(config_path, 'w') as f:
+                                json.dump(DEFAULT_AI_CONFIG, f, indent=2)
+                        
+                        st.session_state.ai_pipeline = AIEnhancedPipeline(str(config_path))
+                        st.success("Pipeline d'IA inicialitzat!")
+                    except Exception as e:
+                        st.error(f"Error inicialitzant IA: {e}")
+                        st.session_state.ai_enabled = False
+            
+            if st.session_state.ai_pipeline:
+                # Mostrar estadístiques del model
+                stats = st.session_state.ai_pipeline.get_model_performance_stats()
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    if stats['model_loaded']:
+                        st.success("🎯 Model carregat")
+                    else:
+                        st.warning("⚠️ Model no carregat")
+                
+                with col2:
+                    st.metric("Precisió estimada", f"{stats['accuracy_estimate']:.1%}")
+                
+                st.metric("Correccions d'usuari", stats['total_corrections'])
+                
+                # Configuració avançada
+                with st.expander("Configuració avançada"):
+                    confidence_threshold = st.slider(
+                        "Llindar de confiança", 
+                        0.1, 1.0, 0.7, 0.05,
+                        help="Elements amb confiança inferior necessitaran revisió humana"
+                    )
+        
+    else:
+        st.error("❌ Components d'IA no disponibles")
+        st.info("💡 Instal·la les dependències d'IA per habilitar aquesta funcionalitat")
+        st.session_state.ai_enabled = False
+
+# Pestanyes principals amb IA
+tab1, tab2, tab3, tab4 = st.tabs(["📤 Pujar Fitxer", "🔍 Resultats", "🔧 Validació HIITL", "📊 Export de Dades"])
+
+with tab1:
+    st.header("Pujar fitxer PDF")
+    
+    # Selector del mètode de processament
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        uploaded_file = st.file_uploader(
+            "Escull un fitxer PDF", 
+            type=['pdf'],
+            help="Puja un plànol tècnic en format PDF per analitzar"
+        )
+    
+    with col2:
+        processing_method = st.selectbox(
+            "Mètode de processament",
+            ["IA Híbrida", "Només Regles", "Només IA"] if st.session_state.ai_enabled else ["Només Regles"],
+            help="Escull com processar el document"
+        )
+    
+    if uploaded_file is not None:
+        # Guardar fitxer temporalment
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            tmp_file.write(uploaded_file.getvalue())
+            tmp_path = tmp_file.name
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col2:
+            if st.button("🚀 Processar amb IA" if st.session_state.ai_enabled else "🚀 Processar", 
+                        type="primary", use_container_width=True):
+                
+                with st.spinner("Processant document..."):
+                    try:
+                        if st.session_state.ai_enabled and st.session_state.ai_pipeline:
+                            # Processament amb IA
+                            use_ai = processing_method in ["IA Híbrida", "Només IA"]
+                            results = st.session_state.ai_pipeline.process_document_with_ai(tmp_path, use_ai)
+                            st.session_state.processing_results = results
+                            
+                            if results['status'] == 'success':
+                                st.success(f"✅ Document processat amb èxit!")
+                                st.info(f"📄 {len(results['pages'])} pàgines processades")
+                                st.info(f"🔍 {results['total_elements']} elements detectats")
+                                
+                                if results['human_review_required']:
+                                    st.warning("⚠️ Alguns elements necessiten revisió humana")
+                            else:
+                                st.error(f"❌ Error: {results.get('error', 'Unknown error')}")
+                        
+                        else:
+                            # Processament tradicional
+                            st.info("Utilitzant processament tradicional...")
+                            # Aquí aniria la lògica existent del pipeline tradicional
+                            st.warning("Implementar fallback al pipeline tradicional")
+                    
+                    except Exception as e:
+                        st.error(f"Error processant: {str(e)}")
+                        st.error(traceback.format_exc())
+                
+                # Netejar fitxer temporal
+                try:
+                    os.unlink(tmp_path)
+                except:
+                    pass
+
+with tab2:
+    st.header("🔍 Resultats de la Detecció")
+    
+    if st.session_state.processing_results:
+        results = st.session_state.processing_results
+        
+        # Resum general
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("📄 Pàgines", len(results.get('pages', [])))
+        
+        with col2:
+            st.metric("🔍 Elements totals", results.get('total_elements', 0))
+        
+        with col3:
+            needs_review = sum(len(page.get('human_review_tasks', [])) for page in results.get('pages', []))
+            st.metric("⚠️ Necessiten revisió", needs_review)
+        
+        with col4:
+            ai_enabled_display = "✅ Sí" if results.get('ai_enabled', False) else "❌ No"
+            st.metric("🤖 IA utilitzada", ai_enabled_display)
+        
+        # Resultats per pàgina
+        st.subheader("Resultats per pàgina")
+        
+        for page in results.get('pages', []):
+            with st.expander(f"📄 Pàgina {page['page_number']} - {len(page.get('elements', []))} elements"):
+                
+                # Informació de la pàgina
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.write("**Mètode de processament:**", page.get('processing_method', 'Unknown'))
+                    if 'ai_metadata' in page:
+                        st.write("**Ratio alta confiança:**", f"{page['ai_metadata'].get('high_confidence_ratio', 0):.1%}")
+                
+                with col2:
+                    st.write("**Necessita revisió:**", "Sí" if page.get('needs_human_review', False) else "No")
+                    st.write("**Elements detectats:**", len(page.get('elements', [])))
+                
+                # Taula d'elements
+                if page.get('elements'):
+                    elements_df = pd.DataFrame([
+                        {
+                            'Tipus': elem.get('type', ''),
+                            'Confiança': f"{elem.get('confidence', 0):.2f}",
+                            'Font': elem.get('source', ''),
+                            'Text': elem.get('text', '')[:50] + '...' if len(elem.get('text', '')) > 50 else elem.get('text', '')
+                        }
+                        for elem in page['elements']
+                    ])
+                    st.dataframe(elements_df, use_container_width=True)
+                
+                # Relacions espacials
+                if page.get('relationships'):
+                    st.write("**Relacions espacials trobades:**")
+                    for rel in page['relationships'][:5]:  # Mostrar només les primeres 5
+                        st.write(f"- {rel.get('type', 'Unknown relation')}")
+    
+    else:
+        st.info("👆 Puja i processa un document per veure els resultats aquí")
+
+with tab3:
+    st.header("🔧 Validació Human-in-the-Loop (HIITL)")
+    
+    if st.session_state.processing_results and st.session_state.processing_results.get('human_review_required'):
+        st.warning("⚠️ Hi ha elements que necessiten la teva revisió per millorar la precisió del model")
+        
+        # Recopilar totes les tasques de revisió
+        all_review_tasks = []
+        for page in st.session_state.processing_results.get('pages', []):
+            for task in page.get('human_review_tasks', []):
+                task['page_number'] = page['page_number']
+                all_review_tasks.append(task)
+        
+        if all_review_tasks:
+            st.write(f"**Total tasques de revisió:** {len(all_review_tasks)}")
+            
+            # Selector de tasca
+            task_index = st.selectbox(
+                "Selecciona tasca a revisar:",
+                range(len(all_review_tasks)),
+                format_func=lambda x: f"Pàgina {all_review_tasks[x]['page_number']} - {all_review_tasks[x].get('suggested_type', 'Unknown')}"
+            )
+            
+            if task_index is not None:
+                current_task = all_review_tasks[task_index]
+                
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    st.write("**Pregunta de revisió:**")
+                    st.info(current_task.get('review_question', 'No question available'))
+                    
+                    st.write("**Detalls de l'element:**")
+                    st.json({
+                        'Tipus suggerit': current_task.get('suggested_type', ''),
+                        'Confiança': current_task.get('confidence', 0),
+                        'Coordenades': current_task.get('bbox', {})
+                    })
+                
+                with col2:
+                    st.write("**Correcció:**")
+                    
+                    # Tipus disponibles per correcció
+                    available_types = [
+                        "dimension_text", "arrow", "tolerance", "symbol", 
+                        "info_text", "title", "line", "table", "scale", 
+                        "north_arrow", "border", "legend", "other"
+                    ]
+                    
+                    corrected_type = st.selectbox(
+                        "Tipus correcte:",
+                        available_types,
+                        index=available_types.index(current_task.get('suggested_type', 'other')) 
+                        if current_task.get('suggested_type', 'other') in available_types else 0
+                    )
+                    
+                    if st.button("✅ Confirmar correcció", type="primary"):
+                        # Guardar feedback
+                        if st.session_state.ai_pipeline and st.session_state.ai_pipeline.learning_manager:
+                            try:
+                                st.session_state.ai_pipeline.learning_manager.save_user_correction(
+                                    current_task.get('element', {}), 
+                                    corrected_type, 
+                                    "streamlit_user"
+                                )
+                                st.success("✅ Correcció guardada! El model millorarà amb aquesta informació.")
+                                
+                                # Actualitzar estadístiques
+                                st.rerun()
+                                
+                            except Exception as e:
+                                st.error(f"Error guardant correcció: {e}")
+                        else:
+                            st.warning("Sistema d'aprenentatge no disponible")
+        
+    elif st.session_state.processing_results:
+        st.success("🎉 Tots els elements han estat detectats amb alta confiança! No cal revisió manual.")
+    
+    else:
+        st.info("👆 Processa primer un document per veure tasques de validació aquí")
+
+with tab4:
+    st.header("📊 Export de Dades")
+    
+    if st.session_state.processing_results:
+        results = st.session_state.processing_results
+        
+        st.subheader("Formats d'exportació disponibles")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("📊 Exportar a Excel", type="primary"):
+                with st.spinner("Creant fitxer Excel..."):
+                    try:
+                        if st.session_state.ai_pipeline:
+                            export_path = st.session_state.ai_pipeline.export_results_enhanced(results, "excel")
+                            st.success(f"✅ Excel creat: {Path(export_path).name}")
+                            
+                            # Oferir descàrrega
+                            with open(export_path, 'rb') as f:
+                                st.download_button(
+                                    "⬇️ Descarregar Excel",
+                                    f.read(),
+                                    f"resultats_ia_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                )
+                        else:
+                            st.error("Pipeline d'IA no disponible per exportació")
+                    except Exception as e:
+                        st.error(f"Error creant Excel: {e}")
+        
+        with col2:
+            if st.button("📄 Exportar JSON Schema", type="secondary"):
+                with st.spinner("Creant JSON Schema..."):
+                    try:
+                        if st.session_state.ai_pipeline:
+                            export_path = st.session_state.ai_pipeline.export_results_enhanced(results, "json_schema")
+                            st.success(f"✅ JSON Schema creat: {Path(export_path).name}")
+                            
+                            # Oferir descàrrega
+                            with open(export_path, 'r', encoding='utf-8') as f:
+                                st.download_button(
+                                    "⬇️ Descarregar JSON Schema",
+                                    f.read(),
+                                    f"resultats_schema_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                                    "application/json"
+                                )
+                        else:
+                            st.error("Pipeline d'IA no disponible per exportació")
+                    except Exception as e:
+                        st.error(f"Error creant JSON Schema: {e}")
+        
+        with col3:
+            if st.button("🗂️ Exportar JSON Simple", type="secondary"):
+                with st.spinner("Creant JSON..."):
+                    try:
+                        if st.session_state.ai_pipeline:
+                            export_path = st.session_state.ai_pipeline.export_results_enhanced(results, "json")
+                            st.success(f"✅ JSON creat: {Path(export_path).name}")
+                            
+                            # Oferir descàrrega
+                            with open(export_path, 'r', encoding='utf-8') as f:
+                                st.download_button(
+                                    "⬇️ Descarregar JSON",
+                                    f.read(),
+                                    f"resultats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                                    "application/json"
+                                )
+                        else:
+                            st.error("Pipeline d'IA no disponible per exportació")
+                    except Exception as e:
+                        st.error(f"Error creant JSON: {e}")
+        
+        # Previsualització de dades
+        st.subheader("Previsualització de dades")
+        
+        # Crear dataframe resum per mostrar
+        all_elements = []
+        for page in results.get('pages', []):
+            for elem in page.get('elements', []):
+                elem_data = {
+                    'Pàgina': page['page_number'],
+                    'Tipus': elem.get('type', ''),
+                    'Confiança': elem.get('confidence', 0),
+                    'Font': elem.get('source', ''),
+                    'Text': elem.get('text', '')[:100] + '...' if len(elem.get('text', '')) > 100 else elem.get('text', '')
+                }
+                all_elements.append(elem_data)
+        
+        if all_elements:
+            df_preview = pd.DataFrame(all_elements)
+            st.dataframe(df_preview, use_container_width=True)
+            
+            # Estadístiques ràpides
+            st.subheader("Estadístiques")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                type_counts = df_preview['Tipus'].value_counts()
+                st.write("**Elements per tipus:**")
+                st.write(type_counts)
+            
+            with col2:
+                avg_confidence = df_preview['Confiança'].mean()
+                st.metric("Confiança mitjana", f"{avg_confidence:.2f}")
+            
+            with col3:
+                source_counts = df_preview['Font'].value_counts()
+                st.write("**Elements per font:**")
+                st.write(source_counts)
+    
+    else:
+        st.info("👆 Processa primer un document per exportar les dades")
 
 # Funcions d'exportació
 def create_excel_export(data):

@@ -8,3 +8,7 @@ requests
 Pillow
 camelot-py[cv]
 openpyxl
+ultralytics
+PyYAML
+torch
+torchvision

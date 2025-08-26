@@ -1,0 +1,7 @@
+{
+  "ai_model_path": "src/ai_model/models/best.pt",
+  "confidence_threshold": 0.7,
+  "human_review_threshold": 0.5,
+  "enable_continuous_learning": true,
+  "auto_retrain_after_corrections": 50
+}
