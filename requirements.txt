@@ -12,3 +12,11 @@ ultralytics
 PyYAML
 torch
 torchvision
+plotly
+matplotlib
+seaborn
+jsonschema
+pathlib2
+tqdm
+psutil
+loguru

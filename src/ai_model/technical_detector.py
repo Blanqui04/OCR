@@ -127,7 +127,8 @@ class TechnicalDrawingDetector:
         return high_conf, low_conf
     
     def visualize_detections(self, image_path: str, elements: List[Dict], 
-                           output_path: Optional[str] = None) -> np.ndarray:
+                           output_path: Optional[str] = None, show_labels: bool = True,
+                           show_confidence: bool = True, interactive: bool = False) -> np.ndarray:
         """
         Visualitza les deteccions sobre la imatge
         
@@ -135,6 +136,9 @@ class TechnicalDrawingDetector:
             image_path: Path a la imatge original
             elements: Elements detectats
             output_path: Path per guardar la imatge (opcional)
+            show_labels: Mostrar etiquetes dels tipus
+            show_confidence: Mostrar valors de confiança
+            interactive: Preparar per visualització interactiva
             
         Returns:
             Imatge amb les deteccions dibuixades
@@ -144,7 +148,7 @@ class TechnicalDrawingDetector:
             self.logger.error(f"No es pot carregar la imatge: {image_path}")
             return np.array([])
         
-        # Colors per cada classe
+        # Colors per cada classe (BGR format per OpenCV)
         colors = {
             "dimension_text": (0, 255, 0),      # Verd
             "dimension_line": (255, 0, 0),      # Blau
@@ -161,10 +165,11 @@ class TechnicalDrawingDetector:
             "datum_reference": (138, 43, 226),  # Blau violeta
         }
         
-        for element in elements:
+        for i, element in enumerate(elements):
             bbox = element["bbox"]
             element_type = element["type"]
             confidence = element["confidence"]
+            text_content = element.get("text", "")
             
             # Coordenades de la caja
             x1, y1 = int(bbox["x1"]), int(bbox["y1"])
@@ -173,20 +178,227 @@ class TechnicalDrawingDetector:
             # Color per la classe
             color = colors.get(element_type, (128, 128, 128))
             
+            # Grossor segons confiança
+            thickness = max(1, int(confidence * 4))
+            
             # Dibuixar rectangle
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+            cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
             
-            # Etiqueta amb tipus i confiança
-            label = f"{element_type}: {confidence:.2f}"
-            label_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
+            # Dibuixar punt central
+            center_x = (x1 + x2) // 2
+            center_y = (y1 + y2) // 2
+            cv2.circle(image, (center_x, center_y), 4, color, -1)
             
-            # Fons per l'etiqueta
-            cv2.rectangle(image, (x1, y1 - label_size[1] - 10), 
-                         (x1 + label_size[0], y1), color, -1)
+            # Preparar etiqueta
+            label_parts = []
+            if show_labels:
+                label_parts.append(f"{element_type}")
+            if show_confidence:
+                label_parts.append(f"{confidence:.2f}")
+            if text_content and len(text_content) > 0:
+                # Truncar text llarg
+                display_text = text_content[:25] + "..." if len(text_content) > 25 else text_content
+                label_parts.append(f'"{display_text}"')
             
-            # Text de l'etiqueta
-            cv2.putText(image, label, (x1, y1 - 5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            if label_parts:
+                label = " | ".join(label_parts)
+                
+                # Calcular mida de l'etiqueta
+                font_scale = 0.5
+                font_thickness = 1
+                label_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)[0]
+                
+                # Posició de l'etiqueta (evitar sortir de la imatge)
+                label_x = max(5, min(x1, image.shape[1] - label_size[0] - 5))
+                label_y = max(label_size[1] + 10, y1 - 5)
+                
+                # Fons semi-transparent per l'etiqueta
+                overlay = image.copy()
+                cv2.rectangle(overlay, (label_x - 3, label_y - label_size[1] - 5), 
+                             (label_x + label_size[0] + 3, label_y + 5), color, -1)
+                cv2.addWeighted(overlay, 0.8, image, 0.2, 0, image)
+                
+                # Text de l'etiqueta
+                cv2.putText(image, label, (label_x, label_y), 
+                           cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), font_thickness)
+                
+                # Número d'element a la cantonada superior esquerra
+                cv2.putText(image, str(i+1), (x1 + 2, y1 + 15), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        
+        # Afegir llegenda si hi ha elements
+        if elements:
+            self._add_legend_to_image(image, colors, elements)
+        
+        # Afegir informació general
+        self._add_image_info(image, elements)
+        
+        # Guardar si s'especifica path
+        if output_path:
+            cv2.imwrite(output_path, image)
+        
+        return image
+    
+    def _add_legend_to_image(self, image: np.ndarray, colors: Dict, elements: List[Dict]):
+        """Afegeix una llegenda amb els tipus d'elements detectats"""
+        # Obtenir tipus únics detectats
+        detected_types = {}
+        for element in elements:
+            element_type = element["type"]
+            if element_type not in detected_types:
+                detected_types[element_type] = {'color': colors.get(element_type, (128, 128, 128)), 'count': 0}
+            detected_types[element_type]['count'] += 1
+        
+        if not detected_types:
+            return
+        
+        # Configuració de la llegenda
+        legend_y_start = 30
+        legend_x = max(10, image.shape[1] - 250)  # Assegurar que la llegenda sigui visible
+        line_height = 22
+        
+        # Calcular dimensions de la llegenda
+        max_text_width = 0
+        for element_type, info in detected_types.items():
+            text = f"{element_type} ({info['count']})"
+            text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)[0]
+            max_text_width = max(max_text_width, text_size[0])
+        
+        legend_width = max_text_width + 40
+        legend_height = len(detected_types) * line_height + 30
+        
+        # Fons de la llegenda
+        overlay = image.copy()
+        cv2.rectangle(overlay, (legend_x - 15, legend_y_start - 20), 
+                     (legend_x + legend_width, legend_y_start + legend_height), (0, 0, 0), -1)
+        cv2.addWeighted(overlay, 0.8, image, 0.2, 0, image)
+        
+        # Vora de la llegenda
+        cv2.rectangle(image, (legend_x - 15, legend_y_start - 20), 
+                     (legend_x + legend_width, legend_y_start + legend_height), (255, 255, 255), 2)
+        
+        # Títol de la llegenda
+        cv2.putText(image, "Elements Detectats:", (legend_x - 10, legend_y_start), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        
+        # Entrades de la llegenda
+        y_pos = legend_y_start + 25
+        for element_type, info in sorted(detected_types.items()):
+            color = info['color']
+            count = info['count']
+            
+            # Rectangle de color
+            cv2.rectangle(image, (legend_x - 10, y_pos - 10), (legend_x + 10, y_pos), color, -1)
+            cv2.rectangle(image, (legend_x - 10, y_pos - 10), (legend_x + 10, y_pos), (255, 255, 255), 1)
+            
+            # Text
+            text = f"{element_type} ({count})"
+            cv2.putText(image, text, (legend_x + 15, y_pos - 2), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+            
+            y_pos += line_height
+    
+    def _add_image_info(self, image: np.ndarray, elements: List[Dict]):
+        """Afegeix informació general de la imatge"""
+        # Informació a mostrar
+        total_elements = len(elements)
+        avg_confidence = sum(elem["confidence"] for elem in elements) / total_elements if total_elements > 0 else 0
+        
+        # Configuració del panell d'informació
+        info_y_start = image.shape[0] - 80
+        info_x = 20
+        
+        # Fons del panell
+        overlay = image.copy()
+        cv2.rectangle(overlay, (info_x - 10, info_y_start - 10), 
+                     (info_x + 300, info_y_start + 70), (0, 0, 0), -1)
+        cv2.addWeighted(overlay, 0.8, image, 0.2, 0, image)
+        
+        # Vora del panell
+        cv2.rectangle(image, (info_x - 10, info_y_start - 10), 
+                     (info_x + 300, info_y_start + 70), (255, 255, 255), 2)
+        
+        # Informació
+        cv2.putText(image, f"Total elements: {total_elements}", (info_x, info_y_start + 15), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        cv2.putText(image, f"Confiança mitjana: {avg_confidence:.2f}", (info_x, info_y_start + 35), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        cv2.putText(image, f"Dimensions: {image.shape[1]}x{image.shape[0]}", (info_x, info_y_start + 55), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    
+    def create_interactive_visualization_data(self, image_path: str, elements: List[Dict]) -> Dict:
+        """
+        Crea dades per visualització interactiva en Streamlit
+        
+        Args:
+            image_path: Path a la imatge
+            elements: Elements detectats
+            
+        Returns:
+            Diccionari amb dades per visualització interactiva
+        """
+        # Carregar imatge original
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError(f"No es pot carregar la imatge: {image_path}")
+        
+        # Convertir BGR a RGB per Streamlit
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        # Crear imatge amb visualitzacions
+        visualized_image = self.visualize_detections(image_path, elements, show_labels=True, show_confidence=True)
+        visualized_image_rgb = cv2.cvtColor(visualized_image, cv2.COLOR_BGR2RGB)
+        
+        # Preparar dades d'elements per interactivitat
+        interactive_elements = []
+        for i, element in enumerate(elements):
+            bbox = element["bbox"]
+            
+            interactive_element = {
+                'id': i + 1,
+                'type': element["type"],
+                'confidence': element["confidence"],
+                'text': element.get("text", ""),
+                'source': element.get("source", "unknown"),
+                'bbox': bbox,
+                'coordinates': {
+                    'x1': int(bbox["x1"]),
+                    'y1': int(bbox["y1"]),
+                    'x2': int(bbox["x2"]),
+                    'y2': int(bbox["y2"]),
+                    'width': int(bbox["x2"] - bbox["x1"]),
+                    'height': int(bbox["y2"] - bbox["y1"])
+                },
+                'center': {
+                    'x': int((bbox["x1"] + bbox["x2"]) / 2),
+                    'y': int((bbox["y1"] + bbox["y2"]) / 2)
+                },
+                'area': int((bbox["x2"] - bbox["x1"]) * (bbox["y2"] - bbox["y1"])),
+            }
+            interactive_elements.append(interactive_element)
+        
+        # Estadístiques de la imatge
+        image_stats = {
+            'width': image.shape[1],
+            'height': image.shape[0],
+            'channels': image.shape[2] if len(image.shape) > 2 else 1,
+            'total_elements': len(elements),
+            'element_types': list(set(elem["type"] for elem in elements)),
+            'avg_confidence': sum(elem["confidence"] for elem in elements) / len(elements) if elements else 0,
+            'confidence_distribution': {
+                'high': len([e for e in elements if e["confidence"] >= 0.8]),
+                'medium': len([e for e in elements if 0.5 <= e["confidence"] < 0.8]),
+                'low': len([e for e in elements if e["confidence"] < 0.5])
+            }
+        }
+        
+        return {
+            'original_image': image_rgb,
+            'visualized_image': visualized_image_rgb,
+            'image_stats': image_stats,
+            'elements': interactive_elements,
+            'visualization_ready': True
+        }
         
         # Guardar si s'especifica output_path
         if output_path:

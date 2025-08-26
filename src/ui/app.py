@@ -10,8 +10,16 @@ from pathlib import Path
 from io import BytesIO
 from datetime import datetime
 
-# Afegir el directori src al path per importar els mòduls
-sys.path.append(str(Path(__file__).parent.parent))
+# Configurar el path correctament per importar mòduls
+current_dir = Path(__file__).parent.absolute()
+src_dir = current_dir.parent.absolute()
+project_root = src_dir.parent.absolute()
+
+# Afegir tant el directori src com l'arrel del projecte al path
+if str(src_dir) not in sys.path:
+    sys.path.insert(0, str(src_dir))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 try:
     from pipeline import OCRPipeline
@@ -22,6 +30,13 @@ try:
         AI_ENHANCED_AVAILABLE = True
     except ImportError:
         AI_ENHANCED_AVAILABLE = False
+    
+    # Importar component de visualització interactiva
+    try:
+        from ui.interactive_viz import InteractiveVisualization, show_interactive_element_details
+        INTERACTIVE_VIZ_AVAILABLE = True
+    except ImportError:
+        INTERACTIVE_VIZ_AVAILABLE = False
         
 except ImportError as e:
     st.error(f"Error important OCRPipeline: {e}")
@@ -33,10 +48,12 @@ except ImportError as e:
         from dimension_linker import detect_lines, link_text_to_lines
         OCRPipeline = None
         AI_ENHANCED_AVAILABLE = False
+        INTERACTIVE_VIZ_AVAILABLE = False
     except ImportError as e2:
         st.error(f"Error important mòduls individuals: {e2}")
         OCRPipeline = None
         AI_ENHANCED_AVAILABLE = False
+        INTERACTIVE_VIZ_AVAILABLE = False
 
 st.set_page_config(page_title="Validador de Plànols Tècnics amb IA", layout="wide")
 
@@ -47,12 +64,27 @@ if 'ai_pipeline' not in st.session_state:
     st.session_state.ai_pipeline = None
 if 'processing_results' not in st.session_state:
     st.session_state.processing_results = None
+if 'interactive_viz' not in st.session_state and INTERACTIVE_VIZ_AVAILABLE:
+    st.session_state.interactive_viz = InteractiveVisualization()
 
 st.title("🤖📐 Validador de Plànols Tècnics amb IA")
 
 # Sidebar per configuració d'IA
 with st.sidebar:
     st.header("⚙️ Configuració")
+    
+    # Estat dels components
+    st.subheader("📊 Estat del Sistema")
+    
+    if AI_ENHANCED_AVAILABLE:
+        st.success("✅ IA disponible")
+    else:
+        st.error("❌ IA no disponible")
+    
+    if INTERACTIVE_VIZ_AVAILABLE:
+        st.success("✅ Visualització interactiva disponible")
+    else:
+        st.error("❌ Visualització interactiva no disponible")
     
     # Configuració d'IA
     st.subheader("🤖 Intel·ligència Artificial")
@@ -117,7 +149,7 @@ with st.sidebar:
         st.session_state.ai_enabled = False
 
 # Pestanyes principals amb IA
-tab1, tab2, tab3, tab4 = st.tabs(["📤 Pujar Fitxer", "🔍 Resultats", "🔧 Validació HIITL", "📊 Export de Dades"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📤 Pujar Fitxer", "🔍 Resultats", "📊 Dashboard", "🔧 Validació HIITL", "📊 Export de Dades"])
 
 with tab1:
     st.header("Pujar fitxer PDF")
@@ -208,47 +240,382 @@ with tab2:
             ai_enabled_display = "✅ Sí" if results.get('ai_enabled', False) else "❌ No"
             st.metric("🤖 IA utilitzada", ai_enabled_display)
         
-        # Resultats per pàgina
-        st.subheader("Resultats per pàgina")
-        
-        for page in results.get('pages', []):
-            with st.expander(f"📄 Pàgina {page['page_number']} - {len(page.get('elements', []))} elements"):
+        # Selector de pàgina per visualització
+        if results.get('pages'):
+            st.subheader("Visualització Interactiva")
+            
+            page_options = [f"Pàgina {p['page_number']}" for p in results['pages']]
+            selected_page_idx = st.selectbox("Selecciona pàgina per visualitzar:", range(len(page_options)), format_func=lambda x: page_options[x])
+            
+            if selected_page_idx is not None:
+                selected_page = results['pages'][selected_page_idx]
                 
-                # Informació de la pàgina
-                col1, col2 = st.columns(2)
+                # Crear visualització interactiva si hi ha elements
+                if selected_page.get('elements'):
+                    try:
+                        # Intentar crear visualització interactiva amb IA
+                        if st.session_state.ai_pipeline and st.session_state.ai_pipeline.ai_pipeline and st.session_state.ai_pipeline.ai_pipeline.ai_detector:
+                            # Crear dades de visualització interactiva
+                            image_path = selected_page.get('image_path', '')
+                            if image_path and os.path.exists(image_path):
+                                
+                                with st.spinner("Creant visualització interactiva..."):
+                                    viz_data = st.session_state.ai_pipeline.ai_pipeline.ai_detector.create_interactive_visualization_data(
+                                        image_path, selected_page['elements']
+                                    )
+                                
+                                # Mostrar imatges costat a costat
+                                col_orig, col_viz = st.columns(2)
+                                
+                                with col_orig:
+                                    st.subheader("📄 Imatge Original")
+                                    st.image(viz_data['original_image'], use_column_width=True, caption="Document original")
+                                
+                                with col_viz:
+                                    st.subheader("🔍 Elements Detectats")
+                                    st.image(viz_data['visualized_image'], use_column_width=True, caption="Elements detectats superposats")
+                                
+                                # Estadístiques de la imatge
+                                st.subheader("📊 Informació de la Imatge")
+                                col1, col2, col3, col4 = st.columns(4)
+                                
+                                with col1:
+                                    st.metric("Amplada", f"{viz_data['image_stats']['width']}px")
+                                
+                                with col2:
+                                    st.metric("Altura", f"{viz_data['image_stats']['height']}px")
+                                
+                                with col3:
+                                    st.metric("Elements detectats", viz_data['image_stats']['total_elements'])
+                                
+                                with col4:
+                                    st.metric("Confiança mitjana", f"{viz_data['image_stats']['avg_confidence']:.2f}")
+                                
+                                # Distribució de confiança
+                                st.subheader("📈 Distribució de Confiança")
+                                conf_dist = viz_data['image_stats']['confidence_distribution']
+                                col1, col2, col3 = st.columns(3)
+                                
+                                with col1:
+                                    st.metric("🟢 Alta (≥0.8)", conf_dist['high'])
+                                
+                                with col2:
+                                    st.metric("🟡 Mitjana (0.5-0.8)", conf_dist['medium'])
+                                
+                                with col3:
+                                    st.metric("🔴 Baixa (<0.5)", conf_dist['low'])
+                                
+                                # Llista interactiva d'elements
+                                st.subheader("📋 Elements Detectats (Interactiu)")
+                                
+                                # Filtres
+                                col_filter1, col_filter2, col_filter3 = st.columns(3)
+                                
+                                with col_filter1:
+                                    type_filter = st.multiselect(
+                                        "Filtrar per tipus:",
+                                        options=viz_data['image_stats']['element_types'],
+                                        default=viz_data['image_stats']['element_types']
+                                    )
+                                
+                                with col_filter2:
+                                    min_confidence = st.slider("Confiança mínima:", 0.0, 1.0, 0.0, 0.05)
+                                
+                                with col_filter3:
+                                    show_text_only = st.checkbox("Només amb text", value=False)
+                                
+                                # Filtrar elements
+                                filtered_elements = [
+                                    elem for elem in viz_data['elements']
+                                    if (elem['type'] in type_filter and 
+                                        elem['confidence'] >= min_confidence and
+                                        (not show_text_only or elem['text'].strip() != ''))
+                                ]
+                                
+                                if filtered_elements:
+                                    # Taula d'elements amb possibilitat de selecció amb error handling
+                                    elements_df = pd.DataFrame([
+                                        {
+                                            'ID': elem.get('id', 0),
+                                            'Tipus': elem.get('type', 'unknown'),
+                                            'Confiança': f"{elem.get('confidence', 0):.3f}",
+                                            'Font': elem.get('source', 'unknown'),
+                                            'Text': elem.get('text', '')[:50] + '...' if len(elem.get('text', '')) > 50 else elem.get('text', ''),
+                                            'Àrea': elem.get('area', 0),
+                                            'Centre X': elem.get('center', {}).get('x', 0),
+                                            'Centre Y': elem.get('center', {}).get('y', 0)
+                                        }
+                                        for elem in filtered_elements
+                                    ])
+                                    
+                                    # Configurar la taula com a seleccionable
+                                    selected_rows = st.dataframe(
+                                        elements_df, 
+                                        use_container_width=True,
+                                        hide_index=True,
+                                        on_select="rerun",
+                                        selection_mode="multi-row"
+                                    )
+                                    
+                                    # Mostrar detalls dels elements seleccionats
+                                    if hasattr(selected_rows, 'selection') and selected_rows.selection.rows:
+                                        st.subheader("🔍 Detalls dels Elements Seleccionats")
+                                        
+                                        for row_idx in selected_rows.selection.rows:
+                                            if row_idx < len(filtered_elements):
+                                                elem = filtered_elements[row_idx]
+                                                
+                                                with st.expander(f"Element {elem['id']} - {elem['type']}"):
+                                                    col1, col2 = st.columns(2)
+                                                    
+                                                    with col1:
+                                                        st.write("**Informació bàsica:**")
+                                                        st.write(f"- **Tipus:** {elem['type']}")
+                                                        st.write(f"- **Confiança:** {elem['confidence']:.3f}")
+                                                        st.write(f"- **Font:** {elem['source']}")
+                                                        if elem['text']:
+                                                            st.write(f"- **Text:** {elem['text']}")
+                                                    
+                                                    with col2:
+                                                        st.write("**Coordenades:**")
+                                                        coords = elem.get('coordinates', {})
+                                                        center = elem.get('center', {})
+                                                        st.write(f"- **Posició:** ({coords.get('x1', 0)}, {coords.get('y1', 0)})")
+                                                        st.write(f"- **Dimensions:** {coords.get('width', 0)}×{coords.get('height', 0)}")
+                                                        st.write(f"- **Centre:** ({center.get('x', 0)}, {center.get('y', 0)})")
+                                                        st.write(f"- **Àrea:** {elem.get('area', 0)} px²")
+                                                    
+                                                    # Opció per corregir l'element
+                                                    if st.button(f"✏️ Corregir element {elem['id']}", key=f"correct_{elem['id']}"):
+                                                        st.session_state[f'editing_element_{elem["id"]}'] = True
+                                                    
+                                                    # Formulari de correcció
+                                                    if st.session_state.get(f'editing_element_{elem["id"]}', False):
+                                                        with st.form(f"correction_form_{elem['id']}"):
+                                                            available_types = [
+                                                                "dimension_text", "dimension_line", "arrow_head", 
+                                                                "geometric_tolerance", "info_table", "revision_table",
+                                                                "title_block", "section_line", "center_line", 
+                                                                "construction_line", "weld_symbol", "surface_finish", 
+                                                                "datum_reference"
+                                                            ]
+                                                            
+                                                            corrected_type = st.selectbox(
+                                                                "Tipus correcte:",
+                                                                available_types,
+                                                                index=available_types.index(elem['type']) if elem['type'] in available_types else 0,
+                                                                key=f"type_correction_{elem['id']}"
+                                                            )
+                                                            
+                                                            corrected_text = st.text_input(
+                                                                "Text correcte:",
+                                                                value=elem['text'],
+                                                                key=f"text_correction_{elem['id']}"
+                                                            )
+                                                            
+                                                            col_submit, col_cancel = st.columns(2)
+                                                            
+                                                            with col_submit:
+                                                                if st.form_submit_button("✅ Aplicar correcció"):
+                                                                    # Guardar correcció
+                                                                    if st.session_state.ai_pipeline and st.session_state.ai_pipeline.learning_manager:
+                                                                        correction_data = {
+                                                                            'original_type': elem['type'],
+                                                                            'corrected_type': corrected_type,
+                                                                            'original_text': elem['text'],
+                                                                            'corrected_text': corrected_text,
+                                                                            'confidence': elem['confidence'],
+                                                                            'bbox': elem['bbox']
+                                                                        }
+                                                                        
+                                                                        st.session_state.ai_pipeline.learning_manager.save_user_correction(
+                                                                            correction_data, corrected_type, "streamlit_interactive"
+                                                                        )
+                                                                        
+                                                                        st.success("✅ Correcció aplicada! El model millorarà amb aquesta informació.")
+                                                                        st.session_state[f'editing_element_{elem["id"]}'] = False
+                                                                        st.rerun()
+                                                            
+                                                            with col_cancel:
+                                                                if st.form_submit_button("❌ Cancel·lar"):
+                                                                    st.session_state[f'editing_element_{elem["id"]}'] = False
+                                                                    st.rerun()
+                                    else:
+                                        st.info("👆 Selecciona elements de la taula per veure detalls i opcions de correcció")
+                                
+                                else:
+                                    st.warning("No hi ha elements que coincideixin amb els filtres seleccionats")
+                            
+                            else:
+                                st.error(f"No es pot trobar la imatge: {image_path}")
+                        
+                        else:
+                            st.warning("Visualització interactiva no disponible - Sistema d'IA no carregat")
+                            # Fallback a visualització bàsica
+                            st.info("Mostrant resultats en format de taula...")
+                            
+                    except Exception as e:
+                        st.error(f"Error creant visualització: {e}")
+                        st.info("Mostrant dades en format de taula com a fallback...")
                 
-                with col1:
-                    st.write("**Mètode de processament:**", page.get('processing_method', 'Unknown'))
-                    if 'ai_metadata' in page:
-                        st.write("**Ratio alta confiança:**", f"{page['ai_metadata'].get('high_confidence_ratio', 0):.1%}")
+                # Taula de fallback sempre disponible
+                if selected_page.get('elements'):
+                    with st.expander("📊 Dades detallades (taula)", expanded=False):
+                        elements_df = pd.DataFrame([
+                            {
+                                'Tipus': elem.get('type', ''),
+                                'Confiança': f"{elem.get('confidence', 0):.2f}",
+                                'Font': elem.get('source', ''),
+                                'Text': elem.get('text', '')[:50] + '...' if len(elem.get('text', '')) > 50 else elem.get('text', '')
+                            }
+                            for elem in selected_page['elements']
+                        ])
+                        st.dataframe(elements_df, use_container_width=True)
                 
-                with col2:
-                    st.write("**Necessita revisió:**", "Sí" if page.get('needs_human_review', False) else "No")
-                    st.write("**Elements detectats:**", len(page.get('elements', [])))
-                
-                # Taula d'elements
-                if page.get('elements'):
-                    elements_df = pd.DataFrame([
-                        {
-                            'Tipus': elem.get('type', ''),
-                            'Confiança': f"{elem.get('confidence', 0):.2f}",
-                            'Font': elem.get('source', ''),
-                            'Text': elem.get('text', '')[:50] + '...' if len(elem.get('text', '')) > 50 else elem.get('text', '')
-                        }
-                        for elem in page['elements']
-                    ])
-                    st.dataframe(elements_df, use_container_width=True)
+                # Informació de processament
+                with st.expander("ℹ️ Informació de processament"):
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.write("**Mètode de processament:**", selected_page.get('processing_method', 'Unknown'))
+                        st.write("**Necessita revisió:**", "Sí" if selected_page.get('needs_human_review', False) else "No")
+                    
+                    with col2:
+                        st.write("**Elements detectats:**", len(selected_page.get('elements', [])))
+                        if 'ai_metadata' in selected_page:
+                            st.write("**Ratio alta confiança:**", f"{selected_page['ai_metadata'].get('high_confidence_ratio', 0):.1%}")
                 
                 # Relacions espacials
-                if page.get('relationships'):
-                    st.write("**Relacions espacials trobades:**")
-                    for rel in page['relationships'][:5]:  # Mostrar només les primeres 5
-                        st.write(f"- {rel.get('type', 'Unknown relation')}")
+                if selected_page.get('relationships'):
+                    with st.expander("🔗 Relacions espacials"):
+                        for i, rel in enumerate(selected_page['relationships'][:10]):  # Mostrar primers 10
+                            st.write(f"{i+1}. {rel.get('type', 'Unknown relation')}")
     
     else:
         st.info("👆 Puja i processa un document per veure els resultats aquí")
 
 with tab3:
+    st.header("📊 Dashboard de Visualització Interactiva")
+    
+    if st.session_state.processing_results and INTERACTIVE_VIZ_AVAILABLE:
+        # Crear dashboard complet amb totes les visualitzacions
+        st.session_state.interactive_viz.create_summary_dashboard(st.session_state.processing_results)
+        
+        # Anàlisi detallada per pàgina
+        st.subheader("🔍 Anàlisi Detallada per Pàgina")
+        
+        # Selector de pàgina
+        pages_with_elements = [p for p in st.session_state.processing_results.get('pages', []) if p.get('elements')]
+        
+        if pages_with_elements:
+            page_options = [f"Pàgina {p['page_number']} ({len(p['elements'])} elements)" for p in pages_with_elements]
+            selected_page_for_analysis = st.selectbox(
+                "Selecciona pàgina per anàlisi detallada:",
+                range(len(pages_with_elements)),
+                format_func=lambda x: page_options[x],
+                key="detailed_analysis_page"
+            )
+            
+            if selected_page_for_analysis is not None:
+                page_data = pages_with_elements[selected_page_for_analysis]
+                elements = page_data['elements']
+                
+                # Estadístiques ràpides
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Elements", len(elements))
+                
+                with col2:
+                    avg_conf = sum(e['confidence'] for e in elements) / len(elements)
+                    st.metric("Confiança mitjana", f"{avg_conf:.2f}")
+                
+                with col3:
+                    high_conf = len([e for e in elements if e['confidence'] >= 0.8])
+                    st.metric("Alta confiança", high_conf)
+                
+                with col4:
+                    types_count = len(set(e['type'] for e in elements))
+                    st.metric("Tipus únics", types_count)
+                
+                # Visualitzacions específiques de la pàgina
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # Mapa de posicions dels elements
+                    st.subheader("🗺️ Mapa d'Elements")
+                    if elements:
+                        max_x = max([e.get('coordinates', {}).get('x1', 0) + e.get('coordinates', {}).get('width', 0) for e in elements] + [1000])
+                        max_y = max([e.get('coordinates', {}).get('y1', 0) + e.get('coordinates', {}).get('height', 0) for e in elements] + [1000])
+                    else:
+                        max_x, max_y = 1000, 1000
+                    
+                    scatter_fig = st.session_state.interactive_viz.create_elements_scatter_plot(elements, max_x, max_y)
+                    st.plotly_chart(scatter_fig, use_container_width=True, key="scatter_plot_dashboard")
+                
+                with col2:
+                    # Anàlisi de mides vs confiança
+                    st.subheader("📏 Àrea vs Confiança")
+                    size_fig = st.session_state.interactive_viz.create_size_analysis_chart(elements)
+                    st.plotly_chart(size_fig, use_container_width=True, key="size_analysis_dashboard")
+                
+                # Cerca d'elements específics
+                st.subheader("🔍 Cerca i Filtratge d'Elements")
+                
+                col_search1, col_search2, col_search3 = st.columns(3)
+                
+                with col_search1:
+                    search_text = st.text_input("Cerca per text contingut:", placeholder="Introdueix text a cercar...")
+                
+                with col_search2:
+                    min_area = st.number_input("Àrea mínima (px²):", min_value=0, value=0)
+                
+                with col_search3:
+                    search_types = st.multiselect(
+                        "Filtrar per tipus:",
+                        options=list(set(e['type'] for e in elements)),
+                        default=list(set(e['type'] for e in elements))
+                    )
+                
+                # Aplicar filtres
+                filtered_elements = []
+                for elem in elements:
+                    # Filtrar per text
+                    if search_text and search_text.lower() not in elem.get('text', '').lower():
+                        continue
+                    
+                    # Filtrar per àrea
+                    if elem['area'] < min_area:
+                        continue
+                    
+                    # Filtrar per tipus
+                    if elem['type'] not in search_types:
+                        continue
+                    
+                    filtered_elements.append(elem)
+                
+                st.write(f"**Elements trobats:** {len(filtered_elements)} de {len(elements)}")
+                
+                if filtered_elements:
+                    # Mostrar elements filtrats
+                    for i, elem in enumerate(filtered_elements[:10]):  # Mostrar màxim 10
+                        with st.expander(f"Element {elem['id']} - {elem['type']} (Confiança: {elem['confidence']:.2f})"):
+                            show_interactive_element_details(elem, str(elem['id']))
+                    
+                    if len(filtered_elements) > 10:
+                        st.info(f"Mostrant els primers 10 de {len(filtered_elements)} elements trobats.")
+        
+        else:
+            st.warning("No hi ha pàgines amb elements detectats per analitzar")
+    
+    elif not INTERACTIVE_VIZ_AVAILABLE:
+        st.error("❌ Component de visualització interactiva no disponible")
+        st.info("💡 Instal·la plotly per habilitar aquesta funcionalitat: `pip install plotly`")
+    
+    else:
+        st.info("👆 Processa primer un document per veure el dashboard de visualització")
+
+with tab4:
     st.header("🔧 Validació Human-in-the-Loop (HIITL)")
     
     if st.session_state.processing_results and st.session_state.processing_results.get('human_review_required'):

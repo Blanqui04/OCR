@@ -11,7 +11,7 @@ import logging
 
 # Importar el pipeline híbrid
 try:
-    from src.ai_model.hybrid_pipeline import HybridDetectionPipeline, ContinuousLearningManager
+    from ai_model.hybrid_pipeline import HybridDetectionPipeline, ContinuousLearningManager
     AI_AVAILABLE = True
 except ImportError:
     AI_AVAILABLE = False
@@ -99,8 +99,8 @@ class AIEnhancedPipeline:
         
         try:
             # 1. Convertir PDF a imatges (component existent)
-            from src.pdf_to_images import convert_pdf_to_images
-            image_paths = convert_pdf_to_images(pdf_path, str(self.project_dir / "data" / "images"))
+            from pdf_to_images import pdf_to_images
+            image_paths = pdf_to_images(pdf_path, str(self.project_dir / "data" / "images"))
             
             # 2. Processar cada pàgina
             for i, image_path in enumerate(image_paths):
@@ -146,9 +146,10 @@ class AIEnhancedPipeline:
         
         try:
             # 1. OCR (component existent)
-            from src.ocr_processor import process_image_ocr
-            ocr_data = process_image_ocr(image_path)
+            from ocr_processor import ocr_with_boxes
+            ocr_data, image_shape = ocr_with_boxes(image_path)
             page_results["ocr_data"] = ocr_data
+            page_results["image_shape"] = image_shape
             
             # 2. Obtenir dimensions de la imatge
             import cv2
@@ -168,18 +169,41 @@ class AIEnhancedPipeline:
                 
             else:
                 # Processament tradicional només amb regles
-                from src.data_extractor import extract_technical_data
+                from data_extractor import extract_technical_data
                 tech_data = extract_technical_data(ocr_data)
                 
                 # Convertir a format estàndard
                 elements = []
                 for dim in tech_data.get("dimensions", []):
+                    bbox = dim.get("bbox", [0, 0, 0, 0])
+                    if isinstance(bbox, list) and len(bbox) >= 4:
+                        x, y, w, h = bbox[:4]
+                        area = w * h if w > 0 and h > 0 else 1
+                        center_x = x + w // 2
+                        center_y = y + h // 2
+                    else:
+                        x, y, w, h = 0, 0, 1, 1
+                        area = 1
+                        center_x, center_y = 0, 0
+                    
                     elements.append({
                         "type": "dimension_text",
-                        "bbox": dim.get("bbox", {}),
+                        "bbox": bbox,
+                        "coordinates": {
+                            "x1": x,
+                            "y1": y,
+                            "width": w,
+                            "height": h
+                        },
+                        "center": {
+                            "x": center_x,
+                            "y": center_y
+                        },
+                        "area": area,
                         "confidence": 0.8,
                         "text": dim.get("text", ""),
-                        "source": "rules"
+                        "source": "rules",
+                        "id": len(elements) + 1
                     })
                 
                 page_results["elements"] = elements
