@@ -56,15 +56,28 @@ class AIEnhancedPipeline:
     def _initialize_ai_components(self):
         """Inicialitza components d'IA"""
         try:
-            # Path al model d'IA (si existeix)
-            model_path = self.config.get("ai_model_path")
-            if model_path:
-                model_path = self.project_dir / model_path
+            # Path al model d'IA (prioritza model personalitzat si existeix)
+            model_path = None
+            
+            # Primer comprovar si hi ha un model personalitzat
+            custom_model_path = self.config.get("custom_model_path")
+            if custom_model_path:
+                custom_path = self.project_dir / custom_model_path
+                if custom_path.exists():
+                    model_path = str(custom_path)
+            
+            # Si no, utilitzar el model configurat (pot ser None per usar model per defecte)
+            if not model_path:
+                ai_model_path = self.config.get("ai_model_path")
+                if ai_model_path:
+                    ai_path = self.project_dir / ai_model_path
+                    if ai_path.exists():
+                        model_path = str(ai_path)
             
             # Crear pipeline híbrid
             self.ai_pipeline = HybridDetectionPipeline(
                 str(self.project_dir), 
-                str(model_path) if model_path and model_path.exists() else None
+                model_path
             )
             
             # Crear gestor d'aprenentatge continu
@@ -258,12 +271,27 @@ class AIEnhancedPipeline:
         stats = {
             "ai_available": self.ai_pipeline is not None,
             "model_loaded": False,
+            "model_status": "no_model",
             "total_corrections": 0,
             "accuracy_estimate": 0.0
         }
         
+        # Verificar estat del model
         if self.ai_pipeline and self.ai_pipeline.ai_detector:
             stats["model_loaded"] = True
+            
+            # Determinar el tipus de model
+            if hasattr(self.ai_pipeline.ai_detector, 'is_custom_model'):
+                if self.ai_pipeline.ai_detector.is_custom_model:
+                    stats["model_status"] = "custom_model_loaded"
+                    stats["accuracy_estimate"] = 0.85  # Estimació per model personalitzat
+                else:
+                    stats["model_status"] = "default_model_ready"
+                    stats["accuracy_estimate"] = 0.75  # Estimació per model per defecte
+            else:
+                # Fallback per compatibilitat
+                stats["model_status"] = "model_loaded"
+                stats["accuracy_estimate"] = 0.75
         
         if self.learning_manager:
             corrections = self.learning_manager.collect_training_data()
@@ -272,7 +300,9 @@ class AIEnhancedPipeline:
             # Calcular precisió estimada basada en correccions
             if len(corrections) > 0:
                 # Simplicat: assumir que menys correccions = millor precisió
-                stats["accuracy_estimate"] = max(0.5, 1.0 - (len(corrections) / 100))
+                current_accuracy = stats["accuracy_estimate"]
+                correction_penalty = min(0.3, len(corrections) / 100)
+                stats["accuracy_estimate"] = max(0.5, current_accuracy - correction_penalty)
         
         return stats
     
@@ -370,7 +400,8 @@ class AIEnhancedPipeline:
 
 # Configuració per defecte d'IA
 DEFAULT_AI_CONFIG = {
-    "ai_model_path": "src/ai_model/models/best.pt",
+    "ai_model_path": None,  # Utilitza model per defecte
+    "custom_model_path": "src/ai_model/models/best.pt",  # Path per model personalitzat
     "confidence_threshold": 0.7,
     "human_review_threshold": 0.5,
     "enable_continuous_learning": True,

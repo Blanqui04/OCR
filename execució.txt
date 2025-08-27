@@ -1,0 +1,1 @@
+cd "C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR"; .\.venv\Scripts\streamlit.exe run src\ui\app.py --server.port=8503

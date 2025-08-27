@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema OCR Avançat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-search"></i> Sistema OCR Avançat</h1>
+                <p class="subtitle">Converteix imatges i PDFs a text amb tecnologia d'IA</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <h2><i class="fas fa-cloud-upload-alt"></i> Puja els teus fitxers</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-file-upload"></i>
+                        <h3>Arrossega els fitxers aquí o fes clic per seleccionar</h3>
+                        <p>Formats acceptats: PDF, PNG, JPG, JPEG, TIFF, BMP (màx. 16MB)</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
+                </div>
+
+                <!-- Debug Status -->
+                <div id="debugStatus" style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-family: monospace; font-size: 12px;">
+                    <strong>Debug Status:</strong><br>
+                    <span id="debugLog">Initializing...</span>
+                </div>
+
+                <!-- Test Buttons -->
+                <div style="margin-top: 10px; text-align: center;">
+                    <button id="testFileInputBtn" style="margin: 5px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Test File Input Direct
+                    </button>
+                    <button id="testUploadAreaBtn" style="margin: 5px; padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Test Upload Area Click
+                    </button>
+                    <button onclick="document.getElementById('fileInput').click(); console.log('Simple click executed');" style="margin: 5px; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Simple File Selector
+                    </button>
+                </div>
+
+                <!-- File List -->
+                <div class="file-list" id="fileList" style="display: none;">
+                    <h3><i class="fas fa-list"></i> Fitxers seleccionats</h3>
+                    <div id="selectedFiles"></div>
+                </div>
+            </section>
+
+            <!-- Options Section -->
+            <section class="options-section">
+                <h2><i class="fas fa-cog"></i> Opcions de processament</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card">
+                        <h4><i class="fas fa-language"></i> Idioma</h4>
+                        <select id="languageSelect">
+                            <option value="auto">Detecció automàtica</option>
+                            <option value="cat" selected>Català</option>
+                            <option value="spa">Castellà</option>
+                            <option value="eng">Anglès</option>
+                            <option value="fra">Francès</option>
+                            <option value="ita">Italià</option>
+                            <option value="deu">Alemany</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-brain"></i> Mode OCR</h4>
+                        <select id="ocrMode">
+                            <option value="accurate">Precís</option>
+                            <option value="fast" selected>Ràpid</option>
+                            <option value="enhanced">Millorat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-file-export"></i> Format de sortida</h4>
+                        <select id="outputFormat">
+                            <option value="txt">Text (.txt)</option>
+                            <option value="json" selected>JSON (.json)</option>
+                            <option value="csv">CSV (.csv)</option>
+                            <option value="xml">XML (.xml)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-table"></i> Detecció de taules</h4>
+                        <label class="switch">
+                            <input type="checkbox" id="tableDetection" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="actions-section">
+                <button class="btn btn-primary" id="processBtn" disabled>
+                    <i class="fas fa-play"></i> Iniciar Processament
+                </button>
+                <button class="btn btn-secondary" id="previewBtn" disabled>
+                    <i class="fas fa-eye"></i> Previsualitzar
+                </button>
+                <button class="btn btn-danger" id="clearBtn">
+                    <i class="fas fa-trash"></i> Netejar
+                </button>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <h2><i class="fas fa-cog fa-spin"></i> Processament en curs</h2>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    <p class="progress-status" id="progressStatus">Preparant...</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2><i class="fas fa-check-circle"></i> Resultats</h2>
+                
+                <div class="results-tabs">
+                    <button class="tab-btn active" data-tab="text">
+                        <i class="fas fa-align-left"></i> Text
+                    </button>
+                    <button class="tab-btn" data-tab="tables">
+                        <i class="fas fa-table"></i> Taules
+                    </button>
+                    <button class="tab-btn" data-tab="metadata">
+                        <i class="fas fa-info-circle"></i> Metadades
+                    </button>
+                </div>
+
+                <div class="results-content">
+                    <div class="tab-panel active" id="textTab">
+                        <div class="results-header">
+                            <h3>Text extret</h3>
+                            <div class="results-actions">
+                                <button class="btn btn-small btn-info" id="copyTextBtn">
+                                    <i class="fas fa-copy"></i> Copiar
+                                </button>
+                                <button class="btn btn-small btn-success" id="downloadTextBtn">
+                                    <i class="fas fa-download"></i> Descarregar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-output" id="textOutput">
+                            <p class="no-results">No s'han processat fitxers encara.</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="tablesTab">
+                        <div id="tablesOutput">
+                            <p class="no-results">No s'han detectat taules.</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel" id="metadataTab">
+                        <div id="metadataOutput">
+                            <p class="no-results">No hi ha metadades disponibles.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Sistema OCR Avançat. Tots els drets reservats.</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processant...</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Debug function
+        function debugLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugElement = document.getElementById('debugLog');
+            debugElement.innerHTML += `<br>[${timestamp}] ${message}`;
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        // Global variables
+        let uploadedFiles = [];
+        let isUploading = false;
+
+        $(document).ready(function() {
+            debugLog('Document ready - jQuery loaded successfully');
+            debugLog('jQuery version: ' + $.fn.jquery);
+            
+            // Test basic functionality
+            debugLog('Testing basic DOM access...');
+            
+            // Check if key elements exist
+            const uploadArea = $('#uploadArea');
+            const fileInput = $('#fileInput');
+            const fileList = $('#fileList');
+            const selectedFiles = $('#selectedFiles');
+            const processBtn = $('#processBtn');
+            const previewBtn = $('#previewBtn');
+            
+            debugLog(`Upload area found: ${uploadArea.length > 0} (length: ${uploadArea.length})`);
+            debugLog(`File input found: ${fileInput.length > 0} (length: ${fileInput.length})`);
+            debugLog(`File list found: ${fileList.length > 0} (length: ${fileList.length})`);
+            debugLog(`Selected files found: ${selectedFiles.length > 0} (length: ${selectedFiles.length})`);
+            debugLog(`Process button found: ${processBtn.length > 0} (length: ${processBtn.length})`);
+            
+            // Check if file input is properly configured
+            if (fileInput.length > 0) {
+                const input = fileInput[0];
+                debugLog(`File input type: ${input.type}`);
+                debugLog(`File input multiple: ${input.multiple}`);
+                debugLog(`File input accept: ${input.accept}`);
+                debugLog(`File input style display: ${input.style.display}`);
+                debugLog(`File input disabled: ${input.disabled}`);
+                debugLog(`File input hidden: ${input.hidden}`);
+            }
+            // Test click event binding
+            debugLog('Binding click event to upload area...');
+            
+            // Remove any existing event handlers first
+            uploadArea.off('click');
+            $('.upload-content').off('click');
+            
+            // Simple, direct click handler
+            uploadArea.on('click', function(e) {
+                debugLog('Upload area clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                debugLog('Attempting to open file dialog...');
+                
+                // Get the actual DOM element
+                const fileInputElement = document.getElementById('fileInput');
+                debugLog('File input element found: ' + (fileInputElement !== null));
+                
+                if (fileInputElement) {
+                    debugLog('File input element type: ' + fileInputElement.type);
+                    debugLog('File input element disabled: ' + fileInputElement.disabled);
+                    debugLog('File input element style.display: ' + fileInputElement.style.display);
+                    
+                    try {
+                        fileInputElement.click();
+                        debugLog('File input click() executed successfully');
+                    } catch (error) {
+                        debugLog('Error clicking file input: ' + error.message);
+                    }
+                } else {
+                    debugLog('ERROR: File input element not found!');
+                }
+            });
+
+            // Also add click handler to the content div for better coverage
+            uploadArea.find('.upload-content').on('click', function(e) {
+                debugLog('Upload content clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const fileInputElement = document.getElementById('fileInput');
+                if (fileInputElement) {
+                    fileInputElement.click();
+                    debugLog('Content click -> file input triggered');
+                }
+            });
+
+            // Test buttons
+            $('#testFileInputBtn').on('click', function(e) {
+                debugLog('Test file input button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const fileInputElement = document.getElementById('fileInput');
+                if (fileInputElement) {
+                    debugLog('Direct file input click attempt...');
+                    fileInputElement.click();
+                    debugLog('Direct file input click executed');
+                } else {
+                    debugLog('ERROR: File input element not found in test!');
+                }
+            });
+
+            $('#testUploadAreaBtn').on('click', function(e) {
+                debugLog('Test upload area button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Manually trigger the upload area click
+                debugLog('Manually triggering upload area click...');
+                uploadArea.trigger('click');
+            });
+
+            // Test file input change
+            debugLog('Binding change event to file input...');
+            fileInput.on('change', function(e) {
+                debugLog('File input change event triggered');
+                debugLog(`Files selected: ${e.target.files.length}`);
+                
+                if (e.target.files.length > 0) {
+                    for (let i = 0; i < e.target.files.length; i++) {
+                        debugLog(`File ${i + 1}: ${e.target.files[i].name} (${e.target.files[i].size} bytes)`);
+                    }
+                    handleFileSelection(e.target.files);
+                } else {
+                    debugLog('No files selected');
+                }
+            });
+
+            // Test drag and drop
+            debugLog('Setting up drag and drop events...');
+            
+            // Prevent default drag behaviors on document
+            $(document).on('dragenter dragover drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            uploadArea.on('dragenter', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                debugLog('Drag enter event');
+                $(this).addClass('dragover');
+            });
+
+            uploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).addClass('dragover');
+            });
+
+            uploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                debugLog('Drag leave event');
+                $(this).removeClass('dragover');
+            });
+
+            uploadArea.on('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                debugLog('Drop event triggered');
+                $(this).removeClass('dragover');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                debugLog(`Files dropped: ${files.length}`);
+                
+                if (files.length > 0) {
+                    handleFileSelection(files);
+                } else {
+                    debugLog('No files in drop event');
+                }
+            });
+
+            function handleFileSelection(fileList) {
+                debugLog(`Handling file selection: ${fileList.length} files`);
+                
+                if (isUploading) {
+                    debugLog('Already uploading, showing warning');
+                    showMessage('Espera que acabi la pujada actual', 'warning');
+                    return;
+                }
+
+                // Convert FileList to Array
+                const filesArray = Array.from(fileList);
+                debugLog(`Files array created with ${filesArray.length} files`);
+                
+                // Validate files
+                const validFiles = [];
+                const invalidFiles = [];
+                
+                filesArray.forEach((file, index) => {
+                    debugLog(`Validating file ${index + 1}: ${file.name} (${file.size} bytes, type: ${file.type})`);
+                    
+                    if (validateFile(file)) {
+                        validFiles.push(file);
+                        debugLog(`File ${index + 1} is valid`);
+                    } else {
+                        invalidFiles.push(file);
+                        debugLog(`File ${index + 1} is invalid`);
+                    }
+                });
+
+                debugLog(`Validation complete: ${validFiles.length} valid, ${invalidFiles.length} invalid`);
+
+                if (invalidFiles.length > 0) {
+                    const errorMsg = `Fitxers no vàlids: ${invalidFiles.map(f => f.name).join(', ')}`;
+                    debugLog(`Showing error for invalid files: ${errorMsg}`);
+                    showMessage(errorMsg, 'error');
+                }
+
+                if (validFiles.length === 0) {
+                    debugLog('No valid files to upload');
+                    showMessage('No hi ha fitxers vàlids per pujar', 'error');
+                    return;
+                }
+
+                debugLog(`Uploading ${validFiles.length} valid files`);
+                uploadFiles(validFiles);
+            }
+
+            function validateFile(file) {
+                debugLog(`Validating file: ${file.name}, size: ${file.size}, type: ${file.type}`);
+                
+                // Check file size (16MB limit)
+                if (file.size > 16 * 1024 * 1024) {
+                    debugLog(`File ${file.name} is too large: ${file.size} bytes`);
+                    return false;
+                }
+                
+                // Check file type
+                const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/tiff', 'image/bmp'];
+                const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.tiff', '.bmp'];
+                
+                const isValidType = allowedTypes.includes(file.type);
+                const isValidExtension = allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+                
+                debugLog(`File type validation: type=${file.type}, valid=${isValidType}, extension valid=${isValidExtension}`);
+                
+                return isValidType || isValidExtension;
+            }
+
+            function uploadFiles(files) {
+                debugLog(`Starting upload of ${files.length} files`);
+                
+                if (files.length === 0) {
+                    debugLog('No files to upload');
+                    return;
+                }
+                
+                isUploading = true;
+                debugLog('Set uploading flag to true');
+                
+                const formData = new FormData();
+                files.forEach((file, index) => {
+                    debugLog(`Adding file ${index + 1} to FormData: ${file.name}`);
+                    formData.append('files', file);
+                });
+                
+                debugLog('FormData created, showing loading overlay');
+                showLoadingOverlay('Pujant fitxers...');
+                
+                debugLog('Starting AJAX request to /upload');
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    timeout: 60000,
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = (evt.loaded / evt.total) * 100;
+                                debugLog(`Upload progress: ${percentComplete.toFixed(2)}%`);
+                                updateLoadingMessage(`Pujant fitxers... ${percentComplete.toFixed(0)}%`);
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        debugLog('Upload successful, response received');
+                        debugLog(`Response: ${JSON.stringify(response)}`);
+                        
+                        hideLoadingOverlay();
+                        isUploading = false;
+                        
+                        if (response.success) {
+                            debugLog(`Upload successful: ${response.files.length} files uploaded`);
+                            uploadedFiles = response.files;
+                            displayUploadedFiles();
+                            updateButtons();
+                            showMessage(response.message, 'success');
+                        } else {
+                            debugLog(`Upload failed: ${response.error}`);
+                            showMessage(response.error || 'Error en la pujada', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        debugLog(`Upload error: status=${status}, error=${error}, xhr.status=${xhr.status}`);
+                        debugLog(`XHR response: ${xhr.responseText}`);
+                        
+                        hideLoadingOverlay();
+                        isUploading = false;
+                        
+                        let errorMessage = 'Error en la pujada del fitxer';
+                        
+                        if (xhr.status === 413) {
+                            errorMessage = 'El fitxer és massa gran. Màxim 16MB.';
+                        } else if (xhr.status === 400) {
+                            errorMessage = xhr.responseJSON?.error || 'Format de fitxer no vàlid';
+                        } else if (xhr.status === 0) {
+                            errorMessage = 'No es pot connectar amb el servidor';
+                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        } else if (status === 'timeout') {
+                            errorMessage = 'Temps d\'espera exhaurit. Prova amb fitxers més petits.';
+                        }
+                        
+                        debugLog(`Showing error message: ${errorMessage}`);
+                        showMessage(errorMessage, 'error');
+                    }
+                });
+            }
+
+            function displayUploadedFiles() {
+                debugLog(`Displaying ${uploadedFiles.length} uploaded files`);
+                
+                if (uploadedFiles.length > 0) {
+                    $('#fileList').show();
+                    let html = '';
+                    uploadedFiles.forEach((file, index) => {
+                        html += `
+                            <div class="file-item" data-index="${index}">
+                                <i class="fas fa-file"></i>
+                                <span class="file-name">${file.original_name}</span>
+                                <span class="file-size">${formatFileSize(file.size)}</span>
+                                <span class="file-type">${file.type}</span>
+                                <button class="btn btn-small btn-danger" onclick="removeFile(${index})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    selectedFiles.html(html);
+                    debugLog('File list HTML updated');
+                } else {
+                    $('#fileList').hide();
+                    debugLog('File list hidden (no files)');
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function updateButtons() {
+                const hasFiles = uploadedFiles.length > 0;
+                debugLog(`Updating buttons: hasFiles=${hasFiles}`);
+                processBtn.prop('disabled', !hasFiles);
+                previewBtn.prop('disabled', !hasFiles);
+            }
+
+            function showLoadingOverlay(message = 'Carregant...') {
+                debugLog(`Showing loading overlay: ${message}`);
+                $('#loadingOverlay').show();
+                $('#loadingOverlay .loading-content p').text(message);
+            }
+
+            function hideLoadingOverlay() {
+                debugLog('Hiding loading overlay');
+                $('#loadingOverlay').hide();
+            }
+
+            function updateLoadingMessage(message) {
+                debugLog(`Updating loading message: ${message}`);
+                $('#loadingOverlay .loading-content p').text(message);
+            }
+
+            function showMessage(message, type = 'info') {
+                debugLog(`Showing message: [${type}] ${message}`);
+                
+                // Remove existing messages
+                $('.message').remove();
+                
+                // Create message element
+                const messageDiv = $(`
+                    <div class="message message-${type}">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                        <button class="message-close">&times;</button>
+                    </div>
+                `);
+                
+                // Add to page
+                $('body').append(messageDiv);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                }, 5000);
+                
+                // Manual close
+                messageDiv.find('.message-close').on('click', () => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                });
+            }
+
+            // Test message system
+            setTimeout(() => {
+                debugLog('Testing message system...');
+                showMessage('Sistema d\'upload carregat correctament!', 'success');
+            }, 1000);
+
+            debugLog('Upload functionality initialization complete');
+        });
+
+        // Global function for removing files
+        function removeFile(index) {
+            debugLog(`Removing file at index: ${index}`);
+            uploadedFiles.splice(index, 1);
+            displayUploadedFiles();
+            updateButtons();
+            showMessage('Fitxer eliminat', 'info');
+        }
+
+        // Expose functions to global scope for debugging
+        window.uploadedFiles = uploadedFiles;
+        window.debugLog = debugLog;
+    </script>
+</body>
+</html>

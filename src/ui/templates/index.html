@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR - Reconeixement Òptic de Caràcters</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-file-text"></i> OCR System</h1>
+                <p class="subtitle">Reconeixement Òptic de Caràcters Avançat</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-file-upload"></i>
+                        <h3>Arrossega els fitxers aquí o fes clic per seleccionar</h3>
+                        <p>Formats acceptats: PDF, PNG, JPG, JPEG, TIFF, BMP (màx. 16MB)</p>
+                    </div>
+                </div>
+                
+                <!-- Hidden file input -->
+                <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp" style="position: absolute; left: -9999px; opacity: 0;">
+                
+                <!-- File List -->
+                <div class="file-list" id="fileList" style="display: none;">
+                    <h3><i class="fas fa-list"></i> Fitxers seleccionats:</h3>
+                    <div id="selectedFiles"></div>
+                </div>
+            </section>
+
+            <!-- Processing Options -->
+            <section class="options-section">
+                <h3><i class="fas fa-cogs"></i> Opcions de Processament</h3>
+                <div class="options-grid">
+                    <div class="option-card">
+                        <h4><i class="fas fa-language"></i> Idioma</h4>
+                        <select id="languageSelect">
+                            <option value="cat">Català</option>
+                            <option value="spa">Espanyol</option>
+                            <option value="eng" selected>Anglès</option>
+                            <option value="fra">Francès</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-search"></i> Mode OCR</h4>
+                        <select id="ocrMode">
+                            <option value="accurate">Precís</option>
+                            <option value="fast" selected>Ràpid</option>
+                            <option value="enhanced">Millorat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-file-export"></i> Format de sortida</h4>
+                        <select id="outputFormat">
+                            <option value="txt">Text (.txt)</option>
+                            <option value="json" selected>JSON (.json)</option>
+                            <option value="csv">CSV (.csv)</option>
+                            <option value="xml">XML (.xml)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-table"></i> Detecció de taules</h4>
+                        <label class="switch">
+                            <input type="checkbox" id="tableDetection" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-flask"></i> Mode simulació</h4>
+                        <label class="switch">
+                            <input type="checkbox" id="forceSimulation">
+                            <span class="slider"></span>
+                        </label>
+                        <small>Activa per a processament ràpid de prova</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="actions-section">
+                <button class="btn btn-primary" id="processBtn" disabled>
+                    <i class="fas fa-play"></i> Iniciar Processament
+                </button>
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-trash"></i> Netejar
+                </button>
+                <button class="btn btn-info" id="previewBtn" disabled>
+                    <i class="fas fa-eye"></i> Vista prèvia
+                </button>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <h3><i class="fas fa-tasks"></i> Progrés del processament</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+                <div class="progress-status" id="progressStatus">Esperant...</div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3><i class="fas fa-clipboard-list"></i> Resultats</h3>
+                <div class="results-container">
+                    <div class="results-tabs">
+                        <button class="tab-btn active" data-tab="text">
+                            <i class="fas fa-font"></i> Text
+                        </button>
+                        <button class="tab-btn" data-tab="tables">
+                            <i class="fas fa-table"></i> Taules
+                        </button>
+                        <button class="tab-btn" data-tab="metadata">
+                            <i class="fas fa-info-circle"></i> Metadades
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <div id="textTab" class="tab-panel active">
+                            <div class="text-output">
+                                <div class="output-controls">
+                                    <button class="btn btn-small" id="copyTextBtn">
+                                        <i class="fas fa-copy"></i> Copiar
+                                    </button>
+                                    <button class="btn btn-small" id="downloadTextBtn">
+                                        <i class="fas fa-download"></i> Descarregar
+                                    </button>
+                                </div>
+                                <pre id="textOutput" class="output-content"></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="tablesTab" class="tab-panel">
+                            <div id="tablesOutput" class="output-content"></div>
+                        </div>
+                        
+                        <div id="metadataTab" class="tab-panel">
+                            <div id="metadataOutput" class="output-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 Sistema OCR Avançat. Tots els drets reservats.</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processant...</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // JavaScript functionality for Flask backend
+        $(document).ready(function() {
+            console.log('OCR System - Initializing...');
+            
+            // File upload handling
+            const uploadArea = $('#uploadArea');
+            const fileInput = $('#fileInput');
+            const fileList = $('#fileList');
+            const selectedFiles = $('#selectedFiles');
+            const processBtn = $('#processBtn');
+            const previewBtn = $('#previewBtn');
+            
+            let uploadedFiles = [];
+
+            console.log('Elements found:', {
+                uploadArea: uploadArea.length,
+                fileInput: fileInput.length,
+                fileList: fileList.length,
+                selectedFiles: selectedFiles.length,
+                processBtn: processBtn.length,
+                previewBtn: previewBtn.length
+            });
+
+            // Debug: Check if preview button is found and enabled
+            console.log('Preview button status:', {
+                exists: previewBtn.length > 0,
+                disabled: previewBtn.prop('disabled'),
+                visible: previewBtn.is(':visible')
+            });
+
+            // Upload area click - WORKING VERSION
+            uploadArea.on('click', function(e) {
+                console.log('Upload area clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Direct method that works
+                const fileInputElement = document.getElementById('fileInput');
+                if (fileInputElement) {
+                    console.log('Opening file dialog...');
+                    fileInputElement.click();
+                } else {
+                    console.error('File input element not found!');
+                }
+            });
+
+            // File input change event
+            fileInput.on('change', function(e) {
+                console.log('File input change event triggered');
+                console.log('Files selected:', e.target.files.length);
+                
+                if (e.target.files && e.target.files.length > 0) {
+                    console.log('Processing selected files...');
+                    uploadFiles(e.target.files);
+                } else {
+                    console.log('No files selected');
+                }
+            });
+
+            // Drag and drop functionality
+            uploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('dragover');
+            });
+
+            uploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+            });
+
+            uploadArea.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+                console.log('Files dropped');
+                uploadFiles(e.originalEvent.dataTransfer.files);
+            });
+
+            function uploadFiles(files) {
+                console.log('uploadFiles called with', files.length, 'files');
+                
+                if (files.length === 0) return;
+                
+                // Validate files first
+                for (let file of files) {
+                    if (file.size > 16 * 1024 * 1024) { // 16MB limit
+                        showMessage(`El fitxer "${file.name}" és massa gran. Màxim 16MB.`, 'error');
+                        return;
+                    }
+                    
+                    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/tiff', 'image/bmp'];
+                    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|png|jpe?g|tiff?|bmp)$/i)) {
+                        showMessage(`El fitxer "${file.name}" no té un format suportat.`, 'error');
+                        return;
+                    }
+                }
+                
+                const formData = new FormData();
+                for (let file of files) {
+                    formData.append('files', file);
+                }
+                
+                // Show loading
+                $('#loadingOverlay').show();
+                
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    timeout: 30000, // 30 seconds timeout
+                    success: function(response) {
+                        $('#loadingOverlay').hide();
+                        console.log('Upload response:', response);
+                        
+                        if (response.success) {
+                            uploadedFiles = response.files;
+                            displayFiles();
+                            processBtn.prop('disabled', false);
+                            previewBtn.prop('disabled', false);
+                            
+                            // Show success message
+                            showMessage(response.message, 'success');
+                        } else {
+                            showMessage(response.error || 'Error en la pujada del fitxer', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loadingOverlay').hide();
+                        console.error('Upload error:', xhr, status, error);
+                        
+                        let errorMessage = 'Error en la pujada del fitxer';
+                        
+                        if (xhr.status === 413) {
+                            errorMessage = 'El fitxer és massa gran. Màxim 16MB.';
+                        } else if (xhr.status === 400) {
+                            errorMessage = xhr.responseJSON?.error || 'Format de fitxer no vàlid';
+                        } else if (xhr.status === 0) {
+                            errorMessage = 'No es pot connectar amb el servidor';
+                        } else if (xhr.responseJSON?.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        } else if (status === 'timeout') {
+                            errorMessage = 'Temps d\'espera exhaurit. Prova amb un fitxer més petit.';
+                        }
+                        
+                        showMessage(errorMessage, 'error');
+                    }
+                });
+            }
+
+            function displayFiles() {
+                if (uploadedFiles.length > 0) {
+                    $('#fileList').show();
+                    let html = '';
+                    uploadedFiles.forEach((file, index) => {
+                        html += `
+                            <div class="file-item" data-index="${index}">
+                                <i class="fas fa-file"></i>
+                                <span class="file-name">${file.original_name}</span>
+                                <span class="file-size">${formatFileSize(file.size)}</span>
+                                <button class="btn btn-small btn-danger" onclick="removeFile(${index})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    selectedFiles.html(html);
+                } else {
+                    $('#fileList').hide();
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Tab functionality
+            $('.tab-btn').on('click', function() {
+                const tab = $(this).data('tab');
+                $('.tab-btn').removeClass('active');
+                $('.tab-panel').removeClass('active');
+                $(this).addClass('active');
+                $(`#${tab}Tab`).addClass('active');
+            });
+
+            // Process button functionality
+            processBtn.on('click', function() {
+                if (uploadedFiles.length === 0) return;
+                
+                const options = {
+                    language: $('#languageSelect').val(),
+                    ocr_mode: $('#ocrMode').val(),
+                    output_format: $('#outputFormat').val(),
+                    table_detection: $('#tableDetection').is(':checked'),
+                    force_simulation: $('#forceSimulation').is(':checked')
+                };
+                
+                // Show progress section
+                $('#progressSection').show();
+                $('#resultsSection').hide();
+                
+                // Reset progress
+                $('#progressFill').css('width', '0%');
+                $('#progressText').text('0%');
+                $('#progressStatus').text('Iniciant processament...');
+                
+                // Start processing
+                $.ajax({
+                    url: '/process',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    timeout: 600000, // 10 minutes timeout
+                    data: JSON.stringify({
+                        files: uploadedFiles,
+                        options: options
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Clear any existing progress animation
+                            clearInterval(window.progressInterval);
+                            
+                            // Complete progress to 100%
+                            animateProgress(100, () => {
+                                $('#progressStatus').text('Processament completat!');
+                                setTimeout(() => {
+                                    showResults(response.results);
+                                }, 500);
+                            });
+                            
+                            if (response.simulation) {
+                                showMessage('Processament completat (mode simulació)', 'success');
+                            } else {
+                                showMessage('Processament OCR completat amb èxit!', 'success');
+                            }
+                        } else {
+                            showMessage(response.error || 'Error en el processament', 'error');
+                            $('#progressSection').hide();
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        clearInterval(window.progressInterval);
+                        $('#progressSection').hide();
+                        
+                        let errorMsg = 'Error en el processament';
+                        if (textStatus === 'timeout') {
+                            errorMsg = 'El processament ha tardat massa temps. Prova amb fitxers més petits.';
+                        } else if (xhr.responseJSON?.error) {
+                            errorMsg = xhr.responseJSON.error;
+                        } else if (textStatus) {
+                            errorMsg = `Error de connexió: ${textStatus}`;
+                        }
+                        
+                        showMessage(errorMsg, 'error');
+                        console.error('Processing error:', textStatus, errorThrown);
+                    }
+                });
+                
+                // Improved progress animation that doesn't get stuck
+                let progress = 0;
+                const maxProgress = 85; // Stop at 85% and wait for real completion
+                const progressSpeed = 3; // Slower but more steady progress
+                
+                window.progressInterval = setInterval(() => {
+                    if (progress < maxProgress) {
+                        // Slower progress as we get closer to the limit
+                        const increment = progressSpeed * (1 - progress / maxProgress);
+                        progress += Math.max(increment, 0.5);
+                        
+                        if (progress >= maxProgress) {
+                            progress = maxProgress;
+                            $('#progressStatus').text('Processant... Això pot trigar uns minuts...');
+                        }
+                        
+                        animateProgress(progress);
+                    }
+                }, 800); // Slower update interval
+            });
+
+            // Preview button functionality
+            previewBtn.on('click', function() {
+                console.log('Preview button clicked! Files:', uploadedFiles.length);
+                
+                if (uploadedFiles.length === 0) {
+                    console.log('No files to preview, aborting');
+                    showMessage('No hi ha fitxers per previsualitzar', 'warning');
+                    return;
+                }
+                
+                console.log('Starting preview request...');
+                
+                // Show loading
+                $('#loadingOverlay').show();
+                
+                $.ajax({
+                    url: '/preview',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        files: uploadedFiles
+                    }),
+                    success: function(response) {
+                        $('#loadingOverlay').hide();
+                        console.log('Preview response:', response);
+                        
+                        if (response.success) {
+                            showPreviewModal(response);
+                        } else {
+                            showMessage(response.error || 'Error en la previsualització', 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loadingOverlay').hide();
+                        console.error('Preview error:', xhr, status, error);
+                        const errorMsg = xhr.responseJSON?.error || 'Error en la previsualització';
+                        showMessage(errorMsg, 'error');
+                    }
+                });
+            });
+
+            // Add click event for debugging
+            $(document).on('click', '#previewBtn', function(e) {
+                console.log('Preview button click event captured:', {
+                    target: e.target,
+                    disabled: $(this).prop('disabled'),
+                    uploadedFiles: uploadedFiles.length
+                });
+            });
+
+            function showPreviewModal(previewData) {
+                // Create modal HTML
+                const modalHtml = `
+                    <div class="preview-modal" id="previewModal">
+                        <div class="preview-modal-content">
+                            <div class="preview-header">
+                                <h3><i class="fas fa-eye"></i> Vista prèvia dels fitxers</h3>
+                                <button class="preview-close" onclick="closePreviewModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="preview-body">
+                                <div class="preview-summary">
+                                    <div class="preview-stat">
+                                        <i class="fas fa-file"></i>
+                                        <span>${previewData.total_files} fitxers</span>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <i class="fas fa-weight-hanging"></i>
+                                        <span>${formatFileSize(previewData.total_size)}</span>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <i class="fas fa-clock"></i>
+                                        <span>~${previewData.estimated_total_time.toFixed(1)}s</span>
+                                    </div>
+                                </div>
+                                <div class="preview-files">
+                                    ${previewData.previews.map(preview => `
+                                        <div class="preview-file-item">
+                                            <div class="preview-file-icon">
+                                                <i class="fas ${preview.filename.toLowerCase().includes('.pdf') ? 'fa-file-pdf' : 'fa-file-image'}"></i>
+                                            </div>
+                                            <div class="preview-file-info">
+                                                <div class="preview-file-name">${preview.filename}</div>
+                                                <div class="preview-file-details">
+                                                    <span>${preview.size_formatted}</span>
+                                                    <span>•</span>
+                                                    <span>${preview.pages_estimated} pàgina${preview.pages_estimated > 1 ? 's' : ''}</span>
+                                                    <span>•</span>
+                                                    <span>~${preview.estimated_processing_time}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="preview-footer">
+                                <button class="btn btn-secondary" onclick="closePreviewModal()">
+                                    Tancar
+                                </button>
+                                <button class="btn btn-primary" onclick="closePreviewModal(); $('#processBtn').click();">
+                                    <i class="fas fa-play"></i> Processar ara
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove existing modal if any
+                $('#previewModal').remove();
+                
+                // Add modal to body
+                $('body').append(modalHtml);
+                
+                // Show modal with animation
+                setTimeout(() => {
+                    $('#previewModal').addClass('show');
+                }, 10);
+            }
+
+            function animateProgress(targetProgress, callback) {
+                $('#progressFill').css('width', targetProgress + '%');
+                $('#progressText').text(Math.round(targetProgress) + '%');
+                
+                if (targetProgress < 30) {
+                    $('#progressStatus').text('Processant fitxers...');
+                } else if (targetProgress < 70) {
+                    $('#progressStatus').text('Executant OCR...');
+                } else if (targetProgress < 95) {
+                    $('#progressStatus').text('Extraient dades...');
+                } else {
+                    $('#progressStatus').text('Finalitzant...');
+                }
+                
+                if (callback && targetProgress >= 100) {
+                    setTimeout(callback, 200);
+                }
+            }
+
+            function showResults(results) {
+                $('#resultsSection').show();
+                
+                // Combine all text results
+                let combinedText = '';
+                let totalWords = 0;
+                let avgConfidence = 0;
+                let tablesFound = 0;
+                let processingTime = 0;
+                
+                results.forEach((result, index) => {
+                    if (result.result) {
+                        combinedText += `=== ${result.filename} ===\n`;
+                        combinedText += result.result.text + '\n\n';
+                        
+                        totalWords += result.result.word_count || 0;
+                        avgConfidence += result.result.confidence || 0;
+                        tablesFound += result.result.tables_found || 0;
+                        processingTime += result.result.processing_time || 0;
+                    } else if (result.error) {
+                        combinedText += `=== ${result.filename} (ERROR) ===\n`;
+                        combinedText += `Error: ${result.error}\n\n`;
+                    }
+                });
+                
+                avgConfidence = avgConfidence / results.length;
+                
+                $('#textOutput').text(combinedText);
+                
+                // Update tables tab
+                let tablesHtml = `
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Fitxer</th>
+                                <th>Estat</th>
+                                <th>Confiança</th>
+                                <th>Temps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                results.forEach(result => {
+                    const status = result.error ? 'Error' : 'Completat';
+                    const confidence = result.result ? `${result.result.confidence.toFixed(1)}%` : 'N/A';
+                    const time = result.result ? `${result.result.processing_time.toFixed(2)}s` : 'N/A';
+                    
+                    tablesHtml += `
+                        <tr>
+                            <td>${result.filename}</td>
+                            <td>${status}</td>
+                            <td>${confidence}</td>
+                            <td>${time}</td>
+                        </tr>
+                    `;
+                });
+                
+                tablesHtml += '</tbody></table>';
+                $('#tablesOutput').html(tablesHtml);
+                
+                // Update metadata tab
+                $('#metadataOutput').html(`
+                    <div class="metadata-info">
+                        <div class="metadata-item">
+                            <strong>Fitxers processats:</strong> ${results.length}
+                        </div>
+                        <div class="metadata-item">
+                            <strong>Temps total:</strong> ${processingTime.toFixed(2)} segons
+                        </div>
+                        <div class="metadata-item">
+                            <strong>Confiança mitjana:</strong> ${avgConfidence.toFixed(1)}%
+                        </div>
+                        <div class="metadata-item">
+                            <strong>Paraules totals:</strong> ${totalWords}
+                        </div>
+                        <div class="metadata-item">
+                            <strong>Taules trobades:</strong> ${tablesFound}
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Clear button functionality
+            $('#clearBtn').on('click', function() {
+                uploadedFiles = [];
+                displayFiles();
+                processBtn.prop('disabled', true);
+                previewBtn.prop('disabled', true);
+                $('#progressSection').hide();
+                $('#resultsSection').hide();
+                $('#progressFill').css('width', '0%');
+                $('#progressText').text('0%');
+                fileInput.val('');
+                showMessage('Dades netejades correctament', 'info');
+            });
+
+            // Copy text functionality
+            $('#copyTextBtn').on('click', function() {
+                const text = $('#textOutput').text();
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = $(this);
+                    const originalHtml = btn.html();
+                    btn.html('<i class="fas fa-check"></i> Copiat!');
+                    setTimeout(() => {
+                        btn.html(originalHtml);
+                    }, 2000);
+                });
+            });
+
+            // Download functionality
+            $('#downloadTextBtn').on('click', function() {
+                const text = $('#textOutput').text();
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ocr_results.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+
+            // Utility function to show messages
+            function showMessage(message, type) {
+                console.log('Showing message:', type, message);
+                
+                // Remove existing messages
+                $('.message').remove();
+                
+                // Create message element
+                const messageDiv = $(`
+                    <div class="message message-${type}">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                        <button class="message-close">&times;</button>
+                    </div>
+                `);
+                
+                // Add to page
+                $('body').append(messageDiv);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                }, 5000);
+                
+                // Manual close
+                messageDiv.find('.message-close').on('click', () => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                });
+            }
+
+            console.log('OCR System initialized successfully!');
+        });
+
+        // Global function for removing files
+        function removeFile(index) {
+            console.log('Removing file at index:', index);
+            uploadedFiles.splice(index, 1);
+            displayFiles();
+            $('#processBtn').prop('disabled', uploadedFiles.length === 0);
+            $('#previewBtn').prop('disabled', uploadedFiles.length === 0);
+        }
+
+        // Global function for closing preview modal
+        function closePreviewModal() {
+            $('#previewModal').removeClass('show');
+            setTimeout(() => {
+                $('#previewModal').remove();
+            }, 300);
+        }
+    </script>
+
+    <style>
+        /* Message styles */
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            max-width: 400px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .message-success {
+            border-left-color: #10b981;
+            color: #065f46;
+        }
+        
+        .message-error {
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .message-info {
+            border-left-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .message-warning {
+            border-left-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        .message-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.6;
+            margin-left: auto;
+        }
+        
+        .message-close:hover {
+            opacity: 1;
+        }
+
+        /* Preview Modal Styles */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .preview-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .preview-modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .preview-modal.show .preview-modal-content {
+            transform: scale(1);
+        }
+
+        .preview-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .preview-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .preview-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .preview-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .preview-stat i {
+            color: #667eea;
+            width: 16px;
+        }
+
+        .preview-files {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .preview-file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .preview-file-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        .preview-file-info {
+            flex: 1;
+        }
+
+        .preview-file-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .preview-file-details {
+            font-size: 0.9rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-footer {
+            padding: 20px;
+            background: #f8fafc;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+    </style>
+</body>
+</html>

@@ -18,5 +18,7 @@ seaborn
 jsonschema
 pathlib2
 tqdm
+flask
+werkzeug
 psutil
 loguru

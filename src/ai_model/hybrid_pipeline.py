@@ -31,14 +31,16 @@ class HybridDetectionPipeline:
         
         # Inicialitzar detector d'IA
         self.ai_detector = None
-        if ai_model_path and os.path.exists(ai_model_path):
-            try:
-                self.ai_detector = TechnicalDrawingDetector(ai_model_path)
-                self.logger.info(f"Model d'IA carregat: {ai_model_path}")
-            except Exception as e:
-                self.logger.error(f"Error carregant model d'IA: {e}")
-        else:
-            self.logger.info("Model d'IA no disponible, utilitzant detecció basada en regles")
+        try:
+            # Sempre intentar crear el detector (pot usar model per defecte)
+            self.ai_detector = TechnicalDrawingDetector(ai_model_path)
+            if ai_model_path and os.path.exists(ai_model_path):
+                self.logger.info(f"Model personalitzat carregat: {ai_model_path}")
+            else:
+                self.logger.info("Utilitzant model YOLO per defecte per detecció general")
+        except Exception as e:
+            self.logger.error(f"Error inicialitzant detector d'IA: {e}")
+            self.ai_detector = None
         
         # Analitzador de relacions espacials
         self.spatial_analyzer = SpatialRelationshipAnalyzer()

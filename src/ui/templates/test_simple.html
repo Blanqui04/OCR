@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test File Upload - Simple</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 3px dashed #007bff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .upload-area:hover {
+            background: #e9ecef;
+            border-color: #0056b3;
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-blue { background: #007bff; color: white; }
+        .btn-green { background: #28a745; color: white; }
+        .btn-red { background: #dc3545; color: white; }
+        .btn-orange { background: #fd7e14; color: white; }
+        .debug {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        #fileInput {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test File Upload - Simple Version</h1>
+        
+        <div class="upload-area" id="uploadArea">
+            <h3>📁 Fes clic aquí per seleccionar fitxers</h3>
+            <p>O arrossega fitxers aquí</p>
+        </div>
+        
+        <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp">
+        
+        <div>
+            <h3>🔧 Test Buttons:</h3>
+            <button class="test-button btn-blue" id="testBtn1">Test 1: Direct Click</button>
+            <button class="test-button btn-green" id="testBtn2">Test 2: jQuery Click</button>
+            <button class="test-button btn-red" onclick="openFileDialog()">Test 3: Function Call</button>
+            <button class="test-button btn-orange" onclick="document.getElementById('fileInput').click()">Test 4: Inline Click</button>
+        </div>
+        
+        <div class="debug" id="debug">
+Initializing test page...
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugElement = document.getElementById('debug');
+            debugElement.textContent += `\n[${timestamp}] ${message}`;
+            console.log(`[TEST] ${message}`);
+        }
+
+        function openFileDialog() {
+            log('Function openFileDialog() called');
+            try {
+                const fileInput = document.getElementById('fileInput');
+                log('Got file input element: ' + (fileInput !== null));
+                if (fileInput) {
+                    fileInput.click();
+                    log('fileInput.click() executed successfully');
+                } else {
+                    log('ERROR: File input not found!');
+                }
+            } catch (error) {
+                log('ERROR in openFileDialog: ' + error.message);
+            }
+        }
+
+        $(document).ready(function() {
+            log('jQuery ready - Document loaded');
+            log('jQuery version: ' + $.fn.jquery);
+            
+            // Test if elements exist
+            const uploadArea = $('#uploadArea');
+            const fileInput = $('#fileInput');
+            
+            log('Upload area found: ' + (uploadArea.length > 0));
+            log('File input found: ' + (fileInput.length > 0));
+            
+            if (fileInput.length > 0) {
+                const input = fileInput[0];
+                log('File input type: ' + input.type);
+                log('File input multiple: ' + input.multiple);
+                log('File input accept: ' + input.accept);
+            }
+            
+            // Upload area click
+            uploadArea.on('click', function(e) {
+                log('Upload area clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    const input = document.getElementById('fileInput');
+                    if (input) {
+                        input.click();
+                        log('Upload area -> file input click executed');
+                    } else {
+                        log('ERROR: File input not found in upload click');
+                    }
+                } catch (error) {
+                    log('ERROR in upload area click: ' + error.message);
+                }
+            });
+            
+            // File input change event
+            fileInput.on('change', function(e) {
+                log('File input change event fired!');
+                log('Files selected: ' + e.target.files.length);
+                
+                if (e.target.files.length > 0) {
+                    for (let i = 0; i < e.target.files.length; i++) {
+                        log(`File ${i + 1}: ${e.target.files[i].name} (${e.target.files[i].size} bytes)`);
+                    }
+                } else {
+                    log('No files selected');
+                }
+            });
+            
+            // Test button 1
+            $('#testBtn1').on('click', function() {
+                log('Test Button 1 clicked (Direct)');
+                try {
+                    const input = document.getElementById('fileInput');
+                    input.click();
+                    log('Test 1: Direct click executed');
+                } catch (error) {
+                    log('Test 1 ERROR: ' + error.message);
+                }
+            });
+            
+            // Test button 2
+            $('#testBtn2').on('click', function() {
+                log('Test Button 2 clicked (jQuery)');
+                try {
+                    fileInput.click();
+                    log('Test 2: jQuery click executed');
+                } catch (error) {
+                    log('Test 2 ERROR: ' + error.message);
+                }
+            });
+            
+            // Drag and drop
+            uploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).css('background', '#e3f2fd');
+            });
+            
+            uploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).css('background', '#f8f9fa');
+            });
+            
+            uploadArea.on('drop', function(e) {
+                e.preventDefault();
+                $(this).css('background', '#f8f9fa');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                log('Files dropped: ' + files.length);
+                
+                if (files.length > 0) {
+                    for (let i = 0; i < files.length; i++) {
+                        log(`Dropped file ${i + 1}: ${files[i].name}`);
+                    }
+                }
+            });
+            
+            log('All event handlers registered successfully');
+        });
+    </script>
+</body>
+</html>

@@ -44,14 +44,31 @@ class TechnicalDrawingDetector:
             12: "datum_reference",     # Referències de datum
         }
         
-        self.model_path = model_path or "yolov8s.pt"  # Model preentrenat per defecte
+        self.model_path = model_path
         self.confidence_threshold = 0.5
         self.iou_threshold = 0.45
+        self.is_custom_model = False
         
         # Inicialitzar model
         try:
-            self.model = YOLO(self.model_path)
-            self.logger.info(f"Model carregat: {self.model_path}")
+            if model_path and os.path.exists(model_path):
+                # Utilitzar model personalitzat
+                self.model = YOLO(model_path)
+                self.is_custom_model = True
+                self.logger.info(f"Model personalitzat carregat: {model_path}")
+            else:
+                # Utilitzar model per defecte de YOLO per detecció general
+                self.model = YOLO("yolov8s.pt")
+                self.is_custom_model = False
+                self.logger.info("Utilitzant model YOLO per defecte (detecció general)")
+                
+                # Ajustar classes per model per defecte (COCO dataset)
+                self.coco_classes = {
+                    0: "person", 14: "bird", 15: "cat", 16: "dog",
+                    # Afegim algunes classes que poden ser útils per plànols
+                    73: "book", 74: "clock", 75: "scissors"
+                }
+                
         except Exception as e:
             self.logger.error(f"Error carregant model: {e}")
             self.model = None
@@ -84,8 +101,17 @@ class TechnicalDrawingDetector:
                 confs = results[0].boxes.conf.cpu().numpy()    # Confiança
                 
                 for box, cls, conf in zip(boxes, classes, confs):
+                    # Determinar el tipus d'element basat en el model utilitzat
+                    if self.is_custom_model:
+                        element_type = self.classes.get(int(cls), "unknown")
+                    else:
+                        # Per model per defecte, interpretar com a elements generals
+                        element_type = f"general_object_{int(cls)}"
+                        # Assignar confiança menor per elements no específics
+                        conf = conf * 0.6  # Reduir confiança per model genèric
+                    
                     element = {
-                        "type": self.classes.get(int(cls), "unknown"),
+                        "type": element_type,
                         "bbox": {
                             "x1": float(box[0]),
                             "y1": float(box[1]), 
@@ -98,12 +124,12 @@ class TechnicalDrawingDetector:
                             "x": float((box[0] + box[2]) / 2),
                             "y": float((box[1] + box[3]) / 2)
                         },
-                        "width": float(box[2] - box[0]),
-                        "height": float(box[3] - box[1])
+                        "model_type": "custom" if self.is_custom_model else "default"
                     }
+                    
                     detected_elements.append(element)
             
-            self.logger.info(f"Detectats {len(detected_elements)} elements")
+            self.logger.info(f"Detectats {len(detected_elements)} elements amb model {'personalitzat' if self.is_custom_model else 'per defecte'}")
             return detected_elements
             
         except Exception as e:

@@ -1,0 +1,28 @@
+{
+  "timestamp": 1756284590.387537,
+  "processing_options": {
+    "language": "eng",
+    "ocr_mode": "fast",
+    "output_format": "json",
+    "table_detection": true
+  },
+  "total_processing_time": 0.0009562969207763672,
+  "results": [
+    {
+      "filename": "6555945_003.pdf",
+      "result": {
+        "text": "Text extret del fitxer: 6555945_003.pdf\n\nAquest és un exemple de text OCR processat.\nEl fitxer original tenia una mida de 0.28 MB.\n\nContingut simulat:\n- Paràgrafs detectats: 7\n- Paraules identificades: 144\n- Confiança del reconeixement: 97.3%\n\nAquest text seria el resultat real del processament OCR\nen una implementació completa del sistema.",
+        "confidence": 97.26941826307696,
+        "processing_time": 1.1391239166259766,
+        "word_count": 144,
+        "tables_found": 1,
+        "language_detected": "eng",
+        "ocr_mode_used": "fast"
+      },
+      "file_info": {
+        "size": 291764,
+        "type": "application/pdf"
+      }
+    }
+  ]
+}
