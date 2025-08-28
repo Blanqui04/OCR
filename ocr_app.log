@@ -71,3 +71,31 @@
 2025-08-28 10:58:28,119 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:58:28] "GET /favicon.ico HTTP/1.1" 200 -
 2025-08-28 10:58:41,348 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:58:41] "GET /?id=956de8e6-70d7-473c-a459-3f86f0fd77a1&vscodeBrowserReqId=1756371521017 HTTP/1.1" 200 -
 2025-08-28 10:58:41,617 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:58:41] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 11:03:23,528 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 11:03:23,529 - __main__ - INFO - Request method: POST
+2025-08-28 11:03:23,531 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryTVJqptrBVvWNq0Cg
+2025-08-28 11:03:23,532 - __main__ - INFO - Content-Length: 291959
+2025-08-28 11:03:23,541 - __main__ - INFO - Received 1 files
+2025-08-28 11:03:23,542 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 11:03:23,543 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 11:03:23,544 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756371803544_6555945_003.pdf
+2025-08-28 11:03:23,551 - __main__ - INFO - File saved successfully: 1756371803544_6555945_003.pdf, size: 291764 bytes
+2025-08-28 11:03:23,552 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 11:03:23,553 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 11:03:23,555 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 11:03:23] "POST /upload HTTP/1.1" 200 -
+2025-08-28 11:03:29,866 - __main__ - INFO - Process request received: 1 files
+2025-08-28 11:03:29,866 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'csv', 'table_detection': True, 'force_simulation': False}
+2025-08-28 11:03:29,889 - web_pipeline - WARNING - YOLOv8 detector not available: No module named 'technical_element_detector'
+2025-08-28 11:03:29,892 - web_pipeline - WARNING - OCR processor not available: No module named 'ocr_processor'
+2025-08-28 11:03:29,893 - web_pipeline - WARNING - No OCR/YOLOv8 components available
+2025-08-28 11:03:29,894 - __main__ - WARNING - Web pipeline not available - using simulation
+2025-08-28 11:03:29,896 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 11:03:29,913 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756371809.csv
+2025-08-28 11:03:29,917 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 11:03:29] "POST /process HTTP/1.1" 200 -
+2025-08-28 11:03:47,680 - __main__ - INFO - Preview request received for 1 files
+2025-08-28 11:03:47,682 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 11:03:47] "POST /preview HTTP/1.1" 200 -
+2025-08-28 11:06:32,121 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-28 11:06:32,122 - werkzeug - INFO - [33mPress CTRL+C to quit[0m

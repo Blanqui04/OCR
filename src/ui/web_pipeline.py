@@ -26,22 +26,66 @@ class WebOCRPipeline:
     
     def _setup_components(self):
         """Configurar components del pipeline"""
-        try:
-            # Setup YOLOv8 detector
-            sys.path.append(str(self.project_root / 'src'))
-            from technical_element_detector import TechnicalElementDetector
-            self.yolo_detector = TechnicalElementDetector()
-            logger.info("YOLOv8 detector initialized successfully")
-        except Exception as e:
-            logger.warning(f"YOLOv8 detector not available: {e}")
+        # Add project paths to sys.path
+        project_root_str = str(self.project_root)
+        src_path = str(self.project_root / 'src')
+        production_path = str(self.project_root / 'production')
+        
+        for path in [project_root_str, src_path, production_path]:
+            if path not in sys.path:
+                sys.path.insert(0, path)
         
         try:
-            # Setup OCR processor
-            from ocr_processor import OCRProcessor
-            self.ocr_processor = OCRProcessor()
-            logger.info("OCR processor initialized successfully")
+            # Try different import paths for YOLOv8 detector
+            self.yolo_detector = None
+            import_attempts = [
+                'src.technical_element_detector',
+                'technical_element_detector',
+                'production.technical_element_detector'
+            ]
+            
+            for module_name in import_attempts:
+                try:
+                    module = __import__(module_name, fromlist=['TechnicalElementDetector'])
+                    TechnicalElementDetector = getattr(module, 'TechnicalElementDetector')
+                    self.yolo_detector = TechnicalElementDetector()
+                    logger.info(f"YOLOv8 detector initialized successfully from {module_name}")
+                    break
+                except (ImportError, AttributeError) as e:
+                    logger.debug(f"Failed to import from {module_name}: {e}")
+                    continue
+            
+            if not self.yolo_detector:
+                logger.warning("YOLOv8 detector not available from any source")
+                
         except Exception as e:
-            logger.warning(f"OCR processor not available: {e}")
+            logger.warning(f"YOLOv8 detector setup failed: {e}")
+        
+        try:
+            # Try different import paths for OCR processor
+            self.ocr_processor = None
+            import_attempts = [
+                'src.ocr_processor',
+                'ocr_processor',
+                'production.ocr_processor'
+            ]
+            
+            for module_name in import_attempts:
+                try:
+                    module = __import__(module_name, fromlist=['OCRProcessor'])
+                    OCRProcessor = getattr(module, 'OCRProcessor')
+                    self.ocr_processor = OCRProcessor()
+                    logger.info(f"OCR processor initialized successfully from {module_name}")
+                    break
+                except (ImportError, AttributeError) as e:
+                    logger.debug(f"Failed to import from {module_name}: {e}")
+                    continue
+            
+            if not self.ocr_processor:
+                logger.warning("OCR processor not available from any source")
+                
+        except Exception as e:
+            logger.warning(f"OCR processor setup failed: {e}")
     
     def process_document(self, file_path: str, options: Dict = None) -> Dict[str, Any]:
         """
@@ -108,9 +152,25 @@ class WebOCRPipeline:
         """Preparar imatges per processar"""
         try:
             if file_path.lower().endswith('.pdf'):
-                # Convert PDF to images
-                from pdf_to_images import convert_pdf_to_images
-                return convert_pdf_to_images(file_path)
+                # Try different import paths for PDF conversion
+                import_attempts = [
+                    'src.pdf_to_images',
+                    'pdf_to_images',
+                    'production.pdf_to_images'
+                ]
+                
+                for module_name in import_attempts:
+                    try:
+                        module = __import__(module_name, fromlist=['convert_pdf_to_images'])
+                        convert_pdf_to_images = getattr(module, 'convert_pdf_to_images')
+                        return convert_pdf_to_images(file_path)
+                    except (ImportError, AttributeError) as e:
+                        logger.debug(f"Failed to import PDF converter from {module_name}: {e}")
+                        continue
+                
+                # If all imports fail, return original path
+                logger.warning("PDF to images conversion not available")
+                return [file_path]
             else:
                 # Already an image
                 return [file_path]

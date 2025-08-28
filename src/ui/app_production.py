@@ -239,30 +239,44 @@ def process_files():
         
         if not force_simulation:
             try:
-                # Try to import the web-optimized pipeline
-                from web_pipeline import create_web_pipeline
-                pipeline = create_web_pipeline()
+                # Try to import the direct web pipeline first
+                from direct_pipeline import create_direct_pipeline
+                pipeline = create_direct_pipeline()
                 
                 if pipeline and pipeline.is_available():
                     use_real_ocr = True
                     capabilities = pipeline.get_capabilities()
-                    logger.info(f"Web OCR pipeline loaded successfully: {capabilities}")
+                    logger.info(f"Direct OCR pipeline loaded successfully: {capabilities}")
                 else:
-                    logger.warning("Web pipeline not available - using simulation")
-                    use_real_ocr = False
+                    logger.warning("Direct pipeline not available - trying other options")
                     
             except ImportError as e:
-                logger.warning(f"Web pipeline not available: {e} - trying production pipeline")
+                logger.warning(f"Direct pipeline not available: {e} - trying web pipeline")
                 try:
-                    # Fallback to production pipeline
-                    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-                    from production.enhanced_pipeline import EnhancedOCRPipeline
-                    pipeline = EnhancedOCRPipeline()
-                    use_real_ocr = True
-                    logger.info("Production enhanced pipeline loaded successfully")
+                    # Fallback to web pipeline
+                    from web_pipeline import create_web_pipeline
+                    pipeline = create_web_pipeline()
+                    
+                    if pipeline and pipeline.is_available():
+                        use_real_ocr = True
+                        capabilities = pipeline.get_capabilities()
+                        logger.info(f"Web OCR pipeline loaded successfully: {capabilities}")
+                    else:
+                        logger.warning("Web pipeline not available - using simulation")
+                        use_real_ocr = False
+                        
                 except ImportError as e2:
-                    logger.warning(f"Enhanced pipeline not available: {e2} - using simulation")
-                    use_real_ocr = False
+                    logger.warning(f"Web pipeline not available: {e2} - trying production pipeline")
+                    try:
+                        # Fallback to production pipeline
+                        sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+                        from production.enhanced_pipeline import EnhancedOCRPipeline
+                        pipeline = EnhancedOCRPipeline()
+                        use_real_ocr = True
+                        logger.info("Production enhanced pipeline loaded successfully")
+                    except ImportError as e3:
+                        logger.warning(f"Enhanced pipeline not available: {e3} - using simulation")
+                        use_real_ocr = False
             except Exception as e:
                 logger.error(f"Error loading OCR modules: {e} - falling back to simulation")
                 use_real_ocr = False
