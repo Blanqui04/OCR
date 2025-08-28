@@ -100,13 +100,21 @@ class DirectWebPipeline:
                 # Process with YOLOv8
                 if self.yolo_available and self.yolo_detector:
                     try:
+                        # Set confidence threshold on the detector instance
+                        original_threshold = self.yolo_detector.confidence_threshold
                         confidence_threshold = options.get('yolo_confidence', 0.3)
-                        detections = self.yolo_detector.detect_elements(
-                            image_path,
-                            confidence_threshold=confidence_threshold
-                        )
-                        all_detections.extend(detections)
-                        logger.info(f"YOLOv8 detected {len(detections)} elements from {image_path}")
+                        self.yolo_detector.confidence_threshold = confidence_threshold
+                        
+                        detections = self.yolo_detector.detect_elements(image_path)
+                        
+                        # Restore original threshold
+                        self.yolo_detector.confidence_threshold = original_threshold
+                        
+                        if 'elements' in detections:
+                            all_detections.extend(detections['elements'])
+                            logger.info(f"YOLOv8 detected {len(detections['elements'])} elements from {image_path}")
+                        else:
+                            logger.info(f"YOLOv8 processed {image_path} but found no elements")
                     except Exception as e:
                         logger.error(f"YOLOv8 processing error: {e}")
             
@@ -127,12 +135,15 @@ class DirectWebPipeline:
     
     def _prepare_images(self, file_path: str) -> List[str]:
         """Preparar imatges per processar"""
+        import os
         try:
             if file_path.lower().endswith('.pdf'):
                 # Try to convert PDF to images
                 try:
                     from src.pdf_to_images import convert_pdf_to_images
-                    return convert_pdf_to_images(file_path)
+                    images_folder = str(self.project_root / 'data' / 'images')
+                    os.makedirs(images_folder, exist_ok=True)
+                    return convert_pdf_to_images(file_path, images_folder)
                 except Exception as e:
                     logger.warning(f"PDF conversion failed: {e}")
                     return [file_path]
@@ -148,11 +159,12 @@ class DirectWebPipeline:
         elements = []
         for detection in detections:
             elements.append({
-                'type': detection.get('class', 'unknown'),
+                'type': detection.get('type', 'unknown'),
                 'confidence': detection.get('confidence', 0),
-                'bbox': detection.get('bbox', []),
-                'text_nearby': detection.get('text_nearby', ''),
-                'area': detection.get('area', 0)
+                'bbox': detection.get('bbox', {}),
+                'center': detection.get('center', {}),
+                'id': detection.get('id', 'unknown'),
+                'area': detection.get('bbox', {}).get('width', 0) * detection.get('bbox', {}).get('height', 0)
             })
         return elements
     

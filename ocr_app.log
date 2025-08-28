@@ -106,3 +106,145 @@
 2025-08-28 11:13:48,040 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2025-08-28 11:13:59,822 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 11:13:59] "GET /?id=95d14222-a2cc-4900-9377-cb568071ef78&vscodeBrowserReqId=1756372439496 HTTP/1.1" 200 -
 2025-08-28 11:14:00,226 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 11:14:00] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 13:51:05,136 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-28 13:51:05,139 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-28 13:51:15,239 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:15] "GET / HTTP/1.1" 200 -
+2025-08-28 13:51:15,360 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:15] "GET /static/style.css HTTP/1.1" 200 -
+2025-08-28 13:51:15,475 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:15] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 13:51:19,770 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 13:51:19,771 - __main__ - INFO - Request method: POST
+2025-08-28 13:51:19,772 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundarybXDR6xJPda5B47EE
+2025-08-28 13:51:19,773 - __main__ - INFO - Content-Length: 291959
+2025-08-28 13:51:19,780 - __main__ - INFO - Received 1 files
+2025-08-28 13:51:19,781 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 13:51:19,781 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 13:51:19,782 - __main__ - INFO - Saving file to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756381879782_6555945_003.pdf
+2025-08-28 13:51:19,792 - __main__ - INFO - File saved successfully: 1756381879782_6555945_003.pdf, size: 291764 bytes
+2025-08-28 13:51:19,793 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 13:51:19,794 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 13:51:19,795 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:19] "POST /upload HTTP/1.1" 200 -
+2025-08-28 13:51:24,888 - __main__ - INFO - Process request received: 1 files
+2025-08-28 13:51:24,889 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'csv', 'table_detection': True, 'force_simulation': False}
+2025-08-28 13:51:28,171 - __main__ - INFO - Preview request received for 1 files
+2025-08-28 13:51:28,173 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:28] "POST /preview HTTP/1.1" 200 -
+2025-08-28 13:51:46,793 - direct_pipeline - INFO - YOLOv8 detector initialized successfully
+2025-08-28 13:51:51,236 - direct_pipeline - INFO - OCR function loaded successfully
+2025-08-28 13:51:51,237 - __main__ - INFO - Direct OCR pipeline loaded successfully: {'yolo_detection': True, 'ocr_processing': True, 'pdf_conversion': True, 'combined_analysis': True}
+2025-08-28 13:51:51,238 - __main__ - INFO - Starting web pipeline processing for: 6555945_003.pdf
+2025-08-28 13:51:51,282 - direct_pipeline - WARNING - PDF conversion failed: cannot import name 'convert_pdf_to_images' from 'src.pdf_to_images' (c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\src\pdf_to_images.py)
+2025-08-28 13:51:51,311 - direct_pipeline - ERROR - OCR processing error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+2025-08-28 13:51:51,313 - direct_pipeline - ERROR - YOLOv8 processing error: TechnicalElementDetector.detect_elements() got an unexpected keyword argument 'confidence_threshold'
+2025-08-28 13:51:51,314 - direct_pipeline - INFO - Document processed successfully: 0 technical elements found
+2025-08-28 13:51:51,315 - __main__ - INFO - Web pipeline processing completed for 6555945_003.pdf: 0 technical elements found
+2025-08-28 13:51:51,316 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 13:51:51,320 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756381911.csv
+2025-08-28 13:51:51,327 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:51:51] "POST /process HTTP/1.1" 200 -
+2025-08-28 13:52:04,318 - __main__ - INFO - Process request received: 1 files
+2025-08-28 13:52:04,320 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'csv', 'table_detection': True, 'force_simulation': False}
+2025-08-28 13:52:04,583 - direct_pipeline - INFO - YOLOv8 detector initialized successfully
+2025-08-28 13:52:04,584 - direct_pipeline - INFO - OCR function loaded successfully
+2025-08-28 13:52:04,584 - __main__ - INFO - Direct OCR pipeline loaded successfully: {'yolo_detection': True, 'ocr_processing': True, 'pdf_conversion': True, 'combined_analysis': True}
+2025-08-28 13:52:04,584 - __main__ - INFO - Starting web pipeline processing for: 6555945_003.pdf
+2025-08-28 13:52:04,585 - direct_pipeline - WARNING - PDF conversion failed: cannot import name 'convert_pdf_to_images' from 'src.pdf_to_images' (c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\src\pdf_to_images.py)
+2025-08-28 13:52:04,585 - direct_pipeline - ERROR - OCR processing error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+2025-08-28 13:52:04,586 - direct_pipeline - ERROR - YOLOv8 processing error: TechnicalElementDetector.detect_elements() got an unexpected keyword argument 'confidence_threshold'
+2025-08-28 13:52:04,586 - direct_pipeline - INFO - Document processed successfully: 0 technical elements found
+2025-08-28 13:52:04,587 - __main__ - INFO - Web pipeline processing completed for 6555945_003.pdf: 0 technical elements found
+2025-08-28 13:52:04,587 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 13:52:04,588 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756381924.csv
+2025-08-28 13:52:04,589 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:04] "POST /process HTTP/1.1" 200 -
+2025-08-28 13:52:32,757 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:32] "GET / HTTP/1.1" 200 -
+2025-08-28 13:52:33,083 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:33] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 13:52:33,121 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:33] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 13:52:38,188 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 13:52:38,188 - __main__ - INFO - Request method: POST
+2025-08-28 13:52:38,189 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryu6YsyMmy6daDwl2k
+2025-08-28 13:52:38,189 - __main__ - INFO - Content-Length: 291959
+2025-08-28 13:52:38,193 - __main__ - INFO - Received 1 files
+2025-08-28 13:52:38,194 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 13:52:38,194 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 13:52:38,194 - __main__ - INFO - Saving file to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756381958194_6555945_003.pdf
+2025-08-28 13:52:38,197 - __main__ - INFO - File saved successfully: 1756381958194_6555945_003.pdf, size: 291764 bytes
+2025-08-28 13:52:38,197 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 13:52:38,198 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 13:52:38,199 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:38] "POST /upload HTTP/1.1" 200 -
+2025-08-28 13:52:39,576 - __main__ - INFO - Process request received: 1 files
+2025-08-28 13:52:39,577 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True, 'force_simulation': True}
+2025-08-28 13:52:39,577 - __main__ - INFO - Forced simulation mode - skipping real OCR
+2025-08-28 13:52:39,578 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 13:52:39,580 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756381959.json
+2025-08-28 13:52:39,581 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:52:39] "POST /process HTTP/1.1" 200 -
+2025-08-28 13:57:32,672 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-28 13:57:32,673 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-28 13:58:36,473 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:36] "GET /?id=9dde6985-b6ed-4a25-a05b-2a69811b56ab&vscodeBrowserReqId=1756382316153 HTTP/1.1" 200 -
+2025-08-28 13:58:36,744 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:36] "GET /static/style.css HTTP/1.1" 200 -
+2025-08-28 13:58:44,742 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:44] "GET / HTTP/1.1" 200 -
+2025-08-28 13:58:44,779 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:44] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 13:58:45,003 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:45] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 13:58:47,630 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 13:58:47,631 - __main__ - INFO - Request method: POST
+2025-08-28 13:58:47,632 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOxB0FhMzoZwHRC8r
+2025-08-28 13:58:47,633 - __main__ - INFO - Content-Length: 291959
+2025-08-28 13:58:47,640 - __main__ - INFO - Received 1 files
+2025-08-28 13:58:47,641 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 13:58:47,642 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 13:58:47,643 - __main__ - INFO - Saving file to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756382327642_6555945_003.pdf
+2025-08-28 13:58:47,650 - __main__ - INFO - File saved successfully: 1756382327642_6555945_003.pdf, size: 291764 bytes
+2025-08-28 13:58:47,652 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 13:58:47,653 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 13:58:47,655 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:47] "POST /upload HTTP/1.1" 200 -
+2025-08-28 13:58:50,724 - __main__ - INFO - Process request received: 1 files
+2025-08-28 13:58:50,725 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True, 'force_simulation': True}
+2025-08-28 13:58:50,725 - __main__ - INFO - Forced simulation mode - skipping real OCR
+2025-08-28 13:58:50,727 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 13:58:50,731 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756382330.json
+2025-08-28 13:58:50,733 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 13:58:50] "POST /process HTTP/1.1" 200 -
+2025-08-28 14:05:58,201 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-28 14:05:58,201 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-28 14:06:06,460 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:06] "GET / HTTP/1.1" 200 -
+2025-08-28 14:06:06,498 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:06] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 14:06:06,723 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:06] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 14:06:09,838 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 14:06:09,840 - __main__ - INFO - Request method: POST
+2025-08-28 14:06:09,841 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryTvdPz685IdvrayJU
+2025-08-28 14:06:09,842 - __main__ - INFO - Content-Length: 291959
+2025-08-28 14:06:09,848 - __main__ - INFO - Received 1 files
+2025-08-28 14:06:09,848 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 14:06:09,849 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 14:06:09,849 - __main__ - INFO - Saving file to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756382769849_6555945_003.pdf
+2025-08-28 14:06:09,858 - __main__ - INFO - File saved successfully: 1756382769849_6555945_003.pdf, size: 291764 bytes
+2025-08-28 14:06:09,859 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 14:06:09,860 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 14:06:09,862 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:09] "POST /upload HTTP/1.1" 200 -
+2025-08-28 14:06:12,299 - __main__ - INFO - Process request received: 1 files
+2025-08-28 14:06:12,300 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True, 'force_simulation': False}
+2025-08-28 14:06:12,376 - direct_pipeline - INFO - YOLOv8 detector initialized successfully
+2025-08-28 14:06:12,376 - direct_pipeline - INFO - OCR function loaded successfully
+2025-08-28 14:06:12,376 - __main__ - INFO - Direct OCR pipeline loaded successfully: {'yolo_detection': True, 'ocr_processing': True, 'pdf_conversion': True, 'combined_analysis': True}
+2025-08-28 14:06:12,377 - __main__ - INFO - Starting web pipeline processing for: 6555945_003.pdf
+2025-08-28 14:06:12,377 - direct_pipeline - WARNING - PDF conversion failed: cannot import name 'convert_pdf_to_images' from 'src.pdf_to_images' (c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\src\pdf_to_images.py)
+2025-08-28 14:06:12,392 - direct_pipeline - ERROR - OCR processing error: OpenCV(4.12.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function 'cv::cvtColor'
+
+2025-08-28 14:06:12,393 - direct_pipeline - ERROR - YOLOv8 processing error: TechnicalElementDetector.detect_elements() got an unexpected keyword argument 'confidence_threshold'
+2025-08-28 14:06:12,393 - direct_pipeline - INFO - Document processed successfully: 0 technical elements found
+2025-08-28 14:06:12,394 - __main__ - INFO - Web pipeline processing completed for 6555945_003.pdf: 0 technical elements found
+2025-08-28 14:06:12,395 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 14:06:12,397 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756382772.json
+2025-08-28 14:06:12,399 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:12] "POST /process HTTP/1.1" 200 -
+2025-08-28 14:06:15,756 - __main__ - INFO - Process request received: 1 files
+2025-08-28 14:06:15,757 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True, 'force_simulation': True}
+2025-08-28 14:06:15,758 - __main__ - INFO - Forced simulation mode - skipping real OCR
+2025-08-28 14:06:15,759 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 14:06:15,763 - __main__ - INFO - Results saved to: c:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756382775.json
+2025-08-28 14:06:15,764 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 14:06:15] "POST /process HTTP/1.1" 200 -

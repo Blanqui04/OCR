@@ -1,0 +1,144 @@
+{
+  "timestamp": 1756382330.7294872,
+  "processing_options": {
+    "language": "eng",
+    "ocr_mode": "fast",
+    "output_format": "json",
+    "table_detection": true,
+    "force_simulation": true
+  },
+  "total_processing_time": 0.0019707679748535156,
+  "results": [
+    {
+      "filename": "6555945_003.pdf",
+      "result": {
+        "text": "PLÀNOL TÈCNIC - 6555945_003.pdf\n\nESPECIFICACIONS:\n- Dimensions principals: 250 x 150 mm\n- Material: Acer inoxidable AISI 316L\n- Acabat superficial: Ra 1.6 µm\n- Toleràncies generals: ISO 2768-m\n\nELEMENTS DETECTATS:\n- TOLERANCIA: confiança 73.0%\n- SIMBOL: confiança 46.7%\n- TOLERANCIA: confiança 79.1%\n- COTA: confiança 53.7%\n- COTA: confiança 74.0%\n- TOLERANCIA: confiança 45.4%\n- TOLERANCIA: confiança 83.6%\n- SIMBOL: confiança 51.0%\n\nNOTES TÈCNIQUES:\n- Verificar dimensions crítiques abans de la producció\n- Aplicar tractament tèrmic segons especificació\n- Control de qualitat segons ISO 9001\n\nFitxer processat: 6555945_003.pdf\nMida original: 0.28 MB\nParaules identificades: 210\nElements tècnics: 8\nConfiança del reconeixement: 86.0%\n\nAquest és un exemple de processament simulat.\nEn producció, utilitzaria el pipeline OCR + YOLOv8 real.",
+        "confidence": 85.97225250676838,
+        "processing_time": 1.1391239166259766,
+        "word_count": 210,
+        "technical_elements_found": 8,
+        "technical_elements": [
+          {
+            "type": "tolerancia",
+            "confidence": 0.7300010309648599,
+            "bbox": [
+              209,
+              127,
+              394,
+              377
+            ],
+            "text_nearby": "Text prop de tolerancia",
+            "area": 105
+          },
+          {
+            "type": "simbol",
+            "confidence": 0.4674960556280804,
+            "bbox": [
+              261,
+              221,
+              581,
+              529
+            ],
+            "text_nearby": "Text prop de simbol",
+            "area": 399
+          },
+          {
+            "type": "tolerancia",
+            "confidence": 0.7911438419800688,
+            "bbox": [
+              63,
+              182,
+              584,
+              515
+            ],
+            "text_nearby": "Text prop de tolerancia",
+            "area": 410
+          },
+          {
+            "type": "cota",
+            "confidence": 0.5370249915060467,
+            "bbox": [
+              208,
+              201,
+              488,
+              523
+            ],
+            "text_nearby": "Text prop de cota",
+            "area": 717
+          },
+          {
+            "type": "cota",
+            "confidence": 0.7399098632944372,
+            "bbox": [
+              252,
+              128,
+              500,
+              479
+            ],
+            "text_nearby": "Text prop de cota",
+            "area": 544
+          },
+          {
+            "type": "tolerancia",
+            "confidence": 0.4541919909071547,
+            "bbox": [
+              176,
+              293,
+              565,
+              512
+            ],
+            "text_nearby": "Text prop de tolerancia",
+            "area": 337
+          },
+          {
+            "type": "tolerancia",
+            "confidence": 0.8356653953969543,
+            "bbox": [
+              242,
+              261,
+              512,
+              476
+            ],
+            "text_nearby": "Text prop de tolerancia",
+            "area": 471
+          },
+          {
+            "type": "simbol",
+            "confidence": 0.5097476444574696,
+            "bbox": [
+              184,
+              208,
+              470,
+              361
+            ],
+            "text_nearby": "Text prop de simbol",
+            "area": 117
+          }
+        ],
+        "yolo_detections": 8,
+        "tables_found": 2,
+        "language_detected": "eng",
+        "ocr_mode_used": "fast",
+        "combined_analysis": {
+          "total_elements": 8,
+          "element_types": {
+            "tolerancia": 4,
+            "simbol": 2,
+            "cota": 2
+          },
+          "confidence_stats": {
+            "min": 0.4541919909071547,
+            "max": 0.8356653953969543,
+            "avg": 0.6331476017668839
+          },
+          "text_quality": "good"
+        },
+        "processing_method": "enhanced_simulation"
+      },
+      "file_info": {
+        "size": 291764,
+        "type": "application/pdf"
+      }
+    }
+  ]
+}
