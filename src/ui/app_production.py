@@ -235,16 +235,34 @@ def process_files():
         
         # Import OCR modules for real processing only if not forced to simulate
         use_real_ocr = False
+        pipeline = None
+        
         if not force_simulation:
             try:
-                from src.ai_enhanced_pipeline import process_document
-                from src.pdf_to_images import convert_pdf_to_images
-                from src.ocr_processor import OCRProcessor
-                use_real_ocr = True
-                logger.info("OCR modules loaded successfully - using real processing")
+                # Try to import the web-optimized pipeline
+                from web_pipeline import create_web_pipeline
+                pipeline = create_web_pipeline()
+                
+                if pipeline and pipeline.is_available():
+                    use_real_ocr = True
+                    capabilities = pipeline.get_capabilities()
+                    logger.info(f"Web OCR pipeline loaded successfully: {capabilities}")
+                else:
+                    logger.warning("Web pipeline not available - using simulation")
+                    use_real_ocr = False
+                    
             except ImportError as e:
-                logger.warning(f"OCR modules not available: {e} - using simulation")
-                use_real_ocr = False
+                logger.warning(f"Web pipeline not available: {e} - trying production pipeline")
+                try:
+                    # Fallback to production pipeline
+                    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+                    from production.enhanced_pipeline import EnhancedOCRPipeline
+                    pipeline = EnhancedOCRPipeline()
+                    use_real_ocr = True
+                    logger.info("Production enhanced pipeline loaded successfully")
+                except ImportError as e2:
+                    logger.warning(f"Enhanced pipeline not available: {e2} - using simulation")
+                    use_real_ocr = False
             except Exception as e:
                 logger.error(f"Error loading OCR modules: {e} - falling back to simulation")
                 use_real_ocr = False
@@ -264,100 +282,43 @@ def process_files():
                 
                 file_size_mb = file_info['size'] / (1024 * 1024)
                 
-                if use_real_ocr:
-                    # Real OCR processing with timeout
+                if use_real_ocr and pipeline:
+                    # Real OCR processing with web pipeline
                     try:
-                        logger.info(f"Starting real OCR processing for: {file_info['original_name']}")
+                        logger.info(f"Starting web pipeline processing for: {file_info['original_name']}")
                         
-                        # Add timeout for OCR processing (5 minutes max)
-                        import signal
+                        # Process document with web pipeline
+                        processing_options = {
+                            'language': language,
+                            'ocr_mode': ocr_mode,
+                            'yolo_confidence': 0.3
+                        }
                         
-                        def timeout_handler(signum, frame):
-                            raise TimeoutError("OCR processing timed out")
+                        result = pipeline.process_document(filepath, processing_options)
                         
-                        # Set timeout for Windows (use threading.Timer as signal doesn't work on Windows)
-                        import threading
-                        
-                        # Initialize OCR processor
-                        ocr_processor = OCRProcessor()
-                        processing_result = {}
-                        processing_error = None
-                        
-                        def process_with_ocr():
-                            nonlocal processing_result, processing_error
-                            try:
-                                # Process based on file type
-                                if filepath.lower().endswith('.pdf'):
-                                    # Convert PDF to images first
-                                    images = convert_pdf_to_images(filepath)
-                                    ocr_results = []
-                                    
-                                    for page_num, image_path in enumerate(images):
-                                        page_result = ocr_processor.process_image(
-                                            image_path, 
-                                            language=language,
-                                            mode=ocr_mode
-                                        )
-                                        page_result['page'] = page_num + 1
-                                        ocr_results.append(page_result)
-                                        logger.info(f"Processed page {page_num + 1} of {file_info['original_name']}")
-                                        
-                                    # Combine results from all pages
-                                    combined_text = "\n\n".join([result.get('text', '') for result in ocr_results])
-                                    combined_confidence = sum([result.get('confidence', 0) for result in ocr_results]) / len(ocr_results) if ocr_results else 0
-                                    total_words = sum([result.get('word_count', 0) for result in ocr_results])
-                                    processing_result['ocr_results'] = ocr_results
-                                    
-                                else:
-                                    # Process image directly
-                                    ocr_result = ocr_processor.process_image(
-                                        filepath,
-                                        language=language,
-                                        mode=ocr_mode
-                                    )
-                                    combined_text = ocr_result.get('text', '')
-                                    combined_confidence = ocr_result.get('confidence', 0)
-                                    total_words = ocr_result.get('word_count', 0)
-                                    processing_result['ocr_results'] = [ocr_result]
-                                
-                                processing_result.update({
-                                    'text': combined_text,
-                                    'confidence': combined_confidence,
-                                    'word_count': total_words
-                                })
-                                
-                            except Exception as e:
-                                processing_error = e
-                        
-                        # Start processing in thread with timeout
-                        process_thread = threading.Thread(target=process_with_ocr)
-                        process_thread.daemon = True
-                        process_thread.start()
-                        process_thread.join(timeout=300)  # 5 minutes timeout
-                        
-                        if process_thread.is_alive():
-                            logger.error(f"OCR processing timed out for {file_info['original_name']}")
-                            use_real_ocr = False  # Fall back to simulation
-                        elif processing_error:
-                            logger.error(f"OCR processing error for {file_info['original_name']}: {processing_error}")
-                            use_real_ocr = False  # Fall back to simulation
+                        if result.get('error'):
+                            logger.error(f"Pipeline processing error: {result['error']}")
+                            use_real_ocr = False
                         else:
-                            # Successful OCR processing
+                            # Extract results from pipeline
                             processing_time = time.time() - processing_start
-                            ocr_results = processing_result.get('ocr_results', [])
+                            technical_elements = result.get('technical_elements', [])
+                            combined_analysis = result.get('combined_analysis', {})
                             
                             results.append({
                                 'filename': file_info['original_name'],
                                 'result': {
-                                    'text': processing_result.get('text', ''),
-                                    'confidence': processing_result.get('confidence', 0),
+                                    'text': result.get('ocr_text', ''),
+                                    'confidence': result.get('ocr_confidence', 0),
                                     'processing_time': processing_time,
-                                    'word_count': processing_result.get('word_count', 0),
-                                    'pages_processed': len(ocr_results) if isinstance(ocr_results, list) else 1,
-                                    'tables_found': 0,  # TODO: Implement table detection
+                                    'word_count': len(result.get('ocr_text', '').split()),
+                                    'technical_elements_found': len(technical_elements),
+                                    'technical_elements': technical_elements,
+                                    'yolo_detections': len(result.get('yolo_detections', [])),
                                     'language_detected': language,
                                     'ocr_mode_used': ocr_mode,
-                                    'pages_detail': ocr_results if len(ocr_results) > 1 else None
+                                    'combined_analysis': combined_analysis,
+                                    'processing_method': 'web_pipeline'
                                 },
                                 'file_info': {
                                     'size': file_info['size'],
@@ -365,35 +326,103 @@ def process_files():
                                 }
                             })
                             
-                            logger.info(f"Successfully processed {file_info['original_name']} with real OCR")
+                            logger.info(f"Web pipeline processing completed for {file_info['original_name']}: {len(technical_elements)} technical elements found")
                         
-                    except Exception as ocr_error:
-                        logger.error(f"Real OCR processing failed for {file_info['original_name']}: {str(ocr_error)}")
-                        # Fall back to simulation if real OCR fails
+                    except Exception as pipeline_error:
+                        logger.error(f"Web pipeline processing failed for {file_info['original_name']}: {str(pipeline_error)}")
+                        # Fall back to simulation if pipeline fails
                         use_real_ocr = False
                 
                 if not use_real_ocr:
+                    # Enhanced simulation with realistic technical elements
+                    import random
+                    
                     # Simulate processing time based on file size
                     simulated_processing_time = min(file_size_mb * 0.5 + 1, 10)  # 0.5s per MB + 1s base, max 10s
-                
-                    # Simulate OCR results
-                    import random
+                    
+                    # Simulate realistic results based on filename
+                    filename_lower = file_info['original_name'].lower()
+                    
+                    # Simulate technical elements found
+                    technical_elements = []
+                    if 'technical' in filename_lower or 'drawing' in filename_lower or '.pdf' in filename_lower:
+                        # Simulate finding technical elements
+                        element_types = ['cota', 'tolerancia', 'simbol']
+                        num_elements = random.randint(2, 8)
+                        
+                        for _ in range(num_elements):
+                            element_type = random.choice(element_types)
+                            confidence = random.uniform(0.4, 0.95)
+                            technical_elements.append({
+                                'type': element_type,
+                                'confidence': confidence,
+                                'bbox': [
+                                    random.randint(50, 300),
+                                    random.randint(50, 300),
+                                    random.randint(350, 600),
+                                    random.randint(350, 600)
+                                ],
+                                'text_nearby': f'Text prop de {element_type}',
+                                'area': random.randint(100, 1000)
+                            })
+                    
+                    # Simulate OCR confidence and text
                     confidence = random.uniform(85, 98)
                     word_count = max(int(file_size_mb * 100 + random.randint(50, 200)), 50)
                     
-                    sample_text = f"""Text extret del fitxer: {file_info['original_name']}
+                    # Create more realistic sample text
+                    sample_text = f"""PLÀNOL TÈCNIC - {file_info['original_name']}
 
-Aquest és un exemple de text OCR processat.
-El fitxer original tenia una mida de {file_size_mb:.2f} MB.
+ESPECIFICACIONS:
+- Dimensions principals: 250 x 150 mm
+- Material: Acer inoxidable AISI 316L
+- Acabat superficial: Ra 1.6 µm
+- Toleràncies generals: ISO 2768-m
 
-Contingut simulat:
-- Paràgrafs detectats: {random.randint(2, 8)}
-- Paraules identificades: {word_count}
-- Confiança del reconeixement: {confidence:.1f}%
+ELEMENTS DETECTATS:
+"""
+                    for element in technical_elements:
+                        sample_text += f"- {element['type'].upper()}: confiança {element['confidence']:.1%}\n"
+                    
+                    sample_text += f"""
+NOTES TÈCNIQUES:
+- Verificar dimensions crítiques abans de la producció
+- Aplicar tractament tèrmic segons especificació
+- Control de qualitat segons ISO 9001
 
-Aquest text seria el resultat real del processament OCR
-en una implementació completa del sistema.
+Fitxer processat: {file_info['original_name']}
+Mida original: {file_size_mb:.2f} MB
+Paraules identificades: {word_count}
+Elements tècnics: {len(technical_elements)}
+Confiança del reconeixement: {confidence:.1f}%
+
+Aquest és un exemple de processament simulat.
+En producció, utilitzaria el pipeline OCR + YOLOv8 real.
                     """
+                    
+                    # Create combined analysis
+                    combined_analysis = {
+                        'total_elements': len(technical_elements),
+                        'element_types': {},
+                        'confidence_stats': {},
+                        'text_quality': 'good' if word_count > 100 else 'fair'
+                    }
+                    
+                    # Count element types
+                    for element in technical_elements:
+                        element_type = element['type']
+                        if element_type not in combined_analysis['element_types']:
+                            combined_analysis['element_types'][element_type] = 0
+                        combined_analysis['element_types'][element_type] += 1
+                    
+                    # Calculate confidence stats
+                    if technical_elements:
+                        confidences = [e['confidence'] for e in technical_elements]
+                        combined_analysis['confidence_stats'] = {
+                            'min': min(confidences),
+                            'max': max(confidences),
+                            'avg': sum(confidences) / len(confidences)
+                        }
                     
                     results.append({
                         'filename': file_info['original_name'],
@@ -402,9 +431,14 @@ en una implementació completa del sistema.
                             'confidence': confidence,
                             'processing_time': simulated_processing_time,
                             'word_count': word_count,
+                            'technical_elements_found': len(technical_elements),
+                            'technical_elements': technical_elements,
+                            'yolo_detections': len(technical_elements),
                             'tables_found': random.randint(0, 3) if table_detection else 0,
                             'language_detected': language,
-                            'ocr_mode_used': ocr_mode
+                            'ocr_mode_used': ocr_mode,
+                            'combined_analysis': combined_analysis,
+                            'processing_method': 'enhanced_simulation'
                         },
                         'file_info': {
                             'size': file_info['size'],
@@ -443,10 +477,54 @@ en una implementació completa del sistema.
                     for result in results:
                         if 'result' in result:
                             f.write(f"=== {result['filename']} ===\n")
-                            f.write(result['result']['text'] + '\n\n')
+                            f.write(f"Text extret:\n{result['result']['text']}\n\n")
+                            
+                            # Add technical elements if found
+                            if 'technical_elements' in result['result']:
+                                f.write(f"Elements tècnics detectats ({result['result'].get('technical_elements_found', 0)}):\n")
+                                for element in result['result']['technical_elements']:
+                                    f.write(f"- {element['type']}: confiança {element['confidence']:.2f}\n")
+                                f.write("\n")
+                            
+                            f.write(f"Confiança: {result['result']['confidence']:.1f}%\n")
+                            f.write(f"Paraules: {result['result']['word_count']}\n")
+                            f.write(f"Temps processament: {result['result']['processing_time']:.2f}s\n\n")
                         else:
                             f.write(f"=== {result['filename']} (ERROR) ===\n")
                             f.write(f"Error: {result.get('error', 'Unknown error')}\n\n")
+            elif output_format == 'csv':
+                import csv
+                with open(output_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    # Header
+                    writer.writerow([
+                        'Filename', 'Text', 'Confidence', 'Word_Count', 'Processing_Time',
+                        'Technical_Elements_Found', 'Technical_Elements_Detail', 'Processing_Method'
+                    ])
+                    
+                    for result in results:
+                        if 'result' in result:
+                            technical_detail = '; '.join([
+                                f"{elem['type']}({elem['confidence']:.2f})" 
+                                for elem in result['result'].get('technical_elements', [])
+                            ])
+                            
+                            writer.writerow([
+                                result['filename'],
+                                result['result']['text'].replace('\n', ' ').strip(),
+                                f"{result['result']['confidence']:.1f}",
+                                result['result']['word_count'],
+                                f"{result['result']['processing_time']:.2f}",
+                                result['result'].get('technical_elements_found', 0),
+                                technical_detail or 'None',
+                                result['result'].get('processing_method', 'unknown')
+                            ])
+                        else:
+                            writer.writerow([
+                                result['filename'], 
+                                f"ERROR: {result.get('error', 'Unknown error')}", 
+                                0, 0, 0, 0, 'Error', 'error'
+                            ])
             
             logger.info(f"Results saved to: {output_path}")
         except Exception as save_error:
@@ -455,7 +533,7 @@ en una implementació completa del sistema.
         return jsonify({
             'success': True,
             'results': results,
-            'simulation': True,
+            'simulation': not use_real_ocr,
             'processing_time': total_processing_time,
             'output_file': output_filename,
             'download_url': f'/download/{output_filename}',
@@ -464,7 +542,9 @@ en una implementació completa del sistema.
                 'successful_files': len([r for r in results if 'result' in r]),
                 'failed_files': len([r for r in results if 'error' in r]),
                 'total_words': sum(r['result']['word_count'] for r in results if 'result' in r),
-                'average_confidence': sum(r['result']['confidence'] for r in results if 'result' in r) / len([r for r in results if 'result' in r]) if any('result' in r for r in results) else 0
+                'total_technical_elements': sum(r['result'].get('technical_elements_found', 0) for r in results if 'result' in r),
+                'average_confidence': sum(r['result']['confidence'] for r in results if 'result' in r) / len([r for r in results if 'result' in r]) if any('result' in r for r in results) else 0,
+                'processing_methods_used': list(set(r['result'].get('processing_method', 'unknown') for r in results if 'result' in r))
             }
         })
         

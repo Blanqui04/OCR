@@ -3,3 +3,61 @@
  * Running on http://127.0.0.1:5000
  * Running on http://172.26.5.166:5000
 2025-08-28 10:08:21,504 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-28 10:14:48,647 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:14:48] "GET /?id=956de8e6-70d7-473c-a459-3f86f0fd77a1&vscodeBrowserReqId=1756368888273 HTTP/1.1" 200 -
+2025-08-28 10:14:49,073 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:14:49] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 10:15:36,956 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:15:36] "GET / HTTP/1.1" 200 -
+2025-08-28 10:15:37,040 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:15:37] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 10:15:37,848 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:15:37] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 10:45:23,810 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 10:45:23,811 - __main__ - INFO - Request method: POST
+2025-08-28 10:45:23,811 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundary5p3mr7RWn3kOrbNl
+2025-08-28 10:45:23,812 - __main__ - INFO - Content-Length: 291959
+2025-08-28 10:45:23,818 - __main__ - INFO - Received 1 files
+2025-08-28 10:45:23,819 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 10:45:23,819 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 10:45:23,821 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756370723821_6555945_003.pdf
+2025-08-28 10:45:23,825 - __main__ - INFO - File saved successfully: 1756370723821_6555945_003.pdf, size: 291764 bytes
+2025-08-28 10:45:23,825 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 10:45:23,826 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 10:45:23,827 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:45:23] "POST /upload HTTP/1.1" 200 -
+2025-08-28 10:45:37,057 - __main__ - INFO - Process request received: 1 files
+2025-08-28 10:45:37,058 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'csv', 'table_detection': True, 'force_simulation': False}
+2025-08-28 10:45:37,079 - __main__ - WARNING - OCR modules not available: cannot import name 'process_document' from 'src.ai_enhanced_pipeline' (C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\src\ai_enhanced_pipeline.py) - using simulation
+2025-08-28 10:45:37,081 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 10:45:37,082 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756370737.csv
+2025-08-28 10:45:37,085 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:45:37] "POST /process HTTP/1.1" 200 -
+2025-08-28 10:46:29,827 - __main__ - INFO - Preview request received for 1 files
+2025-08-28 10:46:29,828 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:46:29] "POST /preview HTTP/1.1" 200 -
+2025-08-28 10:46:33,042 - __main__ - INFO - Process request received: 1 files
+2025-08-28 10:46:33,042 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'csv', 'table_detection': True, 'force_simulation': True}
+2025-08-28 10:46:33,042 - __main__ - INFO - Forced simulation mode - skipping real OCR
+2025-08-28 10:46:33,043 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 10:46:33,043 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756370793.csv
+2025-08-28 10:46:33,044 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:46:33] "POST /process HTTP/1.1" 200 -
+2025-08-28 10:49:30,076 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-28 10:49:30,077 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-28 10:49:39,398 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:49:39] "GET / HTTP/1.1" 200 -
+2025-08-28 10:49:39,505 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:49:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-28 10:49:39,666 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:49:39] "GET /favicon.ico HTTP/1.1" 200 -
+2025-08-28 10:49:45,931 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-28 10:49:45,932 - __main__ - INFO - Request method: POST
+2025-08-28 10:49:45,932 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundarycZ0QhLyGwu4EcPkv
+2025-08-28 10:49:45,932 - __main__ - INFO - Content-Length: 291959
+2025-08-28 10:49:45,938 - __main__ - INFO - Received 1 files
+2025-08-28 10:49:45,938 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-28 10:49:45,939 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-28 10:49:45,940 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756370985940_6555945_003.pdf
+2025-08-28 10:49:45,946 - __main__ - INFO - File saved successfully: 1756370985940_6555945_003.pdf, size: 291764 bytes
+2025-08-28 10:49:45,947 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-28 10:49:45,947 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-28 10:49:45,948 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:49:45] "POST /upload HTTP/1.1" 200 -
+2025-08-28 10:49:56,325 - __main__ - INFO - Process request received: 1 files
+2025-08-28 10:49:56,325 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'csv', 'table_detection': True, 'force_simulation': False}
+2025-08-28 10:49:56,976 - __main__ - WARNING - Enhanced pipeline not available: No module named 'pdf2image' - trying basic OCR
+2025-08-28 10:50:01,223 - __main__ - WARNING - OCR modules not available: cannot import name 'OCRProcessor' from 'src.ocr_processor' (C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\src\ocr_processor.py) - using simulation
+2025-08-28 10:50:01,224 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-28 10:50:01,226 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756371001.csv
+2025-08-28 10:50:01,227 - werkzeug - INFO - 127.0.0.1 - - [28/Aug/2025 10:50:01] "POST /process HTTP/1.1" 200 -
