@@ -1,0 +1,52 @@
+{
+  "image_path": "data\\input\\demo_page.png",
+  "timestamp": "2025-08-28T09:53:18.995695",
+  "model_used": "technical_detector",
+  "total_elements": 2,
+  "summary": {
+    "cota": 2,
+    "tolerancia": 0,
+    "simbol": 0
+  },
+  "elements": [
+    {
+      "id": "cota_1",
+      "type": "cota",
+      "confidence": 0.4400291442871094,
+      "bbox": {
+        "x1": 544.5862426757812,
+        "y1": 5335.833984375,
+        "x2": 2018.1153564453125,
+        "y2": 6215.9345703125,
+        "width": 1473.529052734375,
+        "height": 880.1005859375
+      },
+      "center": {
+        "x": 1281.350830078125,
+        "y": 5775.88427734375
+      }
+    },
+    {
+      "id": "cota_2",
+      "type": "cota",
+      "confidence": 0.34667977690696716,
+      "bbox": {
+        "x1": 4545.67626953125,
+        "y1": 3632.146728515625,
+        "x2": 6015.9873046875,
+        "y2": 4629.04736328125,
+        "width": 1470.31103515625,
+        "height": 996.900634765625
+      },
+      "center": {
+        "x": 5280.83203125,
+        "y": 4130.59716796875
+      }
+    }
+  ],
+  "detection_params": {
+    "confidence_threshold": 0.3,
+    "iou_threshold": 0.45
+  },
+  "annotated_image": "data\\input\\annotated\\detected_demo_page.png"
+}

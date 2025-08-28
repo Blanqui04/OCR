@@ -1,0 +1,38 @@
+{
+  "batch_info": {
+    "input_directory": "data\\images",
+    "output_directory": "data\\images\\detection_results",
+    "total_images": 1,
+    "processed_at": "2025-08-28T09:31:24.334405",
+    "model_used": "technical_detector"
+  },
+  "results": [
+    {
+      "image_path": "data\\images\\page_1.png",
+      "timestamp": "2025-08-28T09:31:25.795687",
+      "model_used": "technical_detector",
+      "total_elements": 0,
+      "summary": {
+        "cota": 0,
+        "tolerancia": 0,
+        "simbol": 0
+      },
+      "elements": [],
+      "detection_params": {
+        "confidence_threshold": 0.6,
+        "iou_threshold": 0.45
+      }
+    }
+  ],
+  "summary": {
+    "total_elements": 0,
+    "by_type": {
+      "cota": 0,
+      "tolerancia": 0,
+      "simbol": 0
+    },
+    "by_image": {
+      "page_1.png": 0
+    }
+  }
+}

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR - Test Local</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-file-text"></i> OCR System</h1>
+                <p class="subtitle">Reconeixement Òptic de Caràcters Avançat</p>
+            </div>
+        </header>
+
+        <!-- Debug Info -->
+        <section class="debug-section">
+            <h3><i class="fas fa-bug"></i> Informació de Debug</h3>
+            <div id="debugInfo">
+                <p>Navegador: <span id="browserInfo"></span></p>
+                <p>Suport per a File API: <span id="fileApiSupport"></span></p>
+                <p>Suport per a drag & drop: <span id="dragDropSupport"></span></p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Arrossega els teus fitxers aquí</h3>
+                        <p>o fes clic per seleccionar</p>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp">
+                        <div class="file-types">
+                            <span>Formats suportats: PDF, PNG, JPG, JPEG, TIFF, BMP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- File List -->
+                <div class="file-list" id="fileList" style="display: none;">
+                    <h3><i class="fas fa-list"></i> Fitxers seleccionats:</h3>
+                    <div id="selectedFiles"></div>
+                </div>
+            </section>
+
+            <!-- Processing Options -->
+            <section class="options-section">
+                <h3><i class="fas fa-cogs"></i> Opcions de Processament</h3>
+                <div class="options-grid">
+                    <div class="option-card">
+                        <h4><i class="fas fa-language"></i> Idioma</h4>
+                        <select id="languageSelect">
+                            <option value="cat">Català</option>
+                            <option value="spa">Espanyol</option>
+                            <option value="eng" selected>Anglès</option>
+                            <option value="fra">Francès</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-search"></i> Mode OCR</h4>
+                        <select id="ocrMode">
+                            <option value="accurate">Precís</option>
+                            <option value="fast" selected>Ràpid</option>
+                            <option value="enhanced">Millorat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-file-export"></i> Format de sortida</h4>
+                        <select id="outputFormat">
+                            <option value="txt">Text (.txt)</option>
+                            <option value="json" selected>JSON (.json)</option>
+                            <option value="csv">CSV (.csv)</option>
+                            <option value="xml">XML (.xml)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h4><i class="fas fa-table"></i> Detecció de taules</h4>
+                        <label class="switch">
+                            <input type="checkbox" id="tableDetection" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="actions-section">
+                <button class="btn btn-primary" id="processBtn" disabled>
+                    <i class="fas fa-play"></i> Test de Processament
+                </button>
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-trash"></i> Netejar
+                </button>
+                <button class="btn btn-info" id="validateBtn" disabled>
+                    <i class="fas fa-check"></i> Validar Fitxers
+                </button>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <h3><i class="fas fa-tasks"></i> Progrés del test</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+                <div class="progress-status" id="progressStatus">Esperant...</div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3><i class="fas fa-clipboard-list"></i> Resultats del Test</h3>
+                <div class="results-container">
+                    <div class="results-tabs">
+                        <button class="tab-btn active" data-tab="files">
+                            <i class="fas fa-file"></i> Fitxers
+                        </button>
+                        <button class="tab-btn" data-tab="validation">
+                            <i class="fas fa-check-circle"></i> Validació
+                        </button>
+                        <button class="tab-btn" data-tab="preview">
+                            <i class="fas fa-eye"></i> Vista prèvia
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <div id="filesTab" class="tab-panel active">
+                            <div id="filesOutput" class="output-content"></div>
+                        </div>
+                        
+                        <div id="validationTab" class="tab-panel">
+                            <div id="validationOutput" class="output-content"></div>
+                        </div>
+                        
+                        <div id="previewTab" class="tab-panel">
+                            <div id="previewOutput" class="output-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Sistema OCR Avançat - Test Local. Tots els drets reservats.</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize debug info
+            initializeDebugInfo();
+            
+            // File handling variables
+            let selectedFiles = [];
+
+            // Debug information
+            function initializeDebugInfo() {
+                $('#browserInfo').text(navigator.userAgent);
+                $('#fileApiSupport').text(window.File && window.FileReader ? 'Sí' : 'No');
+                $('#dragDropSupport').text('ondrop' in window ? 'Sí' : 'No');
+            }
+
+            // File upload handling
+            const uploadArea = $('#uploadArea');
+            const fileInput = $('#fileInput');
+            const fileList = $('#fileList');
+            const selectedFilesDiv = $('#selectedFiles');
+            const processBtn = $('#processBtn');
+            const validateBtn = $('#validateBtn');
+
+            // Drag and drop functionality
+            uploadArea.on('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).addClass('dragover');
+                console.log('Drag over detected');
+            });
+
+            uploadArea.on('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).removeClass('dragover');
+                console.log('Drag leave detected');
+            });
+
+            uploadArea.on('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).removeClass('dragover');
+                console.log('Drop detected');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                console.log('Files dropped:', files.length);
+                handleFiles(files);
+            });
+
+            uploadArea.on('click', function(e) {
+                console.log('Upload area clicked');
+                fileInput.click();
+            });
+
+            fileInput.on('change', function(e) {
+                console.log('File input changed');
+                const files = e.target.files;
+                console.log('Files selected:', files.length);
+                handleFiles(files);
+            });
+
+            function handleFiles(fileList) {
+                console.log('Handling files:', fileList.length);
+                selectedFiles = Array.from(fileList);
+                
+                // Log file details
+                selectedFiles.forEach((file, index) => {
+                    console.log(`File ${index}:`, {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: new Date(file.lastModified)
+                    });
+                });
+                
+                displayFiles();
+                updateButtons();
+                showMessage(`${selectedFiles.length} fitxers seleccionats`, 'success');
+            }
+
+            function displayFiles() {
+                if (selectedFiles.length > 0) {
+                    $('#fileList').show();
+                    let html = '';
+                    selectedFiles.forEach((file, index) => {
+                        const isValid = validateFile(file);
+                        const statusIcon = isValid ? 
+                            '<i class="fas fa-check-circle" style="color: green;"></i>' : 
+                            '<i class="fas fa-times-circle" style="color: red;"></i>';
+                        
+                        html += `
+                            <div class="file-item ${isValid ? 'valid' : 'invalid'}">
+                                ${statusIcon}
+                                <span class="file-name">${file.name}</span>
+                                <span class="file-size">${formatFileSize(file.size)}</span>
+                                <span class="file-type">${file.type || 'Unknown'}</span>
+                                <button class="btn btn-small btn-danger" onclick="removeFile(${index})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    selectedFilesDiv.html(html);
+                } else {
+                    $('#fileList').hide();
+                }
+            }
+
+            function validateFile(file) {
+                // Check file size (16MB limit)
+                if (file.size > 16 * 1024 * 1024) {
+                    return false;
+                }
+                
+                // Check file type
+                const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/tiff', 'image/bmp'];
+                const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.tiff', '.bmp'];
+                
+                return allowedTypes.includes(file.type) || 
+                       allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function updateButtons() {
+                const hasFiles = selectedFiles.length > 0;
+                const hasValidFiles = selectedFiles.some(validateFile);
+                
+                processBtn.prop('disabled', !hasValidFiles);
+                validateBtn.prop('disabled', !hasFiles);
+            }
+
+            // Tab functionality
+            $('.tab-btn').on('click', function() {
+                const tab = $(this).data('tab');
+                $('.tab-btn').removeClass('active');
+                $('.tab-panel').removeClass('active');
+                $(this).addClass('active');
+                $(`#${tab}Tab`).addClass('active');
+            });
+
+            // Validate button
+            validateBtn.on('click', function() {
+                if (selectedFiles.length === 0) return;
+                
+                $('#resultsSection').show();
+                
+                let validationHtml = '<h4>Resultat de la validació:</h4>';
+                let filesHtml = '<h4>Detalls dels fitxers:</h4>';
+                let previewHtml = '<h4>Vista prèvia:</h4>';
+                
+                selectedFiles.forEach((file, index) => {
+                    const isValid = validateFile(file);
+                    const status = isValid ? 'Vàlid' : 'No vàlid';
+                    const reason = getValidationReason(file);
+                    
+                    validationHtml += `
+                        <div class="validation-item ${isValid ? 'valid' : 'invalid'}">
+                            <strong>${file.name}</strong>: ${status}
+                            ${reason ? `<br><small>${reason}</small>` : ''}
+                        </div>
+                    `;
+                    
+                    filesHtml += `
+                        <div class="file-detail">
+                            <strong>Fitxer ${index + 1}:</strong> ${file.name}<br>
+                            <strong>Mida:</strong> ${formatFileSize(file.size)}<br>
+                            <strong>Tipus:</strong> ${file.type || 'Desconegut'}<br>
+                            <strong>Última modificació:</strong> ${new Date(file.lastModified).toLocaleString('ca-ES')}<br>
+                        </div>
+                    `;
+                    
+                    // Preview for images
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewHtml += `
+                                <div class="image-preview">
+                                    <h5>${file.name}</h5>
+                                    <img src="${e.target.result}" style="max-width: 200px; max-height: 200px;">
+                                </div>
+                            `;
+                            $('#previewOutput').html(previewHtml);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                $('#validationOutput').html(validationHtml);
+                $('#filesOutput').html(filesHtml);
+                if (!selectedFiles.some(f => f.type.startsWith('image/'))) {
+                    $('#previewOutput').html('<p>No hi ha imatges per previsualitzar.</p>');
+                }
+            });
+
+            function getValidationReason(file) {
+                if (file.size > 16 * 1024 * 1024) {
+                    return 'Fitxer massa gran (màxim 16MB)';
+                }
+                
+                const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/tiff', 'image/bmp'];
+                const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.tiff', '.bmp'];
+                
+                if (!allowedTypes.includes(file.type) && 
+                    !allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                    return 'Tipus de fitxer no suportat';
+                }
+                
+                return '';
+            }
+
+            // Process button (simulation)
+            processBtn.on('click', function() {
+                if (selectedFiles.length === 0) return;
+                
+                $('#progressSection').show();
+                $('#resultsSection').hide();
+                
+                // Simulate processing
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        setTimeout(showTestResults, 500);
+                    }
+                    
+                    $('#progressFill').css('width', progress + '%');
+                    $('#progressText').text(Math.round(progress) + '%');
+                    
+                    if (progress < 30) {
+                        $('#progressStatus').text('Validant fitxers...');
+                    } else if (progress < 70) {
+                        $('#progressStatus').text('Simulant OCR...');
+                    } else if (progress < 95) {
+                        $('#progressStatus').text('Generant resultats...');
+                    } else {
+                        $('#progressStatus').text('Finalitzant...');
+                    }
+                }, 200);
+            });
+
+            function showTestResults() {
+                $('#resultsSection').show();
+                
+                // Switch to files tab and show test results
+                $('.tab-btn').removeClass('active');
+                $('.tab-panel').removeClass('active');
+                $('.tab-btn[data-tab="files"]').addClass('active');
+                $('#filesTab').addClass('active');
+                
+                let resultsHtml = '<h4>Resultats del test de processament:</h4>';
+                
+                selectedFiles.forEach((file, index) => {
+                    const confidence = Math.random() * 20 + 80; // 80-100%
+                    const words = Math.floor(Math.random() * 200) + 50;
+                    
+                    resultsHtml += `
+                        <div class="test-result">
+                            <h5>${file.name}</h5>
+                            <p><strong>Estat:</strong> Processament simulat completat</p>
+                            <p><strong>Confiança simulada:</strong> ${confidence.toFixed(1)}%</p>
+                            <p><strong>Paraules detectades:</strong> ${words}</p>
+                            <p><strong>Temps de processament:</strong> ${(Math.random() * 3 + 1).toFixed(2)}s</p>
+                        </div>
+                    `;
+                });
+                
+                $('#filesOutput').html(resultsHtml);
+                showMessage('Test de processament completat!', 'success');
+            }
+
+            // Clear button
+            $('#clearBtn').on('click', function() {
+                selectedFiles = [];
+                displayFiles();
+                updateButtons();
+                $('#progressSection').hide();
+                $('#resultsSection').hide();
+                $('#progressFill').css('width', '0%');
+                $('#progressText').text('0%');
+                fileInput.val('');
+                showMessage('Fitxers netejats', 'info');
+            });
+
+            // Utility function to show messages
+            function showMessage(message, type) {
+                // Remove existing messages
+                $('.message').remove();
+                
+                // Create message element
+                const messageDiv = $(`
+                    <div class="message message-${type}">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                        <button class="message-close">&times;</button>
+                    </div>
+                `);
+                
+                // Add to page
+                $('body').append(messageDiv);
+                
+                // Auto remove after 3 seconds
+                setTimeout(() => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                }, 3000);
+                
+                // Manual close
+                messageDiv.find('.message-close').on('click', () => {
+                    messageDiv.fadeOut(() => messageDiv.remove());
+                });
+            }
+        });
+
+        // Global function for removing files
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFiles();
+            updateButtons();
+            showMessage('Fitxer eliminat', 'info');
+        }
+    </script>
+
+    <style>
+        /* Additional styles for debug and test interface */
+        .debug-section {
+            background: rgba(255, 255, 200, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .file-item.valid {
+            background: #f0f9ff;
+            border-left: 3px solid #10b981;
+        }
+        
+        .file-item.invalid {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+        }
+        
+        .validation-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        
+        .validation-item.valid {
+            background: #f0f9ff;
+            border-left: 3px solid #10b981;
+        }
+        
+        .validation-item.invalid {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+        }
+        
+        .file-detail {
+            background: #f8fafc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .test-result {
+            background: #f0f9ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .image-preview {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .image-preview img {
+            display: block;
+            margin: 10px auto;
+            border-radius: 4px;
+        }
+        
+        /* Message styles */
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            max-width: 400px;
+            border-left: 4px solid;
+        }
+        
+        .message-success {
+            border-left-color: #10b981;
+            color: #065f46;
+        }
+        
+        .message-error {
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .message-info {
+            border-left-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        .message-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.6;
+            margin-left: auto;
+        }
+        
+        .message-close:hover {
+            opacity: 1;
+        }
+    </style>
+</body>
+</html>

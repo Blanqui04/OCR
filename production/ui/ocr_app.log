@@ -1,0 +1,177 @@
+2025-08-27 09:27:10,330 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 09:27:10,332 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 09:27:16,462 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:16] "GET / HTTP/1.1" 200 -
+2025-08-27 09:27:16,654 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:27:25,143 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:25] "GET /?id=4eb6ed64-7c6e-45fc-b209-73f0c4faa066&vscodeBrowserReqId=1756279644810 HTTP/1.1" 200 -
+2025-08-27 09:27:25,407 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:25] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:27:32,433 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:27:38,200 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:27:38] "GET /health?id=4eb6ed64-7c6e-45fc-b209-73f0c4faa066&vscodeBrowserReqId=1756279657880 HTTP/1.1" 200 -
+2025-08-27 09:33:27,260 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:33:27] "GET /debug?id=e2f88496-baa8-4cbf-9f16-0fe693bfe422&vscodeBrowserReqId=1756280006938 HTTP/1.1" 200 -
+2025-08-27 09:33:27,521 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:33:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:33:39,870 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:33:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:33:57,126 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:33:57] "GET / HTTP/1.1" 200 -
+2025-08-27 09:33:57,188 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:33:57] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:35:00,360 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 09:35:00,361 - __main__ - INFO - Request method: POST
+2025-08-27 09:35:00,364 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundarypvZCY6LdbAcZuJTO
+2025-08-27 09:35:00,366 - __main__ - INFO - Content-Length: 291959
+2025-08-27 09:35:00,380 - __main__ - INFO - Received 1 files
+2025-08-27 09:35:00,381 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 09:35:00,383 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 09:35:00,385 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756280100385_6555945_003.pdf
+2025-08-27 09:35:00,398 - __main__ - INFO - File saved successfully: 1756280100385_6555945_003.pdf, size: 291764 bytes
+2025-08-27 09:35:00,400 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 09:35:00,401 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 09:35:00,403 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:35:00] "POST /upload HTTP/1.1" 200 -
+2025-08-27 09:36:22,582 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:36:22] "GET /debug?id=e2f88496-baa8-4cbf-9f16-0fe693bfe422&vscodeBrowserReqId=1756280182264 HTTP/1.1" 200 -
+2025-08-27 09:36:22,851 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:36:22] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:36:37,385 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:36:37] "GET / HTTP/1.1" 200 -
+2025-08-27 09:36:37,435 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:36:37] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:38:03,479 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:03] "GET /debug?id=7c675425-8a9f-4cb5-a701-28161eb2b14a&vscodeBrowserReqId=1756280283168 HTTP/1.1" 200 -
+2025-08-27 09:38:03,745 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:03] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:38:20,326 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:20] "GET / HTTP/1.1" 200 -
+2025-08-27 09:38:20,367 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:20] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:38:24,181 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:24] "GET /debug HTTP/1.1" 200 -
+2025-08-27 09:38:24,487 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:24] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:38:38,473 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:38] "GET /debug HTTP/1.1" 200 -
+2025-08-27 09:38:38,522 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:38:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:42:42,017 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 09:42:42,019 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 09:43:32,523 - __main__ - INFO - Serving simple test page
+2025-08-27 09:43:32,531 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:43:32] "GET /test?id=7c675425-8a9f-4cb5-a701-28161eb2b14a&vscodeBrowserReqId=1756280612197 HTTP/1.1" 200 -
+2025-08-27 09:45:40,451 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:45:40] "GET /?id=7c675425-8a9f-4cb5-a701-28161eb2b14a&vscodeBrowserReqId=1756280740111 HTTP/1.1" 200 -
+2025-08-27 09:45:40,788 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:45:40] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:45:57,314 - __main__ - INFO - Serving debug page with enhanced client-side logging
+2025-08-27 09:45:57,338 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:45:57] "GET /debug HTTP/1.1" 200 -
+2025-08-27 09:45:57,364 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:45:57] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:46:16,964 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:46:16] "GET / HTTP/1.1" 200 -
+2025-08-27 09:46:17,294 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:46:17] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:46:32,220 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:46:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:54:47,824 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 09:54:47,827 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 09:54:48,938 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:54:48] "GET / HTTP/1.1" 200 -
+2025-08-27 09:54:49,111 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:54:49] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:55:03,368 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:55:03] "GET /?id=d44ddf06-6a16-4184-b5ef-151e2611658d&vscodeBrowserReqId=1756281303044 HTTP/1.1" 200 -
+2025-08-27 09:55:03,629 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:55:03] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 09:55:45,889 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 09:55:45,890 - __main__ - INFO - Request method: POST
+2025-08-27 09:55:45,891 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryBVEo5tr3umYQ5mrf
+2025-08-27 09:55:45,892 - __main__ - INFO - Content-Length: 291959
+2025-08-27 09:55:45,897 - __main__ - INFO - Received 1 files
+2025-08-27 09:55:45,897 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 09:55:45,898 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 09:55:45,900 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756281345900_6555945_003.pdf
+2025-08-27 09:55:45,907 - __main__ - INFO - File saved successfully: 1756281345900_6555945_003.pdf, size: 291764 bytes
+2025-08-27 09:55:45,910 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 09:55:45,912 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 09:55:45,914 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:55:45] "POST /upload HTTP/1.1" 200 -
+2025-08-27 09:55:54,777 - __main__ - INFO - Process request received: 1 files
+2025-08-27 09:55:54,778 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'accurate', 'output_format': 'json', 'table_detection': True}
+2025-08-27 09:55:54,780 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-27 09:55:54,786 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756281354.json
+2025-08-27 09:55:54,789 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 09:55:54] "POST /process HTTP/1.1" 200 -
+2025-08-27 10:01:59,850 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 10:01:59,852 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 10:02:05,464 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:05] "GET / HTTP/1.1" 200 -
+2025-08-27 10:02:05,536 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:05] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:02:11,285 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 10:02:11,286 - __main__ - INFO - Request method: POST
+2025-08-27 10:02:11,286 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1XKjuIRCTzEjMLr9
+2025-08-27 10:02:11,287 - __main__ - INFO - Content-Length: 291959
+2025-08-27 10:02:11,295 - __main__ - INFO - Received 1 files
+2025-08-27 10:02:11,296 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 10:02:11,296 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 10:02:11,297 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756281731297_6555945_003.pdf
+2025-08-27 10:02:11,304 - __main__ - INFO - File saved successfully: 1756281731297_6555945_003.pdf, size: 291764 bytes
+2025-08-27 10:02:11,305 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 10:02:11,305 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 10:02:11,307 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:11] "POST /upload HTTP/1.1" 200 -
+2025-08-27 10:02:16,697 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:16] "GET /?id=e8895887-a8e3-4ffb-b5da-49f294ff14b8&vscodeBrowserReqId=1756281736364 HTTP/1.1" 200 -
+2025-08-27 10:02:16,950 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:02:20,492 - __main__ - INFO - Process request received: 1 files
+2025-08-27 10:02:20,493 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'enhanced', 'output_format': 'json', 'table_detection': True}
+2025-08-27 10:02:20,495 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-27 10:02:20,498 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756281740.json
+2025-08-27 10:02:20,499 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:02:20] "POST /process HTTP/1.1" 200 -
+2025-08-27 10:03:12,885 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 10:03:12,885 - __main__ - INFO - Request method: POST
+2025-08-27 10:03:12,886 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNFR8JBwabQ0B64jp
+2025-08-27 10:03:12,887 - __main__ - INFO - Content-Length: 291959
+2025-08-27 10:03:12,892 - __main__ - INFO - Received 1 files
+2025-08-27 10:03:12,893 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 10:03:12,894 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 10:03:12,895 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756281792895_6555945_003.pdf
+2025-08-27 10:03:12,905 - __main__ - INFO - File saved successfully: 1756281792895_6555945_003.pdf, size: 291764 bytes
+2025-08-27 10:03:12,906 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 10:03:12,906 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 10:03:12,907 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:03:12] "POST /upload HTTP/1.1" 200 -
+2025-08-27 10:06:26,755 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 10:06:26,758 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 10:06:39,772 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:06:39] "GET /?id=d181e435-29a1-4bc9-85e9-39c164159877&vscodeBrowserReqId=1756281999436 HTTP/1.1" 200 -
+2025-08-27 10:06:40,021 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:06:40] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:08:29,814 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:08:29] "GET / HTTP/1.1" 200 -
+2025-08-27 10:08:29,880 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:08:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:09:02,604 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 10:09:02,605 - __main__ - INFO - Request method: POST
+2025-08-27 10:09:02,605 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryldstfWIIolvnKBWC
+2025-08-27 10:09:02,605 - __main__ - INFO - Content-Length: 291959
+2025-08-27 10:09:02,609 - __main__ - INFO - Received 1 files
+2025-08-27 10:09:02,610 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 10:09:02,610 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 10:09:02,611 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756282142611_6555945_003.pdf
+2025-08-27 10:09:02,616 - __main__ - INFO - File saved successfully: 1756282142611_6555945_003.pdf, size: 291764 bytes
+2025-08-27 10:09:02,617 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 10:09:02,618 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 10:09:02,619 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:09:02] "POST /upload HTTP/1.1" 200 -
+2025-08-27 10:09:12,306 - __main__ - INFO - Process request received: 1 files
+2025-08-27 10:09:12,307 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True}
+2025-08-27 10:09:12,308 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-27 10:09:12,312 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756282152.json
+2025-08-27 10:09:12,314 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:09:12] "POST /process HTTP/1.1" 200 -
+2025-08-27 10:45:51,510 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 10:45:51,511 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 10:46:04,881 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:46:04] "GET /?id=6a5b559d-1937-4e76-998a-085934b3384e&vscodeBrowserReqId=1756284364562 HTTP/1.1" 200 -
+2025-08-27 10:46:05,149 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:46:05] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:48:22,980 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.26.5.166:5000
+2025-08-27 10:48:22,980 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-27 10:49:16,271 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:49:16] "GET / HTTP/1.1" 200 -
+2025-08-27 10:49:16,318 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:49:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-08-27 10:49:46,359 - __main__ - INFO - === UPLOAD REQUEST START ===
+2025-08-27 10:49:46,360 - __main__ - INFO - Request method: POST
+2025-08-27 10:49:46,360 - __main__ - INFO - Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryRAn4gL3MX6ORRvZd
+2025-08-27 10:49:46,361 - __main__ - INFO - Content-Length: 291959
+2025-08-27 10:49:46,363 - __main__ - INFO - Received 1 files
+2025-08-27 10:49:46,364 - __main__ - INFO - File 0: filename='6555945_003.pdf', content_type='application/pdf'
+2025-08-27 10:49:46,364 - __main__ - INFO - Processing file 0: 6555945_003.pdf
+2025-08-27 10:49:46,364 - __main__ - INFO - Saving file to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\uploads\1756284586364_6555945_003.pdf
+2025-08-27 10:49:46,370 - __main__ - INFO - File saved successfully: 1756284586364_6555945_003.pdf, size: 291764 bytes
+2025-08-27 10:49:46,371 - __main__ - INFO - Successfully uploaded 1 files
+2025-08-27 10:49:46,373 - __main__ - INFO - === UPLOAD REQUEST END ===
+2025-08-27 10:49:46,376 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:49:46] "POST /upload HTTP/1.1" 200 -
+2025-08-27 10:49:50,383 - __main__ - INFO - Process request received: 1 files
+2025-08-27 10:49:50,383 - __main__ - INFO - Processing 1 files with options: {'language': 'eng', 'ocr_mode': 'fast', 'output_format': 'json', 'table_detection': True}
+2025-08-27 10:49:50,384 - __main__ - INFO - Processed file 1/1: 6555945_003.pdf
+2025-08-27 10:49:50,388 - __main__ - INFO - Results saved to: C:\Users\eceballos\OneDrive - SOME, S.A\Desktop\Projectes\OCR\data\output\ocr_results_1756284590.json
+2025-08-27 10:49:50,392 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:49:50] "POST /process HTTP/1.1" 200 -
+2025-08-27 10:51:17,816 - werkzeug - INFO - 127.0.0.1 - - [27/Aug/2025 10:51:17] "[36mGET /static/style.css HTTP/1.1[0m" 304 -

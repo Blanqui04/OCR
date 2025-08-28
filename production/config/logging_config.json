@@ -1,0 +1,26 @@
+{
+  "handlers": [
+    {
+      "sink": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\production\\logs\\application.log",
+      "rotation": "10 MB",
+      "retention": "30 days",
+      "level": "INFO",
+      "format": "{time:YYYY-MM-DD HH:mm:ss} | {level} | {module}:{function}:{line} - {message}"
+    },
+    {
+      "sink": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\production\\logs\\errors.log",
+      "rotation": "5 MB",
+      "retention": "60 days",
+      "level": "ERROR",
+      "format": "{time:YYYY-MM-DD HH:mm:ss} | {level} | {module}:{function}:{line} - {message}"
+    },
+    {
+      "sink": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\production\\logs\\performance.log",
+      "rotation": "20 MB",
+      "retention": "15 days",
+      "level": "DEBUG",
+      "filter": "lambda record: 'performance' in record.get('extra', {})",
+      "format": "{time:YYYY-MM-DD HH:mm:ss} | PERF | {extra[performance]} - {message}"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "models": {
+    "technical_detector": {
+      "path": "src\\ai_model\\models\\custom\\technical.pt",
+      "description": "Detector de s\u00edmbols t\u00e8cnics personalitzat",
+      "type": "detection",
+      "custom": true
+    }
+  },
+  "default_model": null,
+  "last_updated": null
+}

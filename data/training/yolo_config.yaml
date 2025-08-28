@@ -1,0 +1,13 @@
+names:
+- dimension
+- tolerance
+- symbol
+- text
+- line
+- circle
+- rectangle
+- annotation
+nc: 8
+path: data\training
+train: synthetic/images
+val: synthetic/images

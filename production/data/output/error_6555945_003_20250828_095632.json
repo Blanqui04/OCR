@@ -1,0 +1,7 @@
+{
+  "document": "6555945_003.pdf",
+  "processed_at": "2025-08-28T09:56:32.219867",
+  "status": "error",
+  "error": "[WinError 183] Cannot create a file when that file already exists: 'data\\\\input\\\\6555945_003.pdf' -> 'data\\\\processed\\\\6555945_003.pdf'",
+  "processing_time": 2.0058586597442627
+}

@@ -1,0 +1,21 @@
+{
+  "document": "6555945_003.pdf",
+  "processed_at": "2025-08-28T09:41:37.712160",
+  "status": "success",
+  "processing_time": 2.000514507293701,
+  "simulated_results": {
+    "ocr_elements": 45,
+    "yolo_detections": {
+      "cotes": 8,
+      "tolerancies": 3,
+      "simbols": 2
+    },
+    "dimensions_extracted": 12,
+    "technical_notes": 5
+  },
+  "files_generated": [
+    "ocr_output_6555945_003.json",
+    "yolo_detections_6555945_003.json",
+    "annotated_image_6555945_003.png"
+  ]
+}

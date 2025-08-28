@@ -1,9 +1,16 @@
 # src/tesseract_setup.py
+"""
+Configuració i setup de Tesseract OCR
+Detecta automàticament la instal·lació de Tesseract i configura pytesseract
+"""
+
 import os
 import requests
 import platform
 import subprocess
 from pathlib import Path
+import pytesseract
+from loguru import logger
 
 def get_tesseract_data_path():
     """Detecta el directori tessdata de Tesseract"""
@@ -104,45 +111,75 @@ def check_tesseract_languages():
         print(f"❌ Error comprovant llenguatges: {e}")
         return []
 
-def setup_technical_ocr():
-    """Configuració completa per OCR tècnic"""
-    print("🔧 Configurant OCR per a símbols tècnics...")
-    print()
+def setup_tesseract_auto():
+    """Configuració automàtica completa de Tesseract"""
+    logger.info("🔧 Configurant Tesseract OCR automàticament...")
     
-    # Comprovar llenguatges actuals
-    langs = check_tesseract_languages()
-    print()
-    
-    if 'equ' in langs:
-        print("✅ Configuració perfecta! 'equ' ja està disponible.")
+    try:
+        # Verificar Tesseract instal·lat
+        result = subprocess.run(['tesseract', '--version'], 
+                              capture_output=True, text=True, check=True)
+        version = result.stdout.split('\n')[0]
+        logger.info(f"Tesseract trobat: {version}")
+        
+        # Configurar pytesseract
+        pytesseract.pytesseract.tesseract_cmd = 'tesseract'
+        
+        # Test bàsic
+        from PIL import Image
+        import numpy as np
+        img_array = np.ones((50, 200, 3), dtype=np.uint8) * 255
+        test_img = Image.fromarray(img_array)
+        text = pytesseract.image_to_string(test_img)
+        
+        logger.success("✅ Tesseract configurat correctament!")
         return True
+        
+    except subprocess.CalledProcessError:
+        logger.error("❌ Tesseract no trobat al PATH")
+        return _setup_tesseract_windows() if platform.system() == "Windows" else False
+    except Exception as e:
+        logger.error(f"❌ Error configurant Tesseract: {e}")
+        return False
+
+def _setup_tesseract_windows():
+    """Configuració específica per Windows"""
+    possible_paths = [
+        r"C:\Users\eceballos\AppData\Local\Programs\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files\PDF24\tesseract\tesseract.exe",
+        r"C:\Tools\Tesseract-OCR\tesseract.exe",
+    ]
     
-    print("⚠️ El model 'equ' no està disponible.")
-    print("Aquest model millora la detecció de símbols tècnics com ⌖, ±, Ø, etc.")
-    print()
-    
-    choice = input("Vols descarregar 'equ.traineddata'? (s/n): ").lower().strip()
-    
-    if choice in ['s', 'si', 'y', 'yes']:
-        success = download_equ_traineddata()
-        if success:
-            print()
-            print("🎉 Instal·lació completada!")
-            print("🔄 Reinicia l'aplicació per utilitzar el nou model.")
+    for path in possible_paths:
+        if os.path.exists(path):
+            pytesseract.pytesseract.tesseract_cmd = path
+            logger.info(f"Tesseract trobat: {path}")
             return True
     
-    print()
-    print("📋 Instruccions manuals:")
-    print("1. Descarrega equ.traineddata de:")
-    print("   https://github.com/tesseract-ocr/tessdata/raw/master/equ.traineddata")
-    tessdata_path = get_tesseract_data_path()
-    if tessdata_path:
-        print(f"2. Copia'l a: {tessdata_path}")
-    else:
-        print("2. Copia'l al directori tessdata de Tesseract")
+    logger.error("❌ Tesseract no trobat. Instal·la'l des de: https://github.com/UB-Mannheim/tesseract/wiki")
+    return False
     print("3. Reinicia l'aplicació")
     
     return False
 
 if __name__ == "__main__":
-    setup_technical_ocr()
+    setup_tesseract_auto()
+else:
+    # Auto-configuració en importar
+    try:
+        # Intentar carregar configuració automàtica primer
+        import sys
+        import os
+        config_file = os.path.join(os.path.dirname(__file__), "..", "tesseract_config.py")
+        if os.path.exists(config_file):
+            sys.path.insert(0, os.path.dirname(config_file))
+            import tesseract_config
+            logger.success("✅ Tesseract configurat automàticament")
+        else:
+            success = setup_tesseract_auto()
+            if not success:
+                logger.warning("Tesseract no configurat completament")
+    except Exception as e:
+        logger.error(f"Error en auto-configuració: {e}")

@@ -1,0 +1,24 @@
+{
+  "models": {
+    "yolov8n": {
+      "path": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\src\\ai_model\\models\\yolov8n.pt",
+      "description": "YOLO v8 Nano - Detecci\u00f3 d'objectes r\u00e0pida",
+      "use_case": "Detecci\u00f3 general d'elements",
+      "downloaded": true
+    },
+    "yolov8s": {
+      "path": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\src\\ai_model\\models\\yolov8s.pt",
+      "description": "YOLO v8 Small - Equilibri velocitat/precisi\u00f3",
+      "use_case": "Detecci\u00f3 precisa d'elements t\u00e8cnics",
+      "downloaded": true
+    },
+    "technical_detector": {
+      "path": "C:\\Users\\eceballos\\OneDrive - SOME, S.A\\Desktop\\Projectes\\OCR\\src\\ai_model\\models\\custom\\technical\\weights\\best.pt",
+      "description": "YOLOv8 personalitzat per detectar elements t\u00e8cnics (cotes, toler\u00e0ncies, s\u00edmbols)",
+      "type": "yolov8_detection",
+      "custom": true
+    }
+  },
+  "default_model": "yolov8n",
+  "last_updated": null
+}

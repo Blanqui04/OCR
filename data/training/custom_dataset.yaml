@@ -1,0 +1,6 @@
+# Dataset personalitzat per YOLOv8
+train: images/train/
+val: images/val/
+test: images/test/
+nc: 3
+names: ["cota", "tolerancia", "simbol"]

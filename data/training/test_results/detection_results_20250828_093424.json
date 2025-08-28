@@ -1,0 +1,1001 @@
+{
+  "batch_info": {
+    "input_directory": "data\\training\\images\\train",
+    "output_directory": "data\\training\\test_results",
+    "total_images": 14,
+    "processed_at": "2025-08-28T09:34:18.467803",
+    "model_used": "technical_detector"
+  },
+  "results": [
+    {
+      "image_path": "data\\training\\images\\train\\sample_000.jpg",
+      "timestamp": "2025-08-28T09:34:18.966075",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9882810711860657,
+          "bbox": {
+            "x1": 393.2154235839844,
+            "y1": 198.6863555908203,
+            "x2": 502.0435485839844,
+            "y2": 237.3883819580078,
+            "width": 108.828125,
+            "height": 38.7020263671875
+          },
+          "center": {
+            "x": 447.6294860839844,
+            "y": 218.03736877441406
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9641303420066833,
+          "bbox": {
+            "x1": 107.86998748779297,
+            "y1": 313.28021240234375,
+            "x2": 185.1531982421875,
+            "y2": 389.95416259765625,
+            "width": 77.28321075439453,
+            "height": 76.6739501953125
+          },
+          "center": {
+            "x": 146.5115966796875,
+            "y": 351.6171875
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9477391839027405,
+          "bbox": {
+            "x1": 179.7137451171875,
+            "y1": 103.12014770507812,
+            "x2": 320.4728088378906,
+            "y2": 153.33544921875,
+            "width": 140.75906372070312,
+            "height": 50.215301513671875
+          },
+          "center": {
+            "x": 250.09327697753906,
+            "y": 128.22779846191406
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_000.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_001.jpg",
+      "timestamp": "2025-08-28T09:34:19.276466",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9890221357345581,
+          "bbox": {
+            "x1": 396.3957214355469,
+            "y1": 198.93894958496094,
+            "x2": 505.1664733886719,
+            "y2": 237.54994201660156,
+            "width": 108.770751953125,
+            "height": 38.610992431640625
+          },
+          "center": {
+            "x": 450.7810974121094,
+            "y": 218.24444580078125
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9625788331031799,
+          "bbox": {
+            "x1": 108.59024047851562,
+            "y1": 313.97137451171875,
+            "x2": 185.11514282226562,
+            "y2": 389.6314697265625,
+            "width": 76.52490234375,
+            "height": 75.66009521484375
+          },
+          "center": {
+            "x": 146.85269165039062,
+            "y": 351.8014221191406
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.95787113904953,
+          "bbox": {
+            "x1": 179.38436889648438,
+            "y1": 103.13336181640625,
+            "x2": 319.34552001953125,
+            "y2": 152.57449340820312,
+            "width": 139.96115112304688,
+            "height": 49.441131591796875
+          },
+          "center": {
+            "x": 249.3649444580078,
+            "y": 127.85392761230469
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_001.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_002.jpg",
+      "timestamp": "2025-08-28T09:34:19.702244",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9824089407920837,
+          "bbox": {
+            "x1": 395.2784729003906,
+            "y1": 198.67617797851562,
+            "x2": 502.4711608886719,
+            "y2": 237.46725463867188,
+            "width": 107.19268798828125,
+            "height": 38.79107666015625
+          },
+          "center": {
+            "x": 448.87481689453125,
+            "y": 218.07171630859375
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9697330594062805,
+          "bbox": {
+            "x1": 108.3240737915039,
+            "y1": 313.428466796875,
+            "x2": 184.78775024414062,
+            "y2": 390.45849609375,
+            "width": 76.46367645263672,
+            "height": 77.030029296875
+          },
+          "center": {
+            "x": 146.555908203125,
+            "y": 351.9434814453125
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9517759680747986,
+          "bbox": {
+            "x1": 179.38656616210938,
+            "y1": 103.13578796386719,
+            "x2": 318.4723815917969,
+            "y2": 152.15765380859375,
+            "width": 139.0858154296875,
+            "height": 49.02186584472656
+          },
+          "center": {
+            "x": 248.92947387695312,
+            "y": 127.64672088623047
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_002.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_003.jpg",
+      "timestamp": "2025-08-28T09:34:20.150085",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9908177852630615,
+          "bbox": {
+            "x1": 392.56494140625,
+            "y1": 198.4143829345703,
+            "x2": 501.345703125,
+            "y2": 237.9864959716797,
+            "width": 108.78076171875,
+            "height": 39.572113037109375
+          },
+          "center": {
+            "x": 446.955322265625,
+            "y": 218.200439453125
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9591274261474609,
+          "bbox": {
+            "x1": 178.98187255859375,
+            "y1": 103.28599548339844,
+            "x2": 319.4566650390625,
+            "y2": 151.9244842529297,
+            "width": 140.47479248046875,
+            "height": 48.63848876953125
+          },
+          "center": {
+            "x": 249.21926879882812,
+            "y": 127.60523986816406
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9457274079322815,
+          "bbox": {
+            "x1": 108.31507110595703,
+            "y1": 313.9404602050781,
+            "x2": 184.84466552734375,
+            "y2": 389.7298889160156,
+            "width": 76.52959442138672,
+            "height": 75.7894287109375
+          },
+          "center": {
+            "x": 146.57986450195312,
+            "y": 351.8351745605469
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_003.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_004.jpg",
+      "timestamp": "2025-08-28T09:34:20.549136",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9842485785484314,
+          "bbox": {
+            "x1": 394.64556884765625,
+            "y1": 198.50344848632812,
+            "x2": 503.16497802734375,
+            "y2": 237.85421752929688,
+            "width": 108.5194091796875,
+            "height": 39.35076904296875
+          },
+          "center": {
+            "x": 448.9052734375,
+            "y": 218.1788330078125
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9537105560302734,
+          "bbox": {
+            "x1": 180.81549072265625,
+            "y1": 103.36164855957031,
+            "x2": 319.64337158203125,
+            "y2": 152.70127868652344,
+            "width": 138.827880859375,
+            "height": 49.339630126953125
+          },
+          "center": {
+            "x": 250.22943115234375,
+            "y": 128.03146362304688
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9476377964019775,
+          "bbox": {
+            "x1": 108.1739501953125,
+            "y1": 313.86834716796875,
+            "x2": 184.66763305664062,
+            "y2": 389.9281005859375,
+            "width": 76.49368286132812,
+            "height": 76.05975341796875
+          },
+          "center": {
+            "x": 146.42079162597656,
+            "y": 351.8982238769531
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_004.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_005.jpg",
+      "timestamp": "2025-08-28T09:34:20.965586",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9910196661949158,
+          "bbox": {
+            "x1": 393.4208068847656,
+            "y1": 198.6051788330078,
+            "x2": 501.6422424316406,
+            "y2": 237.0330047607422,
+            "width": 108.221435546875,
+            "height": 38.427825927734375
+          },
+          "center": {
+            "x": 447.5315246582031,
+            "y": 217.819091796875
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9578294157981873,
+          "bbox": {
+            "x1": 179.3760986328125,
+            "y1": 103.09658813476562,
+            "x2": 317.40301513671875,
+            "y2": 152.95675659179688,
+            "width": 138.02691650390625,
+            "height": 49.86016845703125
+          },
+          "center": {
+            "x": 248.38955688476562,
+            "y": 128.02667236328125
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9521337747573853,
+          "bbox": {
+            "x1": 107.45571899414062,
+            "y1": 312.7453918457031,
+            "x2": 184.740234375,
+            "y2": 389.9971008300781,
+            "width": 77.28451538085938,
+            "height": 77.251708984375
+          },
+          "center": {
+            "x": 146.0979766845703,
+            "y": 351.3712463378906
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_005.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_006.jpg",
+      "timestamp": "2025-08-28T09:34:21.411777",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.989188551902771,
+          "bbox": {
+            "x1": 394.77581787109375,
+            "y1": 198.79071044921875,
+            "x2": 501.74591064453125,
+            "y2": 237.271240234375,
+            "width": 106.9700927734375,
+            "height": 38.48052978515625
+          },
+          "center": {
+            "x": 448.2608642578125,
+            "y": 218.03097534179688
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9608116149902344,
+          "bbox": {
+            "x1": 179.436279296875,
+            "y1": 103.11953735351562,
+            "x2": 320.30938720703125,
+            "y2": 153.11639404296875,
+            "width": 140.87310791015625,
+            "height": 49.996856689453125
+          },
+          "center": {
+            "x": 249.87283325195312,
+            "y": 128.1179656982422
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9564382433891296,
+          "bbox": {
+            "x1": 107.62068939208984,
+            "y1": 313.7489013671875,
+            "x2": 185.70455932617188,
+            "y2": 389.8089599609375,
+            "width": 78.08386993408203,
+            "height": 76.06005859375
+          },
+          "center": {
+            "x": 146.66262817382812,
+            "y": 351.7789306640625
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_006.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_007.jpg",
+      "timestamp": "2025-08-28T09:34:21.891991",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9889271259307861,
+          "bbox": {
+            "x1": 394.14691162109375,
+            "y1": 198.39276123046875,
+            "x2": 502.33160400390625,
+            "y2": 237.60372924804688,
+            "width": 108.1846923828125,
+            "height": 39.210968017578125
+          },
+          "center": {
+            "x": 448.2392578125,
+            "y": 217.9982452392578
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9638108611106873,
+          "bbox": {
+            "x1": 178.91558837890625,
+            "y1": 103.0867919921875,
+            "x2": 319.0832824707031,
+            "y2": 152.5450439453125,
+            "width": 140.16769409179688,
+            "height": 49.458251953125
+          },
+          "center": {
+            "x": 248.9994354248047,
+            "y": 127.81591796875
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9579063057899475,
+          "bbox": {
+            "x1": 107.45197296142578,
+            "y1": 313.62127685546875,
+            "x2": 184.5865478515625,
+            "y2": 389.91827392578125,
+            "width": 77.13457489013672,
+            "height": 76.2969970703125
+          },
+          "center": {
+            "x": 146.01925659179688,
+            "y": 351.769775390625
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_007.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_008.jpg",
+      "timestamp": "2025-08-28T09:34:22.275289",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9870824813842773,
+          "bbox": {
+            "x1": 394.5413818359375,
+            "y1": 198.6563720703125,
+            "x2": 500.822265625,
+            "y2": 236.868408203125,
+            "width": 106.2808837890625,
+            "height": 38.2120361328125
+          },
+          "center": {
+            "x": 447.68182373046875,
+            "y": 217.76239013671875
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9544905424118042,
+          "bbox": {
+            "x1": 179.1932373046875,
+            "y1": 103.04690551757812,
+            "x2": 319.82958984375,
+            "y2": 151.34864807128906,
+            "width": 140.6363525390625,
+            "height": 48.30174255371094
+          },
+          "center": {
+            "x": 249.51141357421875,
+            "y": 127.1977767944336
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9531880021095276,
+          "bbox": {
+            "x1": 107.67816925048828,
+            "y1": 313.61407470703125,
+            "x2": 184.73687744140625,
+            "y2": 389.55743408203125,
+            "width": 77.05870819091797,
+            "height": 75.943359375
+          },
+          "center": {
+            "x": 146.20751953125,
+            "y": 351.58575439453125
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_008.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_009.jpg",
+      "timestamp": "2025-08-28T09:34:22.675695",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9875106811523438,
+          "bbox": {
+            "x1": 395.13134765625,
+            "y1": 198.4131317138672,
+            "x2": 501.9385986328125,
+            "y2": 237.5911407470703,
+            "width": 106.8072509765625,
+            "height": 39.178009033203125
+          },
+          "center": {
+            "x": 448.53497314453125,
+            "y": 218.00213623046875
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9623152613639832,
+          "bbox": {
+            "x1": 108.85333251953125,
+            "y1": 313.75604248046875,
+            "x2": 184.748779296875,
+            "y2": 389.55474853515625,
+            "width": 75.89544677734375,
+            "height": 75.7987060546875
+          },
+          "center": {
+            "x": 146.80105590820312,
+            "y": 351.6553955078125
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9577354788780212,
+          "bbox": {
+            "x1": 179.53665161132812,
+            "y1": 102.9959716796875,
+            "x2": 319.1297302246094,
+            "y2": 153.31500244140625,
+            "width": 139.59307861328125,
+            "height": 50.31903076171875
+          },
+          "center": {
+            "x": 249.33319091796875,
+            "y": 128.15548706054688
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_009.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_010.jpg",
+      "timestamp": "2025-08-28T09:34:23.084826",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9934796094894409,
+          "bbox": {
+            "x1": 393.13934326171875,
+            "y1": 198.69155883789062,
+            "x2": 503.80267333984375,
+            "y2": 236.80270385742188,
+            "width": 110.663330078125,
+            "height": 38.11114501953125
+          },
+          "center": {
+            "x": 448.47100830078125,
+            "y": 217.74713134765625
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9582589268684387,
+          "bbox": {
+            "x1": 107.50286865234375,
+            "y1": 313.23553466796875,
+            "x2": 185.21719360351562,
+            "y2": 390.04083251953125,
+            "width": 77.71432495117188,
+            "height": 76.8052978515625
+          },
+          "center": {
+            "x": 146.3600311279297,
+            "y": 351.63818359375
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9530757665634155,
+          "bbox": {
+            "x1": 180.04522705078125,
+            "y1": 103.21379089355469,
+            "x2": 319.2135925292969,
+            "y2": 152.1717071533203,
+            "width": 139.16836547851562,
+            "height": 48.957916259765625
+          },
+          "center": {
+            "x": 249.62940979003906,
+            "y": 127.6927490234375
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_010.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_011.jpg",
+      "timestamp": "2025-08-28T09:34:23.458450",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9819934964179993,
+          "bbox": {
+            "x1": 394.0615539550781,
+            "y1": 198.90179443359375,
+            "x2": 501.1674499511719,
+            "y2": 237.7294921875,
+            "width": 107.10589599609375,
+            "height": 38.82769775390625
+          },
+          "center": {
+            "x": 447.614501953125,
+            "y": 218.31564331054688
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9634708166122437,
+          "bbox": {
+            "x1": 107.5853042602539,
+            "y1": 313.5237121582031,
+            "x2": 184.93533325195312,
+            "y2": 390.0631408691406,
+            "width": 77.35002899169922,
+            "height": 76.5394287109375
+          },
+          "center": {
+            "x": 146.26031494140625,
+            "y": 351.7934265136719
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9579423069953918,
+          "bbox": {
+            "x1": 178.82730102539062,
+            "y1": 103.05838012695312,
+            "x2": 319.35565185546875,
+            "y2": 152.36651611328125,
+            "width": 140.52835083007812,
+            "height": 49.308135986328125
+          },
+          "center": {
+            "x": 249.0914764404297,
+            "y": 127.71244812011719
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_011.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_012.jpg",
+      "timestamp": "2025-08-28T09:34:23.850240",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9807232022285461,
+          "bbox": {
+            "x1": 394.46893310546875,
+            "y1": 198.60641479492188,
+            "x2": 501.20849609375,
+            "y2": 237.39852905273438,
+            "width": 106.73956298828125,
+            "height": 38.7921142578125
+          },
+          "center": {
+            "x": 447.8387145996094,
+            "y": 218.00247192382812
+          }
+        },
+        {
+          "id": "cota_2",
+          "type": "cota",
+          "confidence": 0.9686935544013977,
+          "bbox": {
+            "x1": 179.61422729492188,
+            "y1": 103.04008483886719,
+            "x2": 320.4990234375,
+            "y2": 152.73252868652344,
+            "width": 140.88479614257812,
+            "height": 49.69244384765625
+          },
+          "center": {
+            "x": 250.05662536621094,
+            "y": 127.88630676269531
+          }
+        },
+        {
+          "id": "simbol_3",
+          "type": "simbol",
+          "confidence": 0.9632733464241028,
+          "bbox": {
+            "x1": 108.6221923828125,
+            "y1": 313.94940185546875,
+            "x2": 184.97210693359375,
+            "y2": 390.15679931640625,
+            "width": 76.34991455078125,
+            "height": 76.2073974609375
+          },
+          "center": {
+            "x": 146.79714965820312,
+            "y": 352.0531005859375
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_012.jpg"
+    },
+    {
+      "image_path": "data\\training\\images\\train\\sample_013.jpg",
+      "timestamp": "2025-08-28T09:34:24.309703",
+      "model_used": "technical_detector",
+      "total_elements": 3,
+      "summary": {
+        "cota": 1,
+        "tolerancia": 1,
+        "simbol": 1
+      },
+      "elements": [
+        {
+          "id": "tolerancia_1",
+          "type": "tolerancia",
+          "confidence": 0.9804099202156067,
+          "bbox": {
+            "x1": 393.9928894042969,
+            "y1": 198.80978393554688,
+            "x2": 501.7963562011719,
+            "y2": 237.35244750976562,
+            "width": 107.803466796875,
+            "height": 38.54266357421875
+          },
+          "center": {
+            "x": 447.8946228027344,
+            "y": 218.08111572265625
+          }
+        },
+        {
+          "id": "simbol_2",
+          "type": "simbol",
+          "confidence": 0.9616332650184631,
+          "bbox": {
+            "x1": 108.77567291259766,
+            "y1": 313.613525390625,
+            "x2": 184.90664672851562,
+            "y2": 389.862060546875,
+            "width": 76.13097381591797,
+            "height": 76.24853515625
+          },
+          "center": {
+            "x": 146.84115600585938,
+            "y": 351.73779296875
+          }
+        },
+        {
+          "id": "cota_3",
+          "type": "cota",
+          "confidence": 0.9492701292037964,
+          "bbox": {
+            "x1": 181.11636352539062,
+            "y1": 103.26972961425781,
+            "x2": 318.7109069824219,
+            "y2": 152.2369842529297,
+            "width": 137.59454345703125,
+            "height": 48.967254638671875
+          },
+          "center": {
+            "x": 249.91363525390625,
+            "y": 127.75335693359375
+          }
+        }
+      ],
+      "detection_params": {
+        "confidence_threshold": 0.2,
+        "iou_threshold": 0.45
+      },
+      "annotated_image": "data\\training\\images\\train\\annotated\\detected_sample_013.jpg"
+    }
+  ],
+  "summary": {
+    "total_elements": 42,
+    "by_type": {
+      "cota": 14,
+      "tolerancia": 14,
+      "simbol": 14
+    },
+    "by_image": {
+      "sample_000.jpg": 3,
+      "sample_001.jpg": 3,
+      "sample_002.jpg": 3,
+      "sample_003.jpg": 3,
+      "sample_004.jpg": 3,
+      "sample_005.jpg": 3,
+      "sample_006.jpg": 3,
+      "sample_007.jpg": 3,
+      "sample_008.jpg": 3,
+      "sample_009.jpg": 3,
+      "sample_010.jpg": 3,
+      "sample_011.jpg": 3,
+      "sample_012.jpg": 3,
+      "sample_013.jpg": 3
+    }
+  }
+}

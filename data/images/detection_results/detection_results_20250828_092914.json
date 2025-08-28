@@ -1,0 +1,19 @@
+{
+  "batch_info": {
+    "input_directory": "data\\images",
+    "output_directory": "data\\images\\detection_results",
+    "total_images": 1,
+    "processed_at": "2025-08-28T09:29:14.442040",
+    "model_used": "technical_detector"
+  },
+  "results": [],
+  "summary": {
+    "total_elements": 0,
+    "by_type": {
+      "cota": 0,
+      "tolerancia": 0,
+      "simbol": 0
+    },
+    "by_image": {}
+  }
+}
